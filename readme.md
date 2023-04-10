@@ -22,6 +22,7 @@ NODE_ENV=development npm run typeorm:cli -- schema:sync
 NODE_ENV=test npm run typeorm:cli -- schema:drop
 NODE_ENV=test npm run typeorm:cli -- schema:sync
 
+NODE_ENV=production npm run typeorm:cli -- schema:drop && NODE_ENV=production npm run typeorm:cli -- schema:sync
 NODE_ENV=development npm run typeorm:cli -- schema:drop && NODE_ENV=development npm run typeorm:cli -- schema:sync
 NODE_ENV=test npm run typeorm:cli -- schema:drop && NODE_ENV=test npm run typeorm:cli -- schema:sync
 ```

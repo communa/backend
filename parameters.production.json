@@ -8,7 +8,7 @@
     "host": "localhost",
     "port": 5432,
     "username": "postgres",
-    "password": "",
+    "password": "postgres",
     "database": "communa_production"
   }
 }
