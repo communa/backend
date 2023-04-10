@@ -13,6 +13,8 @@ Create the necessary database schema
 Ensure there are no errors by execution of all tests
 `yarn test`
 
+`pm2 start npm --name "communa-backedn" -- start`
+
 ### DB
 
 ```

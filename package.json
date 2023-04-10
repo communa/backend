@@ -6,6 +6,7 @@
     "node": "^14"
   },
   "scripts": {
+    "prod": "NODE_ENV=production node build/server.js",
     "dev": "HTTPS=true NODE_ENV=development ts-node-dev --inspect --respawn src/server.ts",
     "test": "NODE_ENV=test nyc ./node_modules/.bin/mocha --require ts-node/register ./src/test/**/**/**/**/*.test.ts",
     "build": "rimraf build && tsc -p tsconfig.json",

@@ -17,9 +17,8 @@ export class ImporterWebPage {
   @inject('PageReader')
   protected pageReader: PageReader;
 
-  public async process(limit: number) {
+  public async process(limit: number, chunks: number) {
     const webpages = await this.webPageRepository.findUnprocessed(limit);
-    const c = 300;
 
     App.browser = await puppeteer.launch({
       args: [
@@ -36,10 +35,10 @@ export class ImporterWebPage {
       limit = webpages[1];
     }
 
-    for (let i = 0; i < limit; i = i + c) {
+    for (let i = 0; i < limit; i = i + chunks) {
       console.log(i);
       const p = [];
-      for (let x = 0; x < c; x++) {
+      for (let x = 0; x < chunks; x++) {
         p.push(this.processUrl(webpages[0][i + x]));
       }
       await Promise.all(p);
