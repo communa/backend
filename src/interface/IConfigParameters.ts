@@ -3,6 +3,7 @@ export interface IConfigParameters {
   port: number;
   sentry: string;
   substrate: string;
+  redis: string;
   jwtSecret: string;
   database: {
     type: string;
