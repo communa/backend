@@ -13,7 +13,10 @@ Create the necessary database schema
 Ensure there are no errors by execution of all tests
 `yarn test`
 
-`pm2 start npm --name "communa-backedn" -- start`
+`NODE_ENV=production pm2 start build/server.js --watch`
+
+### Commands
+NODE_ENV=production node /var/www/html/communa-backend/build/command/ImportPagesCommand.js 25 5
 
 ### DB
 
