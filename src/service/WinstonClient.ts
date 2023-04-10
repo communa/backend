@@ -1,15 +1,11 @@
 import winston from 'winston';
-import * as logglyWinston from 'winston-loggly-bulk';
 import fs from 'fs';
 
 import { inject } from 'inversify';
-import { IConfigParameters } from '../interface/IConfigParameters';
 
 export class WinstonClient {
   @inject('env')
   private env: string;
-  @inject('parameters')
-  private parameters: IConfigParameters;
   public client: winston.Logger;
 
   constructor() {
@@ -39,23 +35,6 @@ export class WinstonClient {
                 }`;
             }),
             winston.format.colorize({ all: true })
-          ),
-          handleExceptions: true,
-        })
-      );
-    } else {
-      this.client.add(
-        new logglyWinston.Loggly({
-          subdomain: this.parameters.loggly.subdomain,
-          token: this.parameters.loggly.token,
-          json: true,
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.printf(data => {
-              const { timestamp, level, message } = data;
-
-              return `${timestamp as string} [${level}]: ${message}`;
-            })
           ),
           handleExceptions: true,
         })
