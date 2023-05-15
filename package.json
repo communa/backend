@@ -6,6 +6,7 @@
     "node": "^14"
   },
   "scripts": {
+    "pm2": "NODE_ENV=production pm2 start build/server.js --watch",
     "prod": "NODE_ENV=production node build/server.js",
     "dev": "HTTPS=true NODE_ENV=development ts-node-dev --inspect --respawn src/server.ts",
     "test": "NODE_ENV=test nyc ./node_modules/.bin/mocha --require ts-node/register ./src/test/**/**/**/**/*.test.ts",

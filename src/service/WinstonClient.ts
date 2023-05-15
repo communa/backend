@@ -31,7 +31,7 @@ export class WinstonClient {
             winston.format.printf(data => {
               const { timestamp, level, message, ...metadata } = data;
 
-              return `${timestamp as string} [${level}]: ${message} ${metadata && Object.keys(metadata).length ? JSON.stringify(metadata) : ''
+              return `${timestamp as string} [${level}]: ${String(message)} ${metadata && Object.keys(metadata).length ? JSON.stringify(metadata) : ''
                 }`;
             }),
             winston.format.colorize({ all: true })
