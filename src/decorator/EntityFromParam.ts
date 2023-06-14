@@ -12,12 +12,11 @@ export function EntityFromParam(
   selectOptions: null | TSelectOptions = null,
   relations: null | TRelations = null
 ) {
-  return function (object: Record<string, unknown>, methodName: string, index: number) {
+  return function (object: Object, methodName: string, index: number) {
     const reflectedType = (Reflect as any).getMetadata('design:paramtypes', object, methodName)[
       index
     ];
-    const target = reflectedType;
-    if (!target) throw new Error('Cannot guess type if the parameter');
+    if (!reflectedType) throw new Error('Cannot guess type if the parameter');
 
     getMetadataArgsStorage().params.push({
       object: object,
@@ -28,7 +27,7 @@ export function EntityFromParam(
       parse: false,
       required: false,
       transform: (_actionProperties, value) =>
-        entityTransform(value, target, selectOptions, relations),
+        entityTransform(value, reflectedType, selectOptions, relations),
     });
   };
 }

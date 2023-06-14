@@ -23,9 +23,6 @@ export class ActivityManager {
     activity.user = user;
     activity.sourceUrl = url;
     activity.title = this.getTitle(activity);
-    // activity.tags = await this.processTags(activity);
-    // activity.locations = await this.processLocations(activity);
-    // activity.files = await this.processImages(activity);
 
     return this.validateAndSave(activity);
   }
@@ -45,9 +42,6 @@ export class ActivityManager {
     }
 
     activity.title = this.getTitle(activity);
-    // activity.tags = await this.processTags(activity);
-    // activity.locations = await this.processLocations(activity);
-    // activity.files = await this.processImages(activity);
 
     return this.activityRepository.saveSingle(activity);
   }

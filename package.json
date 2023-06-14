@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "communa backend",
   "engines": {
-    "node": "^14"
+    "node": "^16"
   },
   "scripts": {
     "pm2": "NODE_ENV=production pm2 start build/server.js --watch",

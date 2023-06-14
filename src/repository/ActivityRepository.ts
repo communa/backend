@@ -6,7 +6,6 @@ import { Filter } from '../service/Filter';
 import { AbstractRepositoryTemplate } from './AbstractRepositoryTemplate';
 import { Activity } from '../entity/Activity';
 import { ISearchActivity } from '../interface/search/ISearchActivity';
-import { User } from '../entity/User';
 
 @injectable()
 export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
@@ -24,33 +23,6 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
 
   public async validateAndCreate(activity: Activity): Promise<Activity> {
     return this.getRepo().save(activity);
-  }
-
-  public async feed(_user: User, search: ISearchActivity): Promise<[Activity[], number]> {
-    const s = _.assign(
-      {
-        filter: {},
-        sort: {
-          createdAt: 'ASC',
-        },
-        page: 0,
-      },
-      search
-    );
-    const sort = this.filter.buildOrderByCondition('activity', s);
-    const limit = this.filter.buildLimit(search);
-
-    return this.getRepo()
-      .createQueryBuilder('activity')
-      .select()
-      .leftJoinAndSelect('activity.user', 'user')
-      .where((qb: SelectQueryBuilder<Activity>) => {
-        this.buildSearchQueries(qb, search);
-      })
-      .orderBy(sort)
-      .skip(limit * s.page)
-      .take(limit)
-      .getManyAndCount();
   }
 
   public async findAndCount(search: ISearchActivity): Promise<[Activity[], number]> {

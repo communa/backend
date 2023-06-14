@@ -23,8 +23,6 @@ import { SubstrateConnector } from '../service/SubstrateConnector';
 import { ValidateRoles } from '../middleware/ValidateRoles';
 import { TagController } from '../controller/TagController';
 import { UserController } from '../controller/UserController';
-import { MessageController } from '../controller/MessageController';
-import { RoomController } from '../controller/RoomController';
 import { ActivityController } from '../controller/ActivityController';
 import { Browser } from 'puppeteer';
 
@@ -129,8 +127,6 @@ export class App {
         AuthController,
         TagController,
         UserController,
-        MessageController,
-        RoomController,
       ],
     });
   }
