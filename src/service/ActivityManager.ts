@@ -6,6 +6,8 @@ import { User } from '../entity/User';
 import ConstraintsValidationException from '../exception/ConstraintsValidationException';
 import { ActivityRepository } from '../repository/ActivityRepository';
 import { PageReader } from './import/PageReader';
+import { EActivityState } from '../interface/EActivityState';
+import { EActivityType } from '../interface/EActivityType';
 
 @injectable()
 export class ActivityManager {
@@ -18,18 +20,18 @@ export class ActivityManager {
     const data = await this.pageReader.readByUrl(url);
     const activity = new Activity();
 
-    activity.title = data.title;
     activity.text = data.text;
     activity.user = user;
     activity.sourceUrl = url;
     activity.title = this.getTitle(activity);
+    activity.state = EActivityState.PUBLISHED;
+    activity.type = EActivityType.IMPORT;
 
     return this.validateAndSave(activity);
   }
 
-  editValidateAndSave(activity: Activity, data: Activity) {
-    activity.title = data.title;
-    activity.text = data.text;
+  editValidateAndSave(activity: Activity, data: Activity) {3
+    activity = Object.assign(activity, data);
 
     void this.validateAndSave(activity);
   }
@@ -40,8 +42,6 @@ export class ActivityManager {
     if (errors.length) {
       throw new ConstraintsValidationException(errors);
     }
-
-    activity.title = this.getTitle(activity);
 
     return this.activityRepository.saveSingle(activity);
   }
@@ -54,19 +54,7 @@ export class ActivityManager {
         return blocks[0].data.text;
       }
     }
-
     return 'Empty title';
   }
 
-  public getIntro(activity: Activity): string {
-    if (activity.text.blocks) {
-      const blocks = activity.text.blocks.filter((b: any) => b.type === 'paragraph');
-
-      if (blocks.length > 0) {
-        return blocks[0].data.text;
-      }
-    }
-
-    return '';
-  }
 }

@@ -23,8 +23,6 @@ import { Authenticator } from '../service/Authenticator';
 import { ActivityRepository } from '../repository/ActivityRepository';
 import { ActivityFixture } from '../test/fixture/ActivityFixture';
 import { ActivityManager } from '../service/ActivityManager';
-import { TagFixture } from '../test/fixture/TagFixture';
-import { TagRepository } from '../repository/TagRepository';
 import { ImporterWebPage } from '../service/import/ImporterWebPage';
 import { ImporterWebSite } from '../service/import/ImporterWebSite';
 import { WebPageFixture } from '../test/fixture/WebPageFixture';
@@ -56,7 +54,6 @@ export class AppContainer {
     // Repositories
     container.bind<UserRepository>('UserRepository').to(UserRepository);
     container.bind<ActivityRepository>('ActivityRepository').to(ActivityRepository);
-    container.bind<TagRepository>('TagRepository').to(TagRepository);
     container.bind<WebPageRepository>('WebPageRepository').to(WebPageRepository);
     container.bind<WebSiteRepository>('WebSiteRepository').to(WebSiteRepository);
 
@@ -81,14 +78,12 @@ export class AppContainer {
     container.bind<WebPageFixture>('WebPageFixture').to(WebPageFixture);
     container.bind<WebSiteFixture>('WebSiteFixture').to(WebSiteFixture);
 
-    // ElasticSearch
-    container.bind<Faker>('Faker').to(Faker);
+   container.bind<Faker>('Faker').to(Faker);
 
     // Fixture
     container.bind<UserFixture>('UserFixture').to(UserFixture);
     container.bind<HostFixture>('HostFixture').to(HostFixture);
     container.bind<ActivityFixture>('ActivityFixture').to(ActivityFixture);
-    container.bind<TagFixture>('TagFixture').to(TagFixture);
 
     AppContainer.container = container;
 

@@ -8,6 +8,7 @@ import { UserFixture } from '../fixture/UserFixture';
 import { ActivityManager } from '../../service/ActivityManager';
 import { ActivityFixture } from '../fixture/ActivityFixture';
 import { ActivityRepository } from '../../repository/ActivityRepository';
+import { EActivityState } from '../../interface/EActivityState';
 
 @suite
 export class ActivityControllerTest extends BaseControllerTest {
@@ -49,7 +50,9 @@ export class ActivityControllerTest extends BaseControllerTest {
   async post() {
     const user = await this.userFixture.createUser();
     const data = {
+      title: faker.datatype.uuid(),
       text: faker.datatype.uuid(),
+      state: EActivityState.DRAFT,
     };
 
     const res = await this.http.request({
@@ -67,7 +70,7 @@ export class ActivityControllerTest extends BaseControllerTest {
 
     expect(res.status).to.be.equal(201);
 
-    expect(activity.title).to.be.eq('Empty title');
+    expect(activity.title).to.be.eq(data.title);
     expect(activity.text).to.be.eq(data.text);
   }
 

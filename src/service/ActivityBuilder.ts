@@ -7,6 +7,8 @@ import { IText } from '../interface/IText';
 import ConstraintsValidationException from '../exception/ConstraintsValidationException';
 import * as cheerio from 'cheerio';
 import { EActivityCancellationReason } from '../interface/EActivityCancellationReason';
+import { EActivityState } from '../interface/EActivityState';
+import { EActivityType } from '../interface/EActivityType';
 
 
 @injectable()
@@ -74,14 +76,18 @@ export class ActivityBuilder {
       activity.jobUrl = jobUrl;
     }
     activity.processedAt = new Date();
+    activity.state = EActivityState.PUBLISHED;
+    activity.type = EActivityType.IMPORT;
 
     if (page.html.indexOf('Looks like this career opportunity is no longer available') > -1) {
       activity.cancelledAt = new Date();
+      activity.state = EActivityState.REMOVED;
       activity.cancellationReason = EActivityCancellationReason.FILLED_OR_CLOSED;
     }
     // skip if hostname is mentioned withing the body
     if (activity.text.indexOf(hostname) > -1) {
       activity.cancelledAt = new Date();
+      activity.state = EActivityState.REMOVED;
       activity.cancellationReason = EActivityCancellationReason.EXTRA_LINKS;
     }
 
@@ -90,6 +96,8 @@ export class ActivityBuilder {
 
   async validateAndSave(activity: Activity) {
     const errors = await validate(activity);
+
+    // console.log(errors);
 
     if (errors.length) {
       throw new ConstraintsValidationException(errors);

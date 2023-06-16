@@ -23,6 +23,7 @@ import { CurrentUser } from '../decorator/CurrentUser';
 import { ActivityRepository } from '../repository/ActivityRepository';
 import { ActivitySearchDto } from '../validator/dto/ActivitySearchDto';
 import { ActivityManager } from '../service/ActivityManager';
+import { EActivityType } from '../interface/EActivityType';
 
 @JsonController('/activity')
 export class ActivityController extends AbstractController {
@@ -87,6 +88,7 @@ export class ActivityController extends AbstractController {
     @Res() res: any
   ) {
     data.user = currentUser;
+    data.type = EActivityType.INPUT;
 
     const activity = await this.activityManager.validateAndSave(data);
 

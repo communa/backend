@@ -21,7 +21,6 @@ import { AuthController } from '../controller/AuthController';
 import { AuthSubstrateController } from '../controller/AuthSubstrateController';
 import { SubstrateConnector } from '../service/SubstrateConnector';
 import { ValidateRoles } from '../middleware/ValidateRoles';
-import { TagController } from '../controller/TagController';
 import { UserController } from '../controller/UserController';
 import { ActivityController } from '../controller/ActivityController';
 import { Browser } from 'puppeteer';
@@ -125,7 +124,6 @@ export class App {
         AuthSubstrateController,
         ActivityController,
         AuthController,
-        TagController,
         UserController,
       ],
     });

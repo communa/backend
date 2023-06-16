@@ -1,12 +1,14 @@
-import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import faker from 'faker';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { JSONSchema } from 'class-validator-jsonschema';
 
 import { User } from './User';
-import { Tag } from './Tag';
 import { AbstractBaseEntity } from './AbstractBaseEntity';
 import { EActivityCancellationReason } from '../interface/EActivityCancellationReason';
+import { EActivityType } from '../interface/EActivityType';
+import { IsNotEmpty } from 'class-validator';
+import { EActivityState } from '../interface/EActivityState';
 
 @JSONSchema({
   example: {
@@ -16,9 +18,11 @@ import { EActivityCancellationReason } from '../interface/EActivityCancellationR
 @Entity()
 @Exclude()
 export class Activity extends AbstractBaseEntity {
-  @Expose({ groups: ['search'] })
+  @IsNotEmpty()
+  @Expose({ groups: ['search', 'create'] })
   @Column('text', { nullable: true })
   title: string;
+  @IsNotEmpty()
   @Expose({ groups: ['search', 'create'] })
   @Column('text', { nullable: true })
   text: any;
@@ -38,6 +42,9 @@ export class Activity extends AbstractBaseEntity {
   @Expose({ groups: ['search', 'create'] })
   @Column('text', { nullable: true })
   salary: string;
+  @Expose({ groups: ['search', 'create'] })
+  @Column('text', { nullable: true })
+  rate: string;
   @Expose({ groups: ['search'] })
   @Column('text', { nullable: true })
   sourceUrl: string;
@@ -45,6 +52,15 @@ export class Activity extends AbstractBaseEntity {
   @Expose({ groups: ['search'] })
   @Column('text', { nullable: true })
   jobUrl: string;
+
+  @IsNotEmpty()
+  @Expose({ groups: ['search'] })
+  @Column('text', { nullable: true })
+  type: EActivityType;
+  @IsNotEmpty()
+  @Expose({ groups: ['search', 'create'] })
+  @Column('text', { nullable: true })
+  state: EActivityState;
 
   @Expose({ groups: ['search'] })
   @Column('timestamptz', { nullable: true })
@@ -61,17 +77,4 @@ export class Activity extends AbstractBaseEntity {
   @Type(() => User)
   @ManyToOne(() => User, { eager: true, nullable: true })
   user: User;
-
-  @ManyToMany(() => Tag, tag => tag.activities)
-  tags: Tag[];
-
-  @Expose({ name: 'status', groups: ['search'] })
-  status() {
-    return 'draft';
-  }
-
-  @Expose({ name: 'tags', groups: ['search'] })
-  getTags() {
-    return [];
-  }
 }

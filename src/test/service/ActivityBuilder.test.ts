@@ -9,7 +9,7 @@ import { expect } from 'chai';
 import { Activity } from '../../entity/Activity';
 
 @suite()
-export class ActivityManagerTest extends AbstractDatabaseIntegration {
+export class ActivityBuilderTest extends AbstractDatabaseIntegration {
   protected activityBuilder: ActivityBuilder;
   protected pageReader: PageReader;
 

@@ -12,6 +12,7 @@ export function EntityFromParam(
   selectOptions: null | TSelectOptions = null,
   relations: null | TRelations = null
 ) {
+  // eslint-disable-next-line
   return function (object: Object, methodName: string, index: number) {
     const reflectedType = (Reflect as any).getMetadata('design:paramtypes', object, methodName)[
       index
