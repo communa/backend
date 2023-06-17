@@ -1,13 +1,14 @@
-import {suite, test} from '@testdeck/mocha';
+import { suite, test } from '@testdeck/mocha';
 import faker from 'faker';
-import {expect} from 'chai';
+import { expect } from 'chai';
 import * as jwt from 'jsonwebtoken';
+import * as web3 from 'web3';
 
-import {Authenticator} from '../../service/Authenticator';
-import {User} from '../../entity/User';
-import {UserFixture} from '../fixture/UserFixture';
-import {AbstractDatabaseIntegration} from '../AbstractDatabase.integration';
-import {UserRepository} from '../../repository/UserRepository';
+import { Authenticator } from '../../service/Authenticator';
+import { User } from '../../entity/User';
+import { UserFixture } from '../fixture/UserFixture';
+import { AbstractDatabaseIntegration } from '../AbstractDatabase.integration';
+import { UserRepository } from '../../repository/UserRepository';
 
 @suite()
 export class AuthenticatorTest extends AbstractDatabaseIntegration {
@@ -53,19 +54,6 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     };
 
     const user = await this.authenticator.registerCustomer(data as User);
-
-    expect(user.passwordPlain).to.be.eq(data.passwordPlain);
-    expect(user.emailOrPhone).to.be.eq(data.emailOrPhone);
-  }
-
-  @test()
-  async registerHost_phone() {
-    const data = {
-      emailOrPhone: faker.phone.phoneNumber(),
-      passwordPlain: faker.internet.password(),
-    };
-
-    const user = await this.authenticator.registerHost(data as User);
 
     expect(user.passwordPlain).to.be.eq(data.passwordPlain);
     expect(user.emailOrPhone).to.be.eq(data.emailOrPhone);
@@ -122,7 +110,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
 
     const payload = jwt.verify(refreshToken, this.parameters.jwtSecret);
 
-    expect(payload).to.include({id: user.id});
+    expect(payload).to.include({ id: user.id });
     expect(payload).to.include.all.keys('exp', 'iat');
   }
 
@@ -141,7 +129,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
 
   @test()
   async getUserFromRefreshToken_failNotValid() {
-    const refreshToken = jwt.sign({id: ''}, this.parameters.jwtSecret, {
+    const refreshToken = jwt.sign({ id: '' }, this.parameters.jwtSecret, {
       expiresIn: 60 * 60 * 24,
     });
 
@@ -159,7 +147,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     const iat = Math.floor(
       new Date(date.setDate(date.getDate() - 1)).setHours(date.getHours() - 1).valueOf() / 1000
     );
-    const refreshToken = jwt.sign({id: faker.random.word(), iat}, this.parameters.jwtSecret, {
+    const refreshToken = jwt.sign({ id: faker.random.word(), iat }, this.parameters.jwtSecret, {
       expiresIn: 60 * 60 * 24,
     });
 
@@ -172,7 +160,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
 
   @test()
   async getUserFromRefreshToken_failUserDoesNotExist() {
-    const refreshToken = jwt.sign({id: faker.datatype.number()}, this.parameters.jwtSecret, {
+    const refreshToken = jwt.sign({ id: faker.datatype.number() }, this.parameters.jwtSecret, {
       expiresIn: 60 * 60 * 24,
     });
 
@@ -225,5 +213,36 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
 
     expect(error.name).to.be.eq('TokenExpiredError');
     expect(error.message).to.be.eq('jwt expired');
+  }
+
+  @test()
+  async login() {
+    const account = web3.eth.accounts.create();
+
+    const nonce = await this.authenticator.getNonce(account.address);
+    const signature = web3.eth.accounts.sign(nonce, account.privateKey)
+    const tokens = await this.authenticator.login(signature.signature, account.address);
+
+    expect(tokens).to.contain.keys(['accessToken', 'refreshToken']);
+  }
+
+  @test()
+  async login_failsWrongNonce() {
+    const accountA = web3.eth.accounts.create();
+    const accountB = web3.eth.accounts.create();
+
+    const nonce = await this.authenticator.getNonce(accountA.address);
+    const signature = web3.eth.accounts.sign(nonce, accountB.privateKey)
+
+    let err = null;
+
+    try {
+      await this.authenticator.login(signature.signature, accountB.address);
+    } catch (e: any) {
+      err = e;
+    }
+
+    expect(err.name).to.be.equal('AuthenticationException');
+    expect(err.message).to.be.equal('Authentication error: Nonce not available or expired');
   }
 }

@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import validator from 'validator';
 import { inject, injectable } from 'inversify';
+import { isEmail } from 'class-validator';
 
 import { User } from '../entity/User';
 import { Mailer } from './Mailer';
@@ -13,7 +14,8 @@ import { IAuthTokens } from '../interface/IAuthTokens';
 import { IConfigParameters } from '../interface/IConfigParameters';
 import AuthenticationException from '../exception/AuthenticationException';
 import { UserManager } from './UserManager';
-import { isEmail } from 'class-validator';
+import { RedisClient } from './RedisClient';
+import { Signer } from './Signer';
 
 @injectable()
 export class Authenticator {
@@ -28,6 +30,45 @@ export class Authenticator {
   protected mailer: Mailer;
   @inject('parameters')
   protected parameters: IConfigParameters;
+  @inject('Signer')
+  protected signer: Signer;
+  @inject('RedisClient')
+  protected redis: RedisClient;
+
+  public async getNonce(address: string): Promise<string> {
+    const nonce = this.signer.generateNonce();
+    const key = `login:${address}`;
+    const seconds = 1000 * 60;
+
+    await this.redis.setWithExpiry(key, nonce, seconds);
+
+    return nonce;
+  }
+
+  public async loginWeb3(signature: string, address: string): Promise<IAuthTokens> {
+    const key = `login:${address}`;
+    const nonce = await this.redis.get(key);
+
+    if (!nonce) {
+      throw new AuthenticationException('Nonce not available or expired');
+    }
+
+    const isValid = this.signer.verify(nonce, signature, address);
+
+    if (!isValid) {
+      throw new AuthenticationException('Signature is not valid');
+    }
+
+    const user = await this.userRepository.findByAddressPublic(address);
+
+    if (!user) {
+      throw new AuthenticationException('User does not exist');
+    }
+
+    const tokens = this.getTokens(user);
+
+    return tokens;
+  }
 
   public async registerCustomer(user: User): Promise<User> {
     user.roles = [EUserRole.ROLE_USER];
@@ -40,14 +81,6 @@ export class Authenticator {
     if (newUser.phone) {
       // send SMS ?
     }
-
-    return newUser;
-  }
-
-  public async registerHost(user: User): Promise<User> {
-    user.roles = [EUserRole.ROLE_USER, EUserRole.ROLE_BUSINESS];
-
-    const newUser = await this.register(user);
 
     return newUser;
   }

@@ -8,7 +8,6 @@ import { AppContainer } from '../../app/AppContainer';
 import { createAppTest } from '../../app/AppBootstrap';
 import { IConfigParameters } from '../../interface/IConfigParameters';
 import { Http } from '../../service/Http';
-import { AuthenticatorTest } from '../../service/AuthenticatorTest';
 
 export class BaseControllerTest {
   protected url: string;
@@ -16,7 +15,6 @@ export class BaseControllerTest {
   protected container: Container;
   protected parameters: IConfigParameters;
   protected http: Http;
-  protected authenticatorTest: AuthenticatorTest;
 
   constructor() {
     const env = AppConfig.getEnv();
@@ -25,7 +23,6 @@ export class BaseControllerTest {
     this.container = AppContainer.build(parameters, env);
     this.parameters = this.container.get('parameters');
     this.http = this.container.get('Http');
-    this.authenticatorTest = this.container.get('AuthenticatorTest');
 
     this.url = `http://${this.parameters.host}:${this.parameters.port}`;
   }

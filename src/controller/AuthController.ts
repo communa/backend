@@ -12,15 +12,15 @@ import {
 
 import faker from 'faker';
 import express from 'express';
-import {OpenAPI, ResponseSchema} from 'routing-controllers-openapi';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 
-import {User} from '../entity/User';
-import {App} from '../app/App';
-import {Authenticator} from '../service/Authenticator';
-import {UserManager} from '../service/UserManager';
-import {UserRepository} from '../repository/UserRepository';
-import {IConfigParameters} from '../interface/IConfigParameters';
-import {AuthForgotPasswordDto} from '../validator/dto/AuthDto';
+import { User } from '../entity/User';
+import { App } from '../app/App';
+import { Authenticator } from '../service/Authenticator';
+import { UserManager } from '../service/UserManager';
+import { UserRepository } from '../repository/UserRepository';
+import { IConfigParameters } from '../interface/IConfigParameters';
+import { AuthForgotPasswordDto } from '../validator/dto/AuthDto';
 
 @JsonController('/auth')
 export class AuthController {
@@ -37,40 +37,75 @@ export class AuthController {
   }
 
   @OpenAPI({
-    summary: 'Register as a host',
+    summary: 'Auth login',
     requestBody: {
       content: {
         'application/json': {
-          examples: {
-            email: {
-              emailOrPhone: faker.internet.email(),
-              passwordPlain: faker.internet.password(),
-            },
-            phone: {
-              emailOrPhone: faker.phone.phoneNumber(),
-              passwordPlain: faker.internet.password(),
-            },
-          },
+          examples: {},
         },
       },
       required: false,
     },
+    responses: {
+      200: {
+        description: 'Replies with refresh and login headers sent',
+        content: {
+          'application/json': {},
+        },
+      },
+    },
   })
-  @Post('/register/host')
-  @HttpCode(201)
-  public async registerHost(
-    @Body({validate: {groups: ['register']}, transform: {groups: ['register']}}) payload: User,
+  @Post('/login/web3')
+  @HttpCode(200)
+  public async loginWeb3(
+    @Body()
+    payload: {
+      signature: string;
+      address: string;
+    },
     @Res() res: any
   ) {
-    const newUser = await this.authenticator.registerHost(payload);
-    const token = this.authenticator.generateJwtToken(newUser);
+    const tokens = await this.authenticator.login(payload.signature, payload.address);
 
-    res.setHeader('Authorization', token);
-    res.location('/api/auth/status');
+    res.setHeader('Authorization', tokens.accessToken);
+    res.setHeader('Refresh-Token', tokens.refreshToken);
 
     return {};
   }
 
+  @HttpCode(200)
+  @Post('/nonce')
+  @OpenAPI({
+    summary: 'Nonce for user login',
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {},
+        },
+      },
+      required: false,
+    },
+    responses: {
+      200: {
+        description: 'Replies with nonce for user login',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                nonce: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  public nonce(@Body() payload: { address: string }): Promise<string> {
+    return this.authenticator.getNonce(payload.address);
+  }
   @OpenAPI({
     summary: 'Register as a user',
     requestBody: {
@@ -94,7 +129,7 @@ export class AuthController {
   @Post('/register')
   @HttpCode(201)
   public async register(
-    @Body({validate: {groups: ['register']}, transform: {groups: ['register']}}) payload: User,
+    @Body({ validate: { groups: ['register'] }, transform: { groups: ['register'] } }) payload: User,
     @Res() res: any
   ) {
     const newUser = await this.authenticator.registerCustomer(payload);
@@ -177,7 +212,7 @@ export class AuthController {
 
   @Get('/status')
   @ResponseSchema(User)
-  @ResponseClassTransformOptions({groups: ['search', 'me']})
+  @ResponseClassTransformOptions({ groups: ['search', 'me'] })
   public async status(@Req() req: express.Request) {
     const token = req.headers.authorization as string;
     const user = await this.authenticator.getUserFromJwtToken(token);

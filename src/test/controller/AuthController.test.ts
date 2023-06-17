@@ -1,5 +1,6 @@
 import faker from 'faker';
 import { expect } from 'chai';
+import * as web3 from 'web3';
 import { suite, test } from '@testdeck/mocha';
 
 import { UserRepository } from '../../repository/UserRepository';
@@ -23,6 +24,47 @@ export class AuthControllerTest extends BaseControllerTest {
     this.userRepository = this.container.get('UserRepository');
     this.userFixture = this.container.get('UserFixture');
     this.faker = this.container.get('Faker');
+  }
+
+  @test()
+  async login() {
+    const account = web3.eth.accounts.create();
+    const nonce = await this.authenticator.getNonce(account.address);
+    const signature = web3.eth.accounts.sign(nonce, account.privateKey)
+
+    const res = await this.http.request({
+      url: `${this.url}/api/auth/web3/login`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: {
+        signature: signature.signature,
+        address: account.address,
+      },
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data).to.be.deep.equal({});
+  }
+
+  @test()
+  async nonce() {
+    const account = web3.eth.accounts.create();
+
+    const res = await this.http.request({
+      url: `${this.url}/api/auth/web3/nonce`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: {
+        address: account.address,
+      },
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data.length).to.be.eq(202);
   }
 
   @test()

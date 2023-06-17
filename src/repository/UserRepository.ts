@@ -16,6 +16,7 @@ export class UserRepository extends AbstractRepositoryTemplate<User> {
 
     return this.saveSingle(user);
   }
+
   public async findAndCount(search: ISearchUser): Promise<[User[], number]> {
     const sort = this.filter.buildOrderByCondition('user', search);
     const limit = this.filter.buildLimit(search);
@@ -52,5 +53,13 @@ export class UserRepository extends AbstractRepositoryTemplate<User> {
       .where('lower(u.email) = :email', { email: emailOrPhone.toLocaleLowerCase() })
       .orWhere('u.phone = :phone', { phone: emailOrPhone })
       .getOne();
+  }
+
+  public findByAddressPublic(address: string): Promise<User | undefined> {
+    return this.getRepo().findOneOrFail({
+      where: {
+        address,
+      }
+    })
   }
 }

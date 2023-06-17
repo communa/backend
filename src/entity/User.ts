@@ -157,29 +157,8 @@ export class User extends AbstractBaseEntity implements IUser {
     return this.userName || this.id;
   }
 
-  @Expose({ name: 'isOnline', groups: ['search'] })
-  isOnline() {
-    return false;
-  }
-
   hasRole(role: EUserRole): boolean {
     return this.roles.indexOf(role) > -1;
-  }
-
-  isHost(): boolean {
-    return this.hasRole(EUserRole.ROLE_BUSINESS);
-  }
-
-  isCustomerOnly(): boolean {
-    return this.hasRole(EUserRole.ROLE_USER) && this.roles.length === 1;
-  }
-
-  isHostOnly(): boolean {
-    return (
-      this.hasRole(EUserRole.ROLE_USER) &&
-      this.hasRole(EUserRole.ROLE_BUSINESS) &&
-      this.roles.length === 2
-    );
   }
 
   @BeforeInsert()
