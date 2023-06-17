@@ -33,7 +33,7 @@ export class ActivityControllerImportTest extends BaseControllerTest {
   @test
   @timeout(20000)
   async import() {
-    const host = await this.hostFixture.createHost();
+    const user = await this.userFixture.createUser();
     const html = fs.readFileSync(
       join(__dirname, '../fixture/sothebys/life-of-luxury-miami-beach-opens-a-doorway-of-discovery')
     );
@@ -51,7 +51,7 @@ export class ActivityControllerImportTest extends BaseControllerTest {
       },
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(host).accessToken,
+        Authorization: this.authenticator.getTokens(user).accessToken,
       },
     });
 

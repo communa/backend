@@ -7,6 +7,7 @@ import bodyParser from 'body-parser';
 import { Container } from 'inversify';
 import { Connection } from 'typeorm';
 import { useExpressServer } from 'routing-controllers';
+import { Browser } from 'puppeteer';
 
 import { AppContainer } from './AppContainer';
 import { DbConnector } from '../connector/DbConnector';
@@ -18,11 +19,9 @@ import { AppConfig } from './AppConfig';
 import { IConfigParameters } from '../interface/IConfigParameters';
 
 import { AuthController } from '../controller/AuthController';
-import { AuthWeb3Controller } from '../controller/AuthWeb3Controller';
 import { ValidateRoles } from '../middleware/ValidateRoles';
 import { UserController } from '../controller/UserController';
 import { ActivityController } from '../controller/ActivityController';
-import { Browser } from 'puppeteer';
 
 const swaggerUiExpress = require('swagger-ui-express');
 const boolParser = require('express-query-boolean');
@@ -120,7 +119,6 @@ export class App {
       routePrefix: '/api',
       controllers: [
         HelpController,
-        AuthWeb3Controller,
         ActivityController,
         AuthController,
         UserController,

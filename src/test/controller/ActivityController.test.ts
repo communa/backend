@@ -9,10 +9,12 @@ import { ActivityManager } from '../../service/ActivityManager';
 import { ActivityFixture } from '../fixture/ActivityFixture';
 import { ActivityRepository } from '../../repository/ActivityRepository';
 import { EActivityState } from '../../interface/EActivityState';
+import { Authenticator } from '../../service/Authenticator';
 
 @suite
 export class ActivityControllerTest extends BaseControllerTest {
   protected http: Http;
+  protected authenticator: Authenticator;
   protected activityManager: ActivityManager;
   protected activityFixture: ActivityFixture;
   protected activityRepository: ActivityRepository;
@@ -21,6 +23,7 @@ export class ActivityControllerTest extends BaseControllerTest {
   constructor() {
     super();
 
+    this.authenticator = this.container.get('Authenticator');
     this.userFixture = this.container.get('UserFixture');
     this.http = this.container.get('Http');
     this.activityFixture = this.container.get('ActivityFixture');
@@ -38,7 +41,7 @@ export class ActivityControllerTest extends BaseControllerTest {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticatorTest.login(user).accessToken,
+        Authorization: this.authenticator.getTokens(user).accessToken,
       },
     });
 
@@ -60,7 +63,7 @@ export class ActivityControllerTest extends BaseControllerTest {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticatorTest.login(user).accessToken,
+        Authorization: this.authenticator.getTokens(user).accessToken,
       },
       data,
     });
@@ -84,7 +87,7 @@ export class ActivityControllerTest extends BaseControllerTest {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticatorTest.login(user).accessToken,
+        Authorization: this.authenticator.getTokens(user).accessToken,
       },
     });
 
@@ -102,7 +105,7 @@ export class ActivityControllerTest extends BaseControllerTest {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticatorTest.login(user).accessToken,
+        Authorization: this.authenticator.getTokens(user).accessToken,
       },
       data: {
         filter: {

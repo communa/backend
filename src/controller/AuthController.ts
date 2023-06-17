@@ -37,7 +37,7 @@ export class AuthController {
   }
 
   @OpenAPI({
-    summary: 'Auth login',
+    summary: 'Auth login Web3',
     requestBody: {
       content: {
         'application/json': {
@@ -65,7 +65,7 @@ export class AuthController {
     },
     @Res() res: any
   ) {
-    const tokens = await this.authenticator.login(payload.signature, payload.address);
+    const tokens = await this.authenticator.loginWeb3(payload.signature, payload.address);
 
     res.setHeader('Authorization', tokens.accessToken);
     res.setHeader('Refresh-Token', tokens.refreshToken);
@@ -106,6 +106,7 @@ export class AuthController {
   public nonce(@Body() payload: { address: string }): Promise<string> {
     return this.authenticator.getNonce(payload.address);
   }
+
   @OpenAPI({
     summary: 'Register as a user',
     requestBody: {

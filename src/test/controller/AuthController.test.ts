@@ -141,29 +141,6 @@ export class AuthControllerTest extends BaseControllerTest {
   }
 
   @test()
-  async register_hostEmail() {
-    const config = {
-      url: `${this.url}/api/auth/register/host`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: {
-        emailOrPhone: faker.internet.email(),
-        passwordPlain: this.userFixture.validatedPassword(),
-        firstName: faker.name.firstName(),
-        lastName: faker.name.lastName(),
-      },
-    };
-
-    const res = await this.http.request(config);
-    const token = res.headers.authorization;
-    const user = await this.authenticator.getUserFromJwtToken(token);
-
-    expect(user.roles).to.be.deep.eq(['ROLE_USER', 'ROLE_BUSINESS']);
-  }
-
-  @test()
   async register_validationFails() {
     const config = {
       url: `${this.url}/api/auth/register`,

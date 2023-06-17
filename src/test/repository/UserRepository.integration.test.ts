@@ -74,7 +74,7 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
 
   @test()
   async findAndCount() {
-    const user = await this.hostFixture.createHost();
+    const user = await this.userFixture.createUser();
 
     const positiveA = await this.userRepository.findAndCount({
       filter: {
@@ -86,7 +86,7 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
     const positiveB = await this.userRepository.findAndCount({
       filter: {
         id: user.id,
-        role: EUserRole.ROLE_BUSINESS,
+        role: EUserRole.ROLE_USER,
       },
       sort: { createdAt: 'ASC' },
       page: 0,

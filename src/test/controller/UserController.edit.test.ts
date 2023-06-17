@@ -44,7 +44,7 @@ export class UserControllerEditTest extends BaseControllerTest {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticatorTest.login(user).accessToken,
+        Authorization: this.authenticator.getTokens(user).accessToken,
       },
       data,
     };
@@ -75,7 +75,7 @@ export class UserControllerEditTest extends BaseControllerTest {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticatorTest.login(user).accessToken,
+        Authorization: this.authenticator.getTokens(user).accessToken,
       },
       data,
     };
@@ -101,7 +101,7 @@ export class UserControllerEditTest extends BaseControllerTest {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticatorTest.login(user).accessToken,
+        Authorization: this.authenticator.getTokens(user).accessToken,
       },
       data,
     });
@@ -128,7 +128,7 @@ export class UserControllerEditTest extends BaseControllerTest {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticatorTest.login(user).accessToken,
+        Authorization: this.authenticator.getTokens(user).accessToken,
       },
       data,
     };
@@ -157,7 +157,7 @@ export class UserControllerEditTest extends BaseControllerTest {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticatorTest.login(user).accessToken,
+        Authorization: this.authenticator.getTokens(user).accessToken,
       },
       data,
     };
@@ -181,7 +181,7 @@ export class UserControllerEditTest extends BaseControllerTest {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticatorTest.login(userB).accessToken,
+        Authorization: this.authenticator.getTokens(userB).accessToken,
       },
       data: userB,
     };
@@ -221,7 +221,7 @@ export class UserControllerEditTest extends BaseControllerTest {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticatorTest.login(userB).accessToken,
+        Authorization: this.authenticator.getTokens(userB).accessToken,
       },
       data: userB,
     };

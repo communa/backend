@@ -1,13 +1,13 @@
-import {suite, test} from '@testdeck/mocha';
+import { suite, test } from '@testdeck/mocha';
 import * as httpMocks from 'node-mocks-http';
-import {expect} from 'chai';
-import {Action} from 'routing-controllers';
+import { expect } from 'chai';
+import { Action } from 'routing-controllers';
 
-import {UserFixture} from '../fixture/UserFixture';
-import {Authenticator} from '../../service/Authenticator';
-import {ValidateRoles} from '../../middleware/ValidateRoles';
-import {EUserRole} from '../../interface/EUserRole';
-import {AbstractDatabaseIntegration} from '../AbstractDatabase.integration';
+import { UserFixture } from '../fixture/UserFixture';
+import { Authenticator } from '../../service/Authenticator';
+import { ValidateRoles } from '../../middleware/ValidateRoles';
+import { EUserRole } from '../../interface/EUserRole';
+import { AbstractDatabaseIntegration } from '../AbstractDatabase.integration';
 
 @suite()
 export class ValidateRolesTest extends AbstractDatabaseIntegration {
@@ -26,23 +26,7 @@ export class ValidateRolesTest extends AbstractDatabaseIntegration {
     const action: Action = {
       request: httpMocks.createRequest(),
       response: httpMocks.createResponse(),
-      next: () => {},
-    };
-
-    action.request.headers['authorization'] = this.authenticator.generateJwtToken(user);
-
-    const status = await ValidateRoles(action, [EUserRole.ROLE_USER]);
-
-    expect(status).to.be.true;
-  }
-
-  @test()
-  async host() {
-    const user = await this.hostFixture.createHost();
-    const action: Action = {
-      request: httpMocks.createRequest(),
-      response: httpMocks.createResponse(),
-      next: () => {},
+      next: () => { },
     };
 
     action.request.headers['authorization'] = this.authenticator.generateJwtToken(user);

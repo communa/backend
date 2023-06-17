@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import faker from 'faker';
+import * as web3 from 'web3';
 
 import { User } from '../../entity/User';
 import { EUserRole } from '../../interface/EUserRole';
@@ -21,8 +22,10 @@ export class UserFixture {
   protected faker: Faker;
 
   public async createWithEmailAndPassword(email: string, passwordPlain: string): Promise<User> {
+    const account = web3.eth.accounts.create();
     const user = new User();
 
+    user.address = account.address;
     user.email = email;
     user.emailOrPhone = email;
     user.passwordPlain = passwordPlain;
@@ -33,7 +36,10 @@ export class UserFixture {
   }
 
   public async createWithPhoneAndPassword(phone: string, passwordPlain: string): Promise<User> {
+    const account = web3.eth.accounts.create();
     const user = new User();
+
+    user.address = account.address;
 
     user.phone = phone;
     user.tz = 'UTC';
@@ -44,9 +50,12 @@ export class UserFixture {
   }
 
   public createUser(): Promise<User> {
+    const account = web3.eth.accounts.create();
     const user = new User();
+
     const email = this.faker.email();
 
+    user.address = account.address;
     user.tz = 'UTC';
     user.email = email;
     user.emailOrPhone = email;
@@ -57,8 +66,10 @@ export class UserFixture {
   }
 
   public createUserWithPhone(phone: string): Promise<User> {
+    const account = web3.eth.accounts.create();
     const user = new User();
 
+    user.address = account.address;
     user.tz = 'UTC';
     user.emailOrPhone = phone;
     user.phone = phone;
