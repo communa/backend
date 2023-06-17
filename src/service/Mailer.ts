@@ -1,8 +1,8 @@
-import {inject, injectable} from 'inversify';
+import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 
-import {User} from '../entity/User';
-import {IConfigParameters} from '../interface/IConfigParameters';
+import { User } from '../entity/User';
+import { IConfigParameters } from '../interface/IConfigParameters';
 
 @injectable()
 export class Mailer {
@@ -11,7 +11,7 @@ export class Mailer {
   @inject('parameters')
   protected parameters: IConfigParameters;
 
-  public sendUserNewEmail(_user: User): void {}
+  public sendUserNewEmail(_user: User): void { }
 
-  public sendUserResetPasswordEmail(_user: User, _token: string): void {}
+  public sendUserResetPasswordEmail(_user: User, _token: string): void { }
 }

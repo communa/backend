@@ -55,7 +55,7 @@ export class AuthController {
       },
     },
   })
-  @Post('/login/web3')
+  @Post('/web3')
   @HttpCode(200)
   public async loginWeb3(
     @Body()

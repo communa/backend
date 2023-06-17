@@ -59,10 +59,12 @@ export class Authenticator {
       throw new AuthenticationException('Signature is not valid');
     }
 
-    const user = await this.userRepository.findByAddressPublic(address);
+    let user = await this.userRepository.findByAddressPublic(address);
 
     if (!user) {
-      throw new AuthenticationException('User does not exist');
+      user = new User();
+      user.address = address;
+      user = await this.userManager.saveSingle(user);
     }
 
     const tokens = this.getTokens(user);

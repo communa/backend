@@ -56,7 +56,7 @@ export class UserRepository extends AbstractRepositoryTemplate<User> {
   }
 
   public findByAddressPublic(address: string): Promise<User | undefined> {
-    return this.getRepo().findOneOrFail({
+    return this.getRepo().findOne({
       where: {
         address,
       }

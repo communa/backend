@@ -3,7 +3,7 @@ import * as faker from 'faker';
 import { JSONSchema } from 'class-validator-jsonschema';
 import { Exclude, Expose } from 'class-transformer';
 
-import { IsNotEmpty, IsOptional, IsString, Length, Validate } from 'class-validator';
+import { IsOptional, Length, Validate } from 'class-validator';
 import { AbstractBaseEntity } from './AbstractBaseEntity';
 import { UserNameExistConstraint } from '../validator/constraint/UserNameExistConstraint';
 import { EmailOrPhoneConstraint } from '../validator/constraint/EmailOrPhoneConstraint';
@@ -22,10 +22,8 @@ import { Activity } from './Activity';
 @Entity()
 @Exclude()
 export class User extends AbstractBaseEntity implements IUser {
-  @Expose({ groups: ['search'] })
-  @IsString()
+  @Expose({ groups: ['search', 'register'] })
   @Column('text')
-  @IsNotEmpty()
   address: string;
 
   // General

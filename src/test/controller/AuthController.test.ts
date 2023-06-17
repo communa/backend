@@ -27,13 +27,13 @@ export class AuthControllerTest extends BaseControllerTest {
   }
 
   @test()
-  async login() {
+  async loginWeb3() {
     const account = web3.eth.accounts.create();
     const nonce = await this.authenticator.getNonce(account.address);
     const signature = web3.eth.accounts.sign(nonce, account.privateKey)
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/web3/login`,
+      url: `${this.url}/api/auth/web3`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export class AuthControllerTest extends BaseControllerTest {
     const account = web3.eth.accounts.create();
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/web3/nonce`,
+      url: `${this.url}/api/auth/nonce`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export class AuthControllerTest extends BaseControllerTest {
     });
 
     expect(res.status).to.be.equal(200);
-    expect(res.data.length).to.be.eq(202);
+    expect(res.data.length).to.be.eq(22);
   }
 
   @test()
@@ -111,6 +111,8 @@ export class AuthControllerTest extends BaseControllerTest {
 
   @test()
   async register_userEmail() {
+    const account = web3.eth.accounts.create();
+
     const config = {
       url: `${this.url}/api/auth/register`,
       method: 'POST',
@@ -118,6 +120,7 @@ export class AuthControllerTest extends BaseControllerTest {
         'Content-Type': 'application/json',
       },
       data: {
+        address: account.address,
         emailOrPhone: faker.internet.email(),
         passwordPlain: this.userFixture.validatedPassword(),
         firstName: faker.name.firstName(),

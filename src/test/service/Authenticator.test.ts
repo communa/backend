@@ -47,8 +47,10 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
   }
 
   @test()
-  async registerCustomer_email() {
+  async register_email() {
+    const account = web3.eth.accounts.create();
     const data = {
+      address: account.address,
       emailOrPhone: faker.internet.email(),
       passwordPlain: faker.internet.password(),
     };
@@ -216,18 +218,18 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
   }
 
   @test()
-  async login() {
+  async loginWeb3() {
     const account = web3.eth.accounts.create();
 
     const nonce = await this.authenticator.getNonce(account.address);
     const signature = web3.eth.accounts.sign(nonce, account.privateKey)
-    const tokens = await this.authenticator.login(signature.signature, account.address);
+    const tokens = await this.authenticator.loginWeb3(signature.signature, account.address);
 
     expect(tokens).to.contain.keys(['accessToken', 'refreshToken']);
   }
 
   @test()
-  async login_failsWrongNonce() {
+  async loginWeb3_failsWrongNonce() {
     const accountA = web3.eth.accounts.create();
     const accountB = web3.eth.accounts.create();
 
@@ -237,7 +239,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     let err = null;
 
     try {
-      await this.authenticator.login(signature.signature, accountB.address);
+      await this.authenticator.loginWeb3(signature.signature, accountB.address);
     } catch (e: any) {
       err = e;
     }

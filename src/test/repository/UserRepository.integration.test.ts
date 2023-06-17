@@ -1,5 +1,6 @@
 import faker from 'faker';
 import { expect } from 'chai';
+import * as web3 from 'web3';
 
 import { suite, test } from '@testdeck/mocha';
 import { UserRepository } from '../../repository/UserRepository';
@@ -23,7 +24,9 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
   @test()
   async create() {
     const user = new User();
+    const account = web3.eth.accounts.create();
 
+    user.address = account.address;
     user.email = this.faker.email();
     user.passwordPlain = faker.internet.password();
 
@@ -40,7 +43,9 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
   async createAndFind() {
     const password = faker.internet.password();
     const user = new User();
+    const account = web3.eth.accounts.create();
 
+    user.address = account.address;
     user.email = this.faker.email();
     user.passwordPlain = password;
 
@@ -54,7 +59,9 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
   @test()
   async createAndDeleteAndFind() {
     const user = new User();
+    const account = web3.eth.accounts.create();
 
+    user.address = account.address;
     user.email = this.faker.email();
     user.passwordPlain = faker.internet.password();
 
