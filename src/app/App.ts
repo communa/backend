@@ -18,8 +18,7 @@ import { AppConfig } from './AppConfig';
 import { IConfigParameters } from '../interface/IConfigParameters';
 
 import { AuthController } from '../controller/AuthController';
-import { AuthSubstrateController } from '../controller/AuthSubstrateController';
-import { SubstrateConnector } from '../service/SubstrateConnector';
+import { AuthWeb3Controller } from '../controller/AuthWeb3Controller';
 import { ValidateRoles } from '../middleware/ValidateRoles';
 import { UserController } from '../controller/UserController';
 import { ActivityController } from '../controller/ActivityController';
@@ -32,7 +31,7 @@ export class App {
   public static server: http.Server;
   public static conn: Connection;
   public static container: Container;
-  public static substrate: SubstrateConnector;
+
   public static browser: Browser;
 
   private readonly env: string;
@@ -50,7 +49,7 @@ export class App {
 
     App.conn = await dbConnector.connect();
     App.container = AppContainer.build(this.parameters, this.env);
-    // App.substrate = App.container.get('SubstrateConnector');
+
   }
 
   public start() {
@@ -121,7 +120,7 @@ export class App {
       routePrefix: '/api',
       controllers: [
         HelpController,
-        AuthSubstrateController,
+        AuthWeb3Controller,
         ActivityController,
         AuthController,
         UserController,

@@ -1,19 +1,19 @@
-import {inject, injectable} from 'inversify';
-import {User} from '../entity/User';
+import { inject, injectable } from 'inversify';
+import { User } from '../entity/User';
 
-import {IAuthTokens} from '../interface/IAuthTokens';
-import {Authenticator} from './Authenticator';
-import {AuthenticatorSubstrate} from './AuthenticatorSubstrate';
+import { IAuthTokens } from '../interface/IAuthTokens';
+import { Authenticator } from './Authenticator';
+import { AuthenticatorWeb3 } from './AuthenticatorWeb3';
 
 @injectable()
 export class AuthenticatorTest {
-  @inject('AuthenticatorSubstrate')
-  protected authenticatorSubstrate: AuthenticatorSubstrate;
+  @inject('AuthenticatorWeb3')
+  protected authenticatorWeb3: AuthenticatorWeb3;
   @inject('Authenticator')
   protected authenticator: Authenticator;
 
   public loginSubstrate(user: User): IAuthTokens {
-    const tokens = this.authenticatorSubstrate.getTokens(user);
+    const tokens = this.authenticatorWeb3.getTokens(user);
 
     return tokens;
   }

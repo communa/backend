@@ -1,16 +1,14 @@
-import {skip, suite, test} from '@testdeck/mocha';
-import {expect} from 'chai';
-import {Keyring} from '@polkadot/keyring';
-import {u8aToHex} from '@polkadot/util';
+import { skip, suite, test } from '@testdeck/mocha';
+import { expect } from 'chai';
 
-import {AppConfig} from '../../app/AppConfig';
-import {AppContainer} from '../../app/AppContainer';
-import {AuthenticatorSubstrate} from '../../service/AuthenticatorSubstrate';
-import {AbstractDatabaseIntegration} from '../AbstractDatabase.integration';
+import { AppConfig } from '../../app/AppConfig';
+import { AppContainer } from '../../app/AppContainer';
+import { AuthenticatorWeb3 } from '../../service/AuthenticatorWeb3';
+import { AbstractDatabaseIntegration } from '../AbstractDatabase.integration';
 
 @suite()
-export class AuthenticatorSubstrateTest extends AbstractDatabaseIntegration {
-  protected authenticator: AuthenticatorSubstrate;
+export class AuthenticatorWeb3Test extends AbstractDatabaseIntegration {
+  protected authenticator: AuthenticatorWeb3;
 
   constructor() {
     super();
@@ -18,7 +16,7 @@ export class AuthenticatorSubstrateTest extends AbstractDatabaseIntegration {
     const parameters = AppConfig.readLocal();
     const container = AppContainer.build(parameters, env);
 
-    this.authenticator = container.get('AuthenticatorSubstrate');
+    this.authenticator = container.get('AuthenticatorWeb3');
   }
 
   @skip
@@ -37,7 +35,7 @@ export class AuthenticatorSubstrateTest extends AbstractDatabaseIntegration {
     const nonce = await this.authenticator.getNonce(account.address);
     const keyring = new Keyring();
     const pair = keyring.addFromMnemonic(account.mnemonic);
-    const signature = u8aToHex(pair.sign(nonce, {withType: true}));
+    const signature = u8aToHex(pair.sign(nonce, { withType: true }));
 
     const tokens = await this.authenticator.login(signature, account.address);
 
@@ -53,7 +51,7 @@ export class AuthenticatorSubstrateTest extends AbstractDatabaseIntegration {
     const nonce = await this.authenticator.getNonce(accountB.address);
     const keyring = new Keyring();
     const pair = keyring.addFromMnemonic(accountA.mnemonic);
-    const signature = u8aToHex(pair.sign(nonce, {withType: true}));
+    const signature = u8aToHex(pair.sign(nonce, { withType: true }));
 
     let err = null;
 

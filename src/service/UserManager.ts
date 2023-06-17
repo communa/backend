@@ -1,33 +1,20 @@
 import { validate } from 'class-validator';
 import { inject, injectable } from 'inversify';
+
 import { User } from '../entity/User';
 import AuthenticationException from '../exception/AuthenticationException';
 import ConstraintsValidationException from '../exception/ConstraintsValidationException';
 import { UserEqualPasswordsException } from '../exception/UserEqualPasswordsException';
-import { EUserRole } from '../interface/EUserRole';
-import { IKeyPair } from '../interface/IKeyPair';
 import { UserRepository } from '../repository/UserRepository';
 import { Authenticator } from './Authenticator';
 import { Mailer } from './Mailer';
-import { SubstrateConnector } from './SubstrateConnector';
 
 @injectable()
 export class UserManager {
   @inject('UserRepository')
   protected userRepository: UserRepository;
-  @inject('SubstrateConnector')
-  protected substrateConnector: SubstrateConnector;
   @inject('Mailer')
   protected mailer: Mailer;
-
-  public async createFromKeyPair(keypair: IKeyPair): Promise<User> {
-    const user = new User();
-
-    user.address = keypair.address;
-    user.roles = [EUserRole.ROLE_HOST, EUserRole.ROLE_USER];
-
-    return this.userRepository.saveSingle(user);
-  }
 
   public async saveSingle(user: User): Promise<User> {
     if (user.passwordPlain) {

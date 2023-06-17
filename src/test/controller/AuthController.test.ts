@@ -6,7 +6,6 @@ import { UserRepository } from '../../repository/UserRepository';
 import { EUserRole } from '../../interface/EUserRole';
 import { BaseControllerTest } from './BaseController.test';
 import { UserFixture } from '../fixture/UserFixture';
-import { HostFixture } from '../fixture/HostFixture';
 import { Faker } from '../../service/Faker';
 import { Authenticator } from '../../service/Authenticator';
 
@@ -15,7 +14,6 @@ export class AuthControllerTest extends BaseControllerTest {
   protected userRepository: UserRepository;
   protected authenticator: Authenticator;
   protected userFixture: UserFixture;
-  protected hostFixture: HostFixture;
   protected faker: Faker;
 
   constructor() {
@@ -24,14 +22,13 @@ export class AuthControllerTest extends BaseControllerTest {
     this.authenticator = this.container.get('Authenticator');
     this.userRepository = this.container.get('UserRepository');
     this.userFixture = this.container.get('UserFixture');
-    this.hostFixture = this.container.get('HostFixture');
     this.faker = this.container.get('Faker');
   }
 
   @test()
   async status_user() {
-    const host = await this.userFixture.createUser();
-    const token = this.authenticator.generateJwtToken(host);
+    const user = await this.userFixture.createUser();
+    const token = this.authenticator.generateJwtToken(user);
 
     const config = {
       url: `${this.url}/api/auth/status`,
@@ -48,26 +45,8 @@ export class AuthControllerTest extends BaseControllerTest {
     expect(res.data).not.to.have.property('password');
     expect(res.data).not.to.have.property('resetPasswordJwtIat');
 
-    expect(res.data.email).to.be.equal(host.email);
-    expect(res.data.id).to.be.equal(host.id);
-  }
-
-  @test()
-  async status_host() {
-    const host = await this.hostFixture.createHost();
-
-    const config = {
-      url: `${this.url}/api/auth/status`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.authenticator.generateJwtToken(host),
-      },
-    };
-
-    const res = await this.http.request(config);
-
-    expect(res.data.id).to.be.eq(host.id);
+    expect(res.data.email).to.be.equal(user.email);
+    expect(res.data.id).to.be.equal(user.id);
   }
 
   @test()
@@ -139,7 +118,7 @@ export class AuthControllerTest extends BaseControllerTest {
     const token = res.headers.authorization;
     const user = await this.authenticator.getUserFromJwtToken(token);
 
-    expect(user.roles).to.be.deep.eq(['ROLE_USER', 'ROLE_HOST']);
+    expect(user.roles).to.be.deep.eq(['ROLE_USER', 'ROLE_BUSINESS']);
   }
 
   @test()
@@ -172,7 +151,7 @@ export class AuthControllerTest extends BaseControllerTest {
   @test()
   async register_duplicateEmailException() {
     const email = faker.internet.email();
-    await this.hostFixture.createWithEmailAndPassword(email, this.userFixture.validatedPassword());
+    await this.userFixture.createWithEmailAndPassword(email, this.userFixture.validatedPassword());
 
     const data = {
       emailOrPhone: email,
@@ -204,7 +183,7 @@ export class AuthControllerTest extends BaseControllerTest {
   @test()
   async register_duplicatePhoneException() {
     const phone = this.faker.phone();
-    await this.hostFixture.createWithPhoneAndPassword(phone, this.userFixture.validatedPassword());
+    await this.userFixture.createWithPhoneAndPassword(phone, this.userFixture.validatedPassword());
 
     const config = {
       url: `${this.url}/api/auth/register`,
@@ -423,7 +402,7 @@ export class AuthControllerTest extends BaseControllerTest {
 
   @test()
   async forgotPassword_emailHost() {
-    const host = await this.hostFixture.createHost();
+    const user = await this.userFixture.createUser();
 
     const config = {
       url: `${this.url}/api/auth/forgot-password`,
@@ -432,7 +411,7 @@ export class AuthControllerTest extends BaseControllerTest {
         'Content-Type': 'application/json',
       },
       data: {
-        emailOrPhone: host.email,
+        emailOrPhone: user.email,
       },
     };
 

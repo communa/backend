@@ -60,7 +60,7 @@ export class UserController extends AbstractController {
             bio: faker.datatype.number(),
             passwordPlain: faker.datatype.uuid(),
             passwordOld: faker.datatype.uuid(),
-            roles: [EUserRole.ROLE_USER, EUserRole.ROLE_HOST],
+            roles: [EUserRole.ROLE_USER, EUserRole.ROLE_BUSINESS],
             tz: 'America/Los_Angeles',
             phone: faker.phone.phoneNumber(),
           },

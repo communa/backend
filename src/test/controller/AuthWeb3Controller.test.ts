@@ -1,25 +1,23 @@
-import {skip, suite, test} from '@testdeck/mocha';
-import {expect} from 'chai';
-import {Keyring} from '@polkadot/keyring';
-import {u8aToHex} from '@polkadot/util';
+import { skip, suite, test } from '@testdeck/mocha';
+import { expect } from 'chai';
 
-import {AuthenticatorSubstrate} from '../../service/AuthenticatorSubstrate';
+import { AuthenticatorWeb3 } from '../../service/AuthenticatorWeb3';
 
-import {UserFixture} from '../fixture/UserFixture';
-import {BaseControllerTest} from './BaseController.test';
-import {UserRepository} from '../../repository/UserRepository';
+import { UserFixture } from '../fixture/UserFixture';
+import { BaseControllerTest } from './BaseController.test';
+import { UserRepository } from '../../repository/UserRepository';
 
 @suite()
-export class AuthSubstrateController extends BaseControllerTest {
+export class AuthWeb3Controller extends BaseControllerTest {
   protected userFixture: UserFixture;
-  protected authenticator: AuthenticatorSubstrate;
+  protected authenticator: AuthenticatorWeb3;
   protected userRepository: UserRepository;
 
   constructor() {
     super();
 
     this.userFixture = this.container.get('UserFixture');
-    this.authenticator = this.container.get('AuthenticatorSubstrate');
+    this.authenticator = this.container.get('AuthenticatorWeb3');
     this.userRepository = this.container.get('UserRepository');
   }
 
@@ -27,7 +25,7 @@ export class AuthSubstrateController extends BaseControllerTest {
   @test()
   async register() {
     const res = await this.http.request({
-      url: `${this.url}/api/auth/substrate/register`,
+      url: `${this.url}/api/auth/web3/register`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -56,10 +54,10 @@ export class AuthSubstrateController extends BaseControllerTest {
 
     const keyring = new Keyring();
     const pair = keyring.addFromMnemonic(account.mnemonic);
-    const signature = u8aToHex(pair.sign(nonce, {withType: true}));
+    const signature = u8aToHex(pair.sign(nonce, { withType: true }));
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/substrate/login`,
+      url: `${this.url}/api/auth/web3/login`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -80,7 +78,7 @@ export class AuthSubstrateController extends BaseControllerTest {
     const account = await this.authenticator.register();
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/substrate/nonce`,
+      url: `${this.url}/api/auth/web3/nonce`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -102,12 +100,12 @@ export class AuthSubstrateController extends BaseControllerTest {
     const nonce = await this.authenticator.getNonce(account.address);
     const keyring = new Keyring();
     const pair = keyring.addFromMnemonic(account.mnemonic);
-    const signature = u8aToHex(pair.sign(nonce, {withType: true}));
+    const signature = u8aToHex(pair.sign(nonce, { withType: true }));
 
     const tokens = await this.authenticator.login(signature, account.address);
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/substrate/status`,
+      url: `${this.url}/api/auth/web3/status`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

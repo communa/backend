@@ -13,7 +13,6 @@ import { IAuthTokens } from '../interface/IAuthTokens';
 import { IConfigParameters } from '../interface/IConfigParameters';
 import AuthenticationException from '../exception/AuthenticationException';
 import { UserManager } from './UserManager';
-import { Signer } from './Signer';
 import { isEmail } from 'class-validator';
 
 @injectable()
@@ -29,8 +28,6 @@ export class Authenticator {
   protected mailer: Mailer;
   @inject('parameters')
   protected parameters: IConfigParameters;
-  @inject('Signer')
-  protected signer: Signer;
 
   public async registerCustomer(user: User): Promise<User> {
     user.roles = [EUserRole.ROLE_USER];
@@ -48,7 +45,7 @@ export class Authenticator {
   }
 
   public async registerHost(user: User): Promise<User> {
-    user.roles = [EUserRole.ROLE_USER, EUserRole.ROLE_HOST];
+    user.roles = [EUserRole.ROLE_USER, EUserRole.ROLE_BUSINESS];
 
     const newUser = await this.register(user);
 
@@ -57,9 +54,6 @@ export class Authenticator {
 
   public async register(user: User): Promise<User> {
     const isEmail = validator.isEmail(user.emailOrPhone);
-    const keypair = this.signer.generateKeyPair();
-
-    user.address = keypair.address;
 
     if (isEmail) {
       user.email = user.emailOrPhone;

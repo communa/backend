@@ -167,7 +167,7 @@ export class User extends AbstractBaseEntity implements IUser {
   }
 
   isHost(): boolean {
-    return this.hasRole(EUserRole.ROLE_HOST);
+    return this.hasRole(EUserRole.ROLE_BUSINESS);
   }
 
   isCustomerOnly(): boolean {
@@ -177,7 +177,7 @@ export class User extends AbstractBaseEntity implements IUser {
   isHostOnly(): boolean {
     return (
       this.hasRole(EUserRole.ROLE_USER) &&
-      this.hasRole(EUserRole.ROLE_HOST) &&
+      this.hasRole(EUserRole.ROLE_BUSINESS) &&
       this.roles.length === 2
     );
   }

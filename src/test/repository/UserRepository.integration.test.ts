@@ -26,7 +26,6 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
 
     user.email = this.faker.email();
     user.passwordPlain = faker.internet.password();
-    user.address = this.signer.generateKeyPair().address;
 
     const newUser = await this.userRepository.saveSingle(user);
 
@@ -42,7 +41,6 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
     const password = faker.internet.password();
     const user = new User();
 
-    user.address = this.signer.generateKeyPair().address;
     user.email = this.faker.email();
     user.passwordPlain = password;
 
@@ -57,7 +55,6 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
   async createAndDeleteAndFind() {
     const user = new User();
 
-    user.address = this.signer.generateKeyPair().address;
     user.email = this.faker.email();
     user.passwordPlain = faker.internet.password();
 
@@ -89,7 +86,7 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
     const positiveB = await this.userRepository.findAndCount({
       filter: {
         id: user.id,
-        role: EUserRole.ROLE_HOST,
+        role: EUserRole.ROLE_BUSINESS,
       },
       sort: { createdAt: 'ASC' },
       page: 0,

@@ -1,27 +1,23 @@
-import {injectable, inject} from 'inversify';
+import { injectable, inject } from 'inversify';
 import * as jwt from 'jsonwebtoken';
 
-import {Signer} from './Signer';
-import {IAuthTokens} from '../interface/IAuthTokens';
-import {IAuthTokenData} from '../interface/IAuthTokenData';
-import {IConfigParameters} from '../interface/IConfigParameters';
-import {SubstrateConnector} from './SubstrateConnector';
-import {IKeyPair} from '../interface/IKeyPair';
+import { Signer } from './Signer';
+import { IAuthTokens } from '../interface/IAuthTokens';
+import { IAuthTokenData } from '../interface/IAuthTokenData';
+import { IConfigParameters } from '../interface/IConfigParameters';
 import AuthenticationException from '../exception/AuthenticationException';
-import {IUser} from '../interface/IUser';
-import {RedisClient} from './RedisClient';
-import {UserManager} from './UserManager';
-import {UserRepository} from '../repository/UserRepository';
+import { IUser } from '../interface/IUser';
+import { RedisClient } from './RedisClient';
+import { UserManager } from './UserManager';
+import { UserRepository } from '../repository/UserRepository';
 
 @injectable()
-export class AuthenticatorSubstrate {
+export class AuthenticatorWeb3 {
   protected accessTokenExpiresIn: number = 60 * 60 * 3; // three hours
   protected refreshTokenExpiresIn: number = 60 * 60 * 24; // 24 hours
 
   @inject('parameters')
   protected parameters: IConfigParameters;
-  @inject('SubstrateConnector')
-  protected substrateConnector: SubstrateConnector;
   @inject('Signer')
   protected signer: Signer;
   @inject('RedisClient')
@@ -31,16 +27,6 @@ export class AuthenticatorSubstrate {
   @inject('UserRepository')
   protected userRepository: UserRepository;
 
-  public async register(): Promise<IKeyPair> {
-    const api = await this.substrateConnector.connect();
-    const keypair = this.signer.generateKeyPair();
-
-    await this.userManager.createFromKeyPair(keypair);
-    await api.disconnect();
-
-    return keypair;
-  }
-
   public async login(signature: string, address: string): Promise<IAuthTokens> {
     const key = `login:${address}`;
     const nonce = await this.redis.get(key);
@@ -49,7 +35,7 @@ export class AuthenticatorSubstrate {
       throw new AuthenticationException('Nonce not available or expired');
     }
 
-    const isValid = await this.signer.verify(nonce, signature, address);
+    const isValid = this.signer.verify(nonce, signature, address);
 
     if (!isValid) {
       throw new AuthenticationException('Signature is not valid');
@@ -137,7 +123,7 @@ export class AuthenticatorSubstrate {
   }
 
   public generateRefreshToken(user: IUser): string {
-    return jwt.sign({address: user.address}, this.parameters.jwtSecret, {
+    return jwt.sign({ address: user.address }, this.parameters.jwtSecret, {
       expiresIn: this.refreshTokenExpiresIn,
     });
   }

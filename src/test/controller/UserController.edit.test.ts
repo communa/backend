@@ -33,7 +33,7 @@ export class UserControllerEditTest extends BaseControllerTest {
       bio: faker.datatype.number(),
       passwordPlain: this.faker.validatedPassword(),
       passwordOld: user.passwordPlain,
-      roles: [EUserRole.ROLE_USER, EUserRole.ROLE_HOST],
+      roles: [EUserRole.ROLE_USER, EUserRole.ROLE_BUSINESS],
       tz: 'America/Los_Angeles',
       phone: this.faker.phone(),
       userName: faker.name.firstName(),
@@ -55,7 +55,7 @@ export class UserControllerEditTest extends BaseControllerTest {
     expect(res.data).to.be.empty;
 
     expect(updated.bio).to.be.equal(data.bio.toString());
-    expect(updated.roles).to.be.deep.equal([EUserRole.ROLE_USER, EUserRole.ROLE_HOST]);
+    expect(updated.roles).to.be.deep.equal([EUserRole.ROLE_USER, EUserRole.ROLE_BUSINESS]);
     expect(updated.tz).to.be.eq(data.tz);
     expect(updated.phone).to.be.eq(data.phone);
 

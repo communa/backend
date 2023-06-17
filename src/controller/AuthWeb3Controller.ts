@@ -3,59 +3,15 @@ import { OpenAPI } from 'routing-controllers-openapi';
 import express from 'express';
 
 import { App } from '../app/App';
-import { AuthenticatorSubstrate } from '../service/AuthenticatorSubstrate';
+import { AuthenticatorWeb3 } from '../service/AuthenticatorWeb3';
 import { IUser } from '../interface/IUser';
 
-@JsonController('/auth/substrate')
-export class AuthSubstrateController {
-  protected authenticator: AuthenticatorSubstrate;
+@JsonController('/auth/web3')
+export class AuthWeb3Controller {
+  protected authenticator: AuthenticatorWeb3;
 
   constructor() {
-    this.authenticator = App.container.get('AuthenticatorSubstrate');
-  }
-
-  @OpenAPI({
-    summary: 'Auth registration',
-    requestBody: {
-      content: {
-        'application/json': {
-          examples: {},
-        },
-      },
-      required: false,
-    },
-    responses: {
-      200: {
-        description: 'Replies with address and mnemonic generated',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                name: {
-                  type: 'string',
-                },
-                description: {
-                  type: 'string',
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  })
-  @Post('/register')
-  @HttpCode(201)
-  public async register(@Res() res: any) {
-    const keypair = await this.authenticator.register();
-    const user = this.authenticator.findUserByAddressOrFail(keypair.address);
-    const tokens = this.authenticator.getTokens(user);
-
-    res.setHeader('Authorization', tokens.accessToken);
-    res.setHeader('Refresh-Token', tokens.refreshToken);
-
-    return keypair;
+    this.authenticator = App.container.get('AuthenticatorWeb3');
   }
 
   @OpenAPI({

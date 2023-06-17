@@ -7,9 +7,8 @@ import { OpenApi } from '../service/OpenApi';
 import { PageReader } from '../service/import/PageReader';
 
 import { ArticleRenderer } from '../service/import/ArticleRenderer';
-import { AuthenticatorSubstrate } from '../service/AuthenticatorSubstrate';
+import { AuthenticatorWeb3 } from '../service/AuthenticatorWeb3';
 import { Signer } from '../service/Signer';
-import { SubstrateConnector } from '../service/SubstrateConnector';
 import { RedisClient } from '../service/RedisClient';
 import { UserFixture } from '../test/fixture/UserFixture';
 import { UserRepository } from '../repository/UserRepository';
@@ -17,7 +16,6 @@ import { Filter } from '../service/Filter';
 import { AuthenticatorTest } from '../service/AuthenticatorTest';
 import { UserManager } from '../service/UserManager';
 import { Mailer } from '../service/Mailer';
-import { HostFixture } from '../test/fixture/HostFixture';
 import { Faker } from '../service/Faker';
 import { Authenticator } from '../service/Authenticator';
 import { ActivityRepository } from '../repository/ActivityRepository';
@@ -61,11 +59,10 @@ export class AppContainer {
     container.bind<Signer>('Signer').to(Signer);
     container.bind<Authenticator>('Authenticator').to(Authenticator);
     container.bind<ActivityBuilder>('ActivityBuilder').to(ActivityBuilder);
-    container.bind<AuthenticatorSubstrate>('AuthenticatorSubstrate').to(AuthenticatorSubstrate);
+    container.bind<AuthenticatorWeb3>('AuthenticatorWeb3').to(AuthenticatorWeb3);
     container.bind<AuthenticatorTest>('AuthenticatorTest').to(AuthenticatorTest);
     container.bind<PageReader>('PageReader').to(PageReader);
     container.bind<ArticleRenderer>('ArticleRenderer').to(ArticleRenderer);
-    container.bind<SubstrateConnector>('SubstrateConnector').to(SubstrateConnector);
     container.bind<RedisClient>('RedisClient').to(RedisClient);
     container.bind<Filter>('Filter').to(Filter);
     container.bind<UserManager>('UserManager').to(UserManager);
@@ -78,11 +75,10 @@ export class AppContainer {
     container.bind<WebPageFixture>('WebPageFixture').to(WebPageFixture);
     container.bind<WebSiteFixture>('WebSiteFixture').to(WebSiteFixture);
 
-   container.bind<Faker>('Faker').to(Faker);
+    container.bind<Faker>('Faker').to(Faker);
 
     // Fixture
     container.bind<UserFixture>('UserFixture').to(UserFixture);
-    container.bind<HostFixture>('HostFixture').to(HostFixture);
     container.bind<ActivityFixture>('ActivityFixture').to(ActivityFixture);
 
     AppContainer.container = container;
