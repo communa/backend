@@ -218,14 +218,32 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
   }
 
   @test()
-  async loginWeb3() {
+  async loginWeb3_register() {
     const account = web3.eth.accounts.create();
 
     const nonce = await this.authenticator.getNonce(account.address);
     const signature = web3.eth.accounts.sign(nonce, account.privateKey)
     const tokens = await this.authenticator.loginWeb3(signature.signature, account.address);
 
+    const userDB = await this.userRepository.findByAddressPublicOrFail(account.address);
+
     expect(tokens).to.contain.keys(['accessToken', 'refreshToken']);
+    expect(userDB.address).to.be.eq(account.address);
+  }
+
+  @test()
+  async loginWeb3_login() {
+    const account = web3.eth.accounts.create();
+    const user = await this.userFixture.createUserFromKeypair(account);
+
+    const nonce = await this.authenticator.getNonce(user.address);
+    const signature = web3.eth.accounts.sign(nonce, account.privateKey)
+    const tokens = await this.authenticator.loginWeb3(signature.signature, account.address);
+
+    const userDB = await this.userRepository.findByAddressPublicOrFail(account.address);
+
+    expect(tokens).to.contain.keys(['accessToken', 'refreshToken']);
+    expect(userDB.id).to.be.eq(user.id);
   }
 
   @test()

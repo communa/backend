@@ -65,6 +65,22 @@ export class UserFixture {
     return this.userManager.saveSingle(user);
   }
 
+  public createUserFromKeypair(keypair: web3.Web3BaseWalletAccount): Promise<User> {
+    const user = new User();
+
+    const email = this.faker.email();
+
+    user.address = keypair.address;
+    user.tz = 'UTC';
+    user.email = email;
+    user.emailOrPhone = email;
+    user.roles = [EUserRole.ROLE_USER];
+    user.passwordPlain = this.faker.validatedPassword();
+
+    return this.userManager.saveSingle(user);
+  }
+
+
   public createUserWithPhone(phone: string): Promise<User> {
     const account = web3.eth.accounts.create();
     const user = new User();

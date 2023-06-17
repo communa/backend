@@ -62,4 +62,12 @@ export class UserRepository extends AbstractRepositoryTemplate<User> {
       }
     })
   }
+
+  public findByAddressPublicOrFail(address: string): Promise<User> {
+    return this.getRepo().findOneOrFail({
+      where: {
+        address,
+      }
+    })
+  }
 }

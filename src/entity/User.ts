@@ -23,7 +23,7 @@ import { Activity } from './Activity';
 @Exclude()
 export class User extends AbstractBaseEntity implements IUser {
   @Expose({ groups: ['search', 'register'] })
-  @Column('text')
+  @Column('text', { unique: true })
   address: string;
 
   // General
