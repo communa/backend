@@ -26,8 +26,8 @@ Ensure there are no errors by execution of all tests
 
 ### Commands
 ```sh
-NODE_ENV=production node /var/www/html/communa-backend/build/command/ImportPagesCommand.js 25 5
-NODE_ENV=production node build/command/ImportWebsiteCommand.js
+NODE_ENV=development ts-node src/command/ImportPagesCommand.ts 50 5
+NODE_ENV=development ts-node src/command/ImportWebsiteCommand.ts
 ```
 
 ### DB
@@ -48,7 +48,7 @@ NODE_ENV=test npm run typeorm:cli -- schema:drop && NODE_ENV=test npm run typeor
 ```sh
 npm yarn test
 
-NODE_ENV=test node --inspect ./node_modules/.bin/mocha --require ts-node/register ./src/test/service/ActivityBuilder.test.ts -g build_transak
+NODE_ENV=test node --inspect ./node_modules/.bin/mocha --require ts-node/register ./src/test/service/ActivityBuilder.test.ts -g
 ```
 
 ### OpenAPI
