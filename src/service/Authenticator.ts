@@ -50,7 +50,7 @@ export class Authenticator {
     const nonce = await this.redis.get(key);
 
     if (!nonce) {
-      throw new AuthenticationException('Nonce not available or expired');
+      throw new AuthenticationException('Nonce is not available or expired');
     }
 
     const isValid = this.signer.verify(nonce, signature, address);

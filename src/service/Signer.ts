@@ -1,6 +1,8 @@
 import { injectable, inject } from 'inversify';
 import * as web3 from 'web3';
 
+import faker from 'faker';
+
 import { IConfigParameters } from '../interface/IConfigParameters';
 
 @injectable()
@@ -9,7 +11,7 @@ export class Signer {
   protected parameters: IConfigParameters;
 
   public generateNonce(): string {
-    return web3.utils.randomHex(10);
+    return faker.datatype.uuid();
   }
 
   public verify(nonce: string, signature: string, address: string): boolean {

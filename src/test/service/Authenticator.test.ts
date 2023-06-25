@@ -263,6 +263,6 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     }
 
     expect(err.name).to.be.equal('AuthenticationException');
-    expect(err.message).to.be.equal('Authentication error: Nonce not available or expired');
+    expect(err.message).to.be.equal('Authentication error: Nonce is not available or expired');
   }
 }

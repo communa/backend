@@ -64,7 +64,7 @@ export class AuthControllerTest extends BaseControllerTest {
     });
 
     expect(res.status).to.be.equal(200);
-    expect(res.data.length).to.be.eq(22);
+    expect(res.data.length).to.be.eq(36);
   }
 
   @test()

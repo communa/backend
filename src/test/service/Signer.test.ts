@@ -19,7 +19,7 @@ export class SignerTest extends AbstractDatabaseIntegration {
   nonce() {
     const nonce = this.signer.generateNonce();
 
-    expect(nonce.length).to.be.eq(22);
+    expect(nonce.length).to.be.eq(36);
   }
 
   @test()
