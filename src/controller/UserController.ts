@@ -1,8 +1,10 @@
 import {
   Authorized,
   Body,
+  Get,
   HttpCode,
   JsonController,
+  Param,
   Post,
   Put,
   ResponseClassTransformOptions,
@@ -48,6 +50,12 @@ export class UserController extends AbstractController {
   @ResponseClassTransformOptions({ groups: ['search'] })
   public search(@Body() search: ISearchUser) {
     return this.userRepository.findAndCount(search);
+  }
+
+  @Get('/:address/address')
+  @ResponseClassTransformOptions({ groups: ['search'] })
+  public get(@Param('address') address: string,): Promise<User> {
+    return this.userRepository.findByAddressPublicOrFail(address);
   }
 
   @Put()
