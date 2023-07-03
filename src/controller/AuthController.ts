@@ -133,7 +133,7 @@ export class AuthController {
     @Body({ validate: { groups: ['register'] }, transform: { groups: ['register'] } }) payload: User,
     @Res() res: any
   ) {
-    const newUser = await this.authenticator.registerCustomer(payload);
+    const newUser = await this.authenticator.register(payload);
     const token = this.authenticator.generateJwtToken(newUser);
 
     res.setHeader('Authorization', token);

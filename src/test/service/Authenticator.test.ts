@@ -55,7 +55,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
       passwordPlain: faker.internet.password(),
     };
 
-    const user = await this.authenticator.registerCustomer(data as User);
+    const user = await this.authenticator.register(data as User);
 
     expect(user.passwordPlain).to.be.eq(data.passwordPlain);
     expect(user.emailOrPhone).to.be.eq(data.emailOrPhone);
@@ -74,7 +74,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
   }
 
   @test()
-  async getUserFromJwtToken_nullAfterEmailChange() {
+  async getUserFromJwtToken_afterEmailChange() {
     const email = faker.internet.email();
     const password = faker.internet.password();
     const user = await this.userFixture.createWithEmailAndPassword(email, password);
@@ -87,7 +87,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
 
     const userFromToken = await this.authenticator.getUserFromJwtToken(token);
 
-    expect(userFromToken).to.be.null;
+    expect(userFromToken.id).to.be.equal(user.id);
   }
 
   @test()

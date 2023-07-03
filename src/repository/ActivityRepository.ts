@@ -6,6 +6,7 @@ import { Filter } from '../service/Filter';
 import { AbstractRepositoryTemplate } from './AbstractRepositoryTemplate';
 import { Activity } from '../entity/Activity';
 import { ISearchActivity } from '../interface/search/ISearchActivity';
+import { User } from '../entity/User';
 
 @injectable()
 export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
@@ -47,6 +48,32 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
       })
       .andWhere('activity.cancelledAt IS NULL')
       .andWhere('activity.jobUrl IS NOT NULL')
+      .orderBy(sort)
+      .skip(limit * s.page)
+      .take(limit)
+      .getManyAndCount();
+  }
+
+  public async findAndCountPublishing(search: ISearchActivity, user: User): Promise<[Activity[], number]> {
+    const s = _.assign(
+      {
+        filter: {},
+        sort: {
+          createdAt: 'ASC',
+        },
+        page: 0,
+      },
+      search
+    );
+    const sort = this.filter.buildOrderByCondition('activity', s);
+    const limit = this.filter.buildLimit(search);
+
+    return this.getRepo()
+      .createQueryBuilder('activity')
+      .select()
+      .where((qb: SelectQueryBuilder<Activity>) => {
+        qb.andWhere('activity.user.id = :userId', { userId: user.id });
+      })
       .orderBy(sort)
       .skip(limit * s.page)
       .take(limit)

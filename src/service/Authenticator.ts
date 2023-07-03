@@ -64,39 +64,34 @@ export class Authenticator {
     if (!user) {
       user = new User();
       user.address = address;
+      user.roles = [EUserRole.ROLE_USER];
       user = await this.userManager.saveSingle(user);
     }
 
-    const tokens = this.getTokens(user);
-
-    return tokens;
+    return this.getTokens(user);
   }
 
-  public async registerCustomer(user: User): Promise<User> {
-    user.roles = [EUserRole.ROLE_USER];
+  public async register(userNew: User): Promise<User> {
+    const isEmail = validator.isEmail(userNew.emailOrPhone);
 
-    const newUser = await this.register(user);
-
-    if (newUser.email) {
-      this.mailer.sendUserNewEmail(newUser);
+    if (isEmail) {
+      userNew.email = userNew.emailOrPhone;
+    } else {
+      userNew.phone = userNew.emailOrPhone;
     }
-    if (newUser.phone) {
+
+    userNew.roles = [EUserRole.ROLE_USER];
+
+    const user = await this.userManager.saveSingle(userNew);
+
+    if (userNew.email) {
+      this.mailer.sendUserNewEmail(user);
+    }
+    if (user.phone) {
       // send SMS ?
     }
 
-    return newUser;
-  }
-
-  public async register(user: User): Promise<User> {
-    const isEmail = validator.isEmail(user.emailOrPhone);
-
-    if (isEmail) {
-      user.email = user.emailOrPhone;
-    } else {
-      user.phone = user.emailOrPhone;
-    }
-
-    return await this.userManager.saveSingle(user);
+    return user;
   }
 
   public async login(emailOrPhone: string, password: string): Promise<User> {
@@ -136,11 +131,23 @@ export class Authenticator {
 
   public async getUserFromJwtToken(token: string): Promise<User | any> {
     try {
-      const emailOrPhone = this.getEmailOrPhoneOrThrowError(token);
-      const user = await this.userRepository.findByEmailPhone(emailOrPhone);
+      const tokenData: any = this.decodeJwtToken(token);
 
-      if (user) {
-        return Promise.resolve(user);
+      // console.log(tokenData);
+
+      if (tokenData.emailOrPhone) {
+        const user = await this.userRepository.findByEmailPhone(tokenData.emailOrPhone);
+
+        if (user) {
+          return Promise.resolve(user);
+        }
+      }
+      if (tokenData.address) {
+        const user = await this.userRepository.findByAddressPublic(tokenData.address);
+
+        if (user) {
+          return Promise.resolve(user);
+        }
       }
 
       return Promise.resolve(null);
