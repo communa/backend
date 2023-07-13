@@ -1,5 +1,5 @@
-import { App } from './App';
-import { AppConfig } from './AppConfig';
+import {App} from './App';
+import {AppConfig} from './AppConfig';
 import RejectedExecutionException from '../exception/RejectedExecutionException';
 
 export async function createApp() {

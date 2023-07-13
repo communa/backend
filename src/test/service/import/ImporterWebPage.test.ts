@@ -1,8 +1,8 @@
-import { skip, suite, test, timeout } from '@testdeck/mocha';
+import {skip, suite, test, timeout} from '@testdeck/mocha';
 
-import { ImporterWebPage } from '../../../service/import/ImporterWebPage';
-import { WebPageFixture } from '../../fixture/WebPageFixture';
-import { AbstractDatabaseIntegration } from '../../AbstractDatabase.integration';
+import {ImporterWebPage} from '../../../service/import/ImporterWebPage';
+import {WebPageFixture} from '../../fixture/WebPageFixture';
+import {AbstractDatabaseIntegration} from '../../AbstractDatabase.integration';
 
 @suite()
 export class ImporterWebPageTest extends AbstractDatabaseIntegration {

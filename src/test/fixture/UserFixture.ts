@@ -1,14 +1,14 @@
-import { inject, injectable } from 'inversify';
+import {inject, injectable} from 'inversify';
 import faker from 'faker';
 import * as web3 from 'web3';
 
-import { User } from '../../entity/User';
-import { EUserRole } from '../../interface/EUserRole';
+import {User} from '../../entity/User';
+import {EUserRole} from '../../interface/EUserRole';
 
-import { UserRepository } from '../../repository/UserRepository';
-import { Signer } from '../../service/Signer';
-import { UserManager } from '../../service/UserManager';
-import { Faker } from '../../service/Faker';
+import {UserRepository} from '../../repository/UserRepository';
+import {Signer} from '../../service/Signer';
+import {UserManager} from '../../service/UserManager';
+import {Faker} from '../../service/Faker';
 
 @injectable()
 export class UserFixture {
@@ -80,7 +80,6 @@ export class UserFixture {
     return this.userManager.saveSingle(user);
   }
 
-
   public createUserWithPhone(phone: string): Promise<User> {
     const account = web3.eth.accounts.create();
     const user = new User();
@@ -97,7 +96,7 @@ export class UserFixture {
 
   public validatedPassword(): string {
     return `${faker.internet.password(10).toLowerCase()}${faker.random
-      .alpha({ count: 2 })
+      .alpha({count: 2})
       .toUpperCase()}_!${faker.datatype.number(9)}`;
   }
 }

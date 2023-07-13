@@ -12,15 +12,15 @@ import {
 
 import faker from 'faker';
 import express from 'express';
-import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
+import {OpenAPI, ResponseSchema} from 'routing-controllers-openapi';
 
-import { User } from '../entity/User';
-import { App } from '../app/App';
-import { Authenticator } from '../service/Authenticator';
-import { UserManager } from '../service/UserManager';
-import { UserRepository } from '../repository/UserRepository';
-import { IConfigParameters } from '../interface/IConfigParameters';
-import { AuthForgotPasswordDto } from '../validator/dto/AuthDto';
+import {User} from '../entity/User';
+import {App} from '../app/App';
+import {Authenticator} from '../service/Authenticator';
+import {UserManager} from '../service/UserManager';
+import {UserRepository} from '../repository/UserRepository';
+import {IConfigParameters} from '../interface/IConfigParameters';
+import {AuthForgotPasswordDto} from '../validator/dto/AuthDto';
 
 @JsonController('/auth')
 export class AuthController {
@@ -103,7 +103,7 @@ export class AuthController {
       },
     },
   })
-  public nonce(@Body() payload: { address: string }): Promise<string> {
+  public nonce(@Body() payload: {address: string}): Promise<string> {
     return this.authenticator.getNonce(payload.address);
   }
 
@@ -130,7 +130,7 @@ export class AuthController {
   @Post('/register')
   @HttpCode(201)
   public async register(
-    @Body({ validate: { groups: ['register'] }, transform: { groups: ['register'] } }) payload: User,
+    @Body({validate: {groups: ['register']}, transform: {groups: ['register']}}) payload: User,
     @Res() res: any
   ) {
     const newUser = await this.authenticator.register(payload);
@@ -213,7 +213,7 @@ export class AuthController {
 
   @Get('/status')
   @ResponseSchema(User)
-  @ResponseClassTransformOptions({ groups: ['search', 'me'] })
+  @ResponseClassTransformOptions({groups: ['search', 'me']})
   public async status(@Req() req: express.Request) {
     const token = req.headers.authorization as string;
     const user = await this.authenticator.getUserFromJwtToken(token);

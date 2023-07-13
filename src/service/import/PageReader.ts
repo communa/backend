@@ -1,10 +1,10 @@
-import { JSDOM } from 'jsdom';
-import { inject, injectable } from 'inversify';
-import { Readability } from '@mozilla/readability';
+import {JSDOM} from 'jsdom';
+import {inject, injectable} from 'inversify';
+import {Readability} from '@mozilla/readability';
 
-import { Http } from '../Http';
-import { IText } from '../../interface/IText';
-import { ArticleRenderer } from './ArticleRenderer';
+import {Http} from '../Http';
+import {IText} from '../../interface/IText';
+import {ArticleRenderer} from './ArticleRenderer';
 
 @injectable()
 export class PageReader {

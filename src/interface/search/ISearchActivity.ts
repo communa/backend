@@ -1,9 +1,9 @@
-import { ISearch } from './ISearch';
+import {EActivityState} from '../EActivityState';
+import {ISearch} from './ISearch';
 
 export interface ISearchActivity extends ISearch {
   filter: {
     userId?: string;
-    locationId?: string;
-    tagId?: string;
+    state?: EActivityState;
   };
 }

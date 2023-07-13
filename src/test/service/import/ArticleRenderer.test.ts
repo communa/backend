@@ -1,7 +1,7 @@
-import { skip, suite, test, timeout } from '@testdeck/mocha';
-import { ArticleRenderer } from '../../../service/import/ArticleRenderer';
-import { AppConfig } from '../../../app/AppConfig';
-import { AppContainer } from '../../../app/AppContainer';
+import {skip, suite, test, timeout} from '@testdeck/mocha';
+import {ArticleRenderer} from '../../../service/import/ArticleRenderer';
+import {AppConfig} from '../../../app/AppConfig';
+import {AppContainer} from '../../../app/AppContainer';
 
 @suite()
 export class ArticleRendererTest {

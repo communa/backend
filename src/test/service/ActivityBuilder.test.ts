@@ -1,12 +1,12 @@
-import { suite, test } from '@testdeck/mocha';
+import {suite, test} from '@testdeck/mocha';
 import fs from 'fs';
-import { join } from 'path';
+import {join} from 'path';
 
-import { AbstractDatabaseIntegration } from '../AbstractDatabase.integration';
-import { ActivityBuilder } from '../../service/ActivityBuilder';
-import { PageReader } from '../../service/import/PageReader';
-import { expect } from 'chai';
-import { Activity } from '../../entity/Activity';
+import {AbstractDatabaseIntegration} from '../AbstractDatabase.integration';
+import {ActivityBuilder} from '../../service/ActivityBuilder';
+import {PageReader} from '../../service/import/PageReader';
+import {expect} from 'chai';
+import {Activity} from '../../entity/Activity';
 
 @suite()
 export class ActivityBuilderTest extends AbstractDatabaseIntegration {
@@ -23,12 +23,10 @@ export class ActivityBuilderTest extends AbstractDatabaseIntegration {
   @test()
   async build_jet() {
     const url = 'https://cryptocurrencyjobs.co/engineering/jet-protocol-data-engineer/';
-    const html = fs.readFileSync(
-      join(__dirname, '../fixture/cryptocurrencyjobs/Data_Engineer')
-    );
+    const html = fs.readFileSync(join(__dirname, '../fixture/cryptocurrencyjobs/Data_Engineer'));
 
     const page = await this.pageReader.read(html.toString(), url);
-    const activity = await this.activityBuilder.build(page) as Activity;
+    const activity = (await this.activityBuilder.build(page)) as Activity;
 
     expect(activity.title).to.be.eq('Data Engineer at Jet Protocol');
   }
@@ -41,7 +39,7 @@ export class ActivityBuilderTest extends AbstractDatabaseIntegration {
     );
 
     const page = await this.pageReader.read(html.toString(), url);
-    const activity = await this.activityBuilder.build(page) as Activity;
+    const activity = (await this.activityBuilder.build(page)) as Activity;
 
     expect(activity.title).to.be.eq('Senior Rust Engineer at Chainflip');
   }
@@ -54,7 +52,7 @@ export class ActivityBuilderTest extends AbstractDatabaseIntegration {
     );
 
     const page = await this.pageReader.read(html.toString(), url);
-    const activity = await this.activityBuilder.build(page) as Activity;
+    const activity = (await this.activityBuilder.build(page)) as Activity;
 
     expect(activity.title).to.be.eq('Tax Specialist Intern at Ledger');
   }

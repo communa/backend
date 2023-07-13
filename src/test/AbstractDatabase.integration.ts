@@ -1,13 +1,13 @@
-import { Connection } from 'typeorm';
-import { Container } from 'inversify';
-import { timeout } from '@testdeck/mocha';
-import { AppConfig } from '../app/AppConfig';
+import {Connection} from 'typeorm';
+import {Container} from 'inversify';
+import {timeout} from '@testdeck/mocha';
+import {AppConfig} from '../app/AppConfig';
 
-import { DbConnector } from '../connector/DbConnector';
-import { AppContainer } from '../app/AppContainer';
-import { UserFixture } from './fixture/UserFixture';
-import { IConfigParameters } from '../interface/IConfigParameters';
-import { Faker } from '../service/Faker';
+import {DbConnector} from '../connector/DbConnector';
+import {AppContainer} from '../app/AppContainer';
+import {UserFixture} from './fixture/UserFixture';
+import {IConfigParameters} from '../interface/IConfigParameters';
+import {Faker} from '../service/Faker';
 
 export class AbstractDatabaseIntegration {
   public conn: Connection;

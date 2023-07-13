@@ -1,6 +1,6 @@
-import { App } from '../app/App';
-import { ImporterWebPage } from '../service/import/ImporterWebPage';
-import { createApp } from '../app/AppBootstrap';
+import {App} from '../app/App';
+import {ImporterWebPage} from '../service/import/ImporterWebPage';
+import {createApp} from '../app/AppBootstrap';
 
 (async () => {
   const limit = Number(process.argv[2]);

@@ -1,12 +1,12 @@
-import { inject, injectable } from 'inversify';
+import {inject, injectable} from 'inversify';
 
-import { WebSite } from '../../entity/WebSite';
+import {WebSite} from '../../entity/WebSite';
 
-import { ActivityRepository } from '../../repository/ActivityRepository';
-import { WebPageRepository } from '../../repository/WebPageRepository';
-import { Http } from '../Http';
-import { Parser } from 'xml2js';
-import { WebPage } from '../../entity/WebPage';
+import {ActivityRepository} from '../../repository/ActivityRepository';
+import {WebPageRepository} from '../../repository/WebPageRepository';
+import {Http} from '../Http';
+import {Parser} from 'xml2js';
+import {WebPage} from '../../entity/WebPage';
 
 @injectable()
 export class ImporterWebSite {
@@ -38,7 +38,7 @@ export class ImporterWebSite {
   private convertToJson(xml: string): Promise<string[]> {
     const parser = new Parser();
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let collection: string[] = [];
       parser.parseString(xml, (_err, result) => {
         const json: any = JSON.parse(JSON.stringify(result, null, 4));

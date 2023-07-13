@@ -11,21 +11,21 @@ import {
   getConnection,
 } from 'typeorm';
 
-import { Repository } from 'typeorm/repository/Repository';
-import { ISearch } from '../interface/search/ISearch';
-import { Filter } from '../service/Filter';
+import {Repository} from 'typeorm/repository/Repository';
+import {ISearch} from '../interface/search/ISearch';
+import {Filter} from '../service/Filter';
 
 export interface ObjectLiteral {
   [key: string]: any;
 }
 
-export type TRelations = { [key: string]: boolean | any };
+export type TRelations = {[key: string]: boolean | any};
 export type TFindOptions = TRelations;
 export type TSelectOptions = TRelations;
 
 export abstract class AbstractRepositoryTemplate<T extends ObjectLiteral> {
   protected filter: Filter;
-  protected target: EntityTarget<T> & { name: string };
+  protected target: EntityTarget<T> & {name: string};
 
   public async findBy(options: FindManyOptions<T>): Promise<T[]> {
     return this.getRepo().find(options);
@@ -137,12 +137,12 @@ export abstract class AbstractRepositoryTemplate<T extends ObjectLiteral> {
 
       if (key === 'query') {
         const value: string = findOptions[key];
-        query.andWhere(`${parentKey}.${key} ILIKE :${key}`, { [key]: `%${value}%` });
+        query.andWhere(`${parentKey}.${key} ILIKE :${key}`, {[key]: `%${value}%`});
       } else if (Array.isArray(findOptions[key])) {
         const values: number[] | string[] = findOptions[key];
-        query.andWhere(`${parentKey}.${key} IN (:...${key})`, { [key]: values });
+        query.andWhere(`${parentKey}.${key} IN (:...${key})`, {[key]: values});
       } else {
-        query.andWhere(`${parentKey}.${key} = :${key}`, { [key]: findOptions[key] });
+        query.andWhere(`${parentKey}.${key} = :${key}`, {[key]: findOptions[key]});
       }
     });
   }

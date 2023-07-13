@@ -1,7 +1,7 @@
 import winston from 'winston';
 import fs from 'fs';
 
-import { inject } from 'inversify';
+import {inject} from 'inversify';
 
 export class WinstonClient {
   @inject('env')
@@ -27,14 +27,15 @@ export class WinstonClient {
       this.client.add(
         new winston.transports.Console({
           format: winston.format.combine(
-            winston.format.timestamp({ format: 'YYYY/MM/DD HH:mm:ss' }),
+            winston.format.timestamp({format: 'YYYY/MM/DD HH:mm:ss'}),
             winston.format.printf(data => {
-              const { timestamp, level, message, ...metadata } = data;
+              const {timestamp, level, message, ...metadata} = data;
 
-              return `${timestamp as string} [${level}]: ${String(message)} ${metadata && Object.keys(metadata).length ? JSON.stringify(metadata) : ''
-                }`;
+              return `${timestamp as string} [${level}]: ${String(message)} ${
+                metadata && Object.keys(metadata).length ? JSON.stringify(metadata) : ''
+              }`;
             }),
-            winston.format.colorize({ all: true })
+            winston.format.colorize({all: true})
           ),
           handleExceptions: true,
         })

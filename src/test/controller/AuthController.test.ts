@@ -1,14 +1,14 @@
 import faker from 'faker';
-import { expect } from 'chai';
+import {expect} from 'chai';
 import * as web3 from 'web3';
-import { suite, test } from '@testdeck/mocha';
+import {suite, test} from '@testdeck/mocha';
 
-import { UserRepository } from '../../repository/UserRepository';
-import { EUserRole } from '../../interface/EUserRole';
-import { BaseControllerTest } from './BaseController.test';
-import { UserFixture } from '../fixture/UserFixture';
-import { Faker } from '../../service/Faker';
-import { Authenticator } from '../../service/Authenticator';
+import {UserRepository} from '../../repository/UserRepository';
+import {EUserRole} from '../../interface/EUserRole';
+import {BaseControllerTest} from './BaseController.test';
+import {UserFixture} from '../fixture/UserFixture';
+import {Faker} from '../../service/Faker';
+import {Authenticator} from '../../service/Authenticator';
 
 @suite()
 export class AuthControllerTest extends BaseControllerTest {
@@ -30,7 +30,7 @@ export class AuthControllerTest extends BaseControllerTest {
   async loginWeb3() {
     const account = web3.eth.accounts.create();
     const nonce = await this.authenticator.getNonce(account.address);
-    const signature = web3.eth.accounts.sign(nonce, account.privateKey)
+    const signature = web3.eth.accounts.sign(nonce, account.privateKey);
 
     const res = await this.http.request({
       url: `${this.url}/api/auth/web3`,

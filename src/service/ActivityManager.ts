@@ -1,13 +1,13 @@
-import { validate } from 'class-validator';
-import { inject, injectable } from 'inversify';
+import {validate} from 'class-validator';
+import {inject, injectable} from 'inversify';
 
-import { Activity } from '../entity/Activity';
-import { User } from '../entity/User';
+import {Activity} from '../entity/Activity';
+import {User} from '../entity/User';
 import ConstraintsValidationException from '../exception/ConstraintsValidationException';
-import { ActivityRepository } from '../repository/ActivityRepository';
-import { PageReader } from './import/PageReader';
-import { EActivityState } from '../interface/EActivityState';
-import { EActivityType } from '../interface/EActivityType';
+import {ActivityRepository} from '../repository/ActivityRepository';
+import {PageReader} from './import/PageReader';
+import {EActivityState} from '../interface/EActivityState';
+import {EActivityType} from '../interface/EActivityType';
 
 @injectable()
 export class ActivityManager {
@@ -30,8 +30,10 @@ export class ActivityManager {
     return this.validateAndSave(activity);
   }
 
-  editValidateAndSave(activity: Activity, data: Activity) {3
+  editValidateAndSave(activity: Activity, data: Activity) {
     activity = Object.assign(activity, data);
+
+    console.log(data);
 
     void this.validateAndSave(activity);
   }
@@ -56,5 +58,4 @@ export class ActivityManager {
     }
     return 'Empty title';
   }
-
 }

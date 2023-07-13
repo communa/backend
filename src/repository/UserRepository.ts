@@ -1,9 +1,9 @@
-import { inject, injectable } from 'inversify';
+import {inject, injectable} from 'inversify';
 
-import { User } from '../entity/User';
-import { ISearchUser } from '../interface/search/ISearchUser';
-import { Filter } from '../service/Filter';
-import { AbstractRepositoryTemplate } from './AbstractRepositoryTemplate';
+import {User} from '../entity/User';
+import {ISearchUser} from '../interface/search/ISearchUser';
+import {Filter} from '../service/Filter';
+import {AbstractRepositoryTemplate} from './AbstractRepositoryTemplate';
 
 @injectable()
 export class UserRepository extends AbstractRepositoryTemplate<User> {
@@ -25,10 +25,10 @@ export class UserRepository extends AbstractRepositoryTemplate<User> {
       .createQueryBuilder('user')
       .where((qb: any) => {
         if (search.filter.id) {
-          qb.andWhere('user.id = :id', { id: search.filter.id });
+          qb.andWhere('user.id = :id', {id: search.filter.id});
         }
         if (search.query) {
-          qb.andWhere('user.query ILIKE :query', { query: `%${search.query}%` });
+          qb.andWhere('user.query ILIKE :query', {query: `%${search.query}%`});
         }
       })
       .orderBy(sort)
@@ -41,8 +41,8 @@ export class UserRepository extends AbstractRepositoryTemplate<User> {
     return this.getRepo()
       .createQueryBuilder('u')
       .select()
-      .where('u.email = :email', { email: emailOrPhone })
-      .orWhere('u.phone = :phone', { phone: emailOrPhone })
+      .where('u.email = :email', {email: emailOrPhone})
+      .orWhere('u.phone = :phone', {phone: emailOrPhone})
       .getOneOrFail();
   }
 
@@ -50,8 +50,8 @@ export class UserRepository extends AbstractRepositoryTemplate<User> {
     return this.getRepo()
       .createQueryBuilder('u')
       .select()
-      .where('lower(u.email) = :email', { email: emailOrPhone.toLocaleLowerCase() })
-      .orWhere('u.phone = :phone', { phone: emailOrPhone })
+      .where('lower(u.email) = :email', {email: emailOrPhone.toLocaleLowerCase()})
+      .orWhere('u.phone = :phone', {phone: emailOrPhone})
       .getOne();
   }
 
@@ -59,15 +59,15 @@ export class UserRepository extends AbstractRepositoryTemplate<User> {
     return this.getRepo().findOne({
       where: {
         address,
-      }
-    })
+      },
+    });
   }
 
   public findByAddressPublicOrFail(address: string): Promise<User> {
     return this.getRepo().findOneOrFail({
       where: {
         address,
-      }
-    })
+      },
+    });
   }
 }

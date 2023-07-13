@@ -1,7 +1,7 @@
-import { inject, injectable } from 'inversify';
+import {inject, injectable} from 'inversify';
 
-import { WebPageRepository } from '../../repository/WebPageRepository';
-import { WebPage } from '../../entity/WebPage';
+import {WebPageRepository} from '../../repository/WebPageRepository';
+import {WebPage} from '../../entity/WebPage';
 
 @injectable()
 export class WebPageFixture {

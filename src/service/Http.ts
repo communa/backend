@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { injectable } from 'inversify';
+import Axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
+import {injectable} from 'inversify';
 
 @injectable()
 export class Http {

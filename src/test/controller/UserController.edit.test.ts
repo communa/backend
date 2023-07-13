@@ -1,13 +1,13 @@
-import { expect } from 'chai';
+import {expect} from 'chai';
 import faker from 'faker';
-import { suite, test } from '@testdeck/mocha';
+import {suite, test} from '@testdeck/mocha';
 
-import { BaseControllerTest } from './BaseController.test';
-import { UserFixture } from '../fixture/UserFixture';
-import { UserRepository } from '../../repository/UserRepository';
-import { EUserRole } from '../../interface/EUserRole';
-import { Faker } from '../../service/Faker';
-import { Authenticator } from '../../service/Authenticator';
+import {BaseControllerTest} from './BaseController.test';
+import {UserFixture} from '../fixture/UserFixture';
+import {UserRepository} from '../../repository/UserRepository';
+import {EUserRole} from '../../interface/EUserRole';
+import {Faker} from '../../service/Faker';
+import {Authenticator} from '../../service/Authenticator';
 
 @suite()
 export class UserControllerEditTest extends BaseControllerTest {

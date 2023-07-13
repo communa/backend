@@ -1,15 +1,14 @@
-import { inject, injectable } from 'inversify';
-import { validate } from 'class-validator';
+import {inject, injectable} from 'inversify';
+import {validate} from 'class-validator';
 
-import { Activity } from '../entity/Activity';
-import { ActivityRepository } from '../repository/ActivityRepository';
-import { IText } from '../interface/IText';
+import {Activity} from '../entity/Activity';
+import {ActivityRepository} from '../repository/ActivityRepository';
+import {IText} from '../interface/IText';
 import ConstraintsValidationException from '../exception/ConstraintsValidationException';
 import * as cheerio from 'cheerio';
-import { EActivityCancellationReason } from '../interface/EActivityCancellationReason';
-import { EActivityState } from '../interface/EActivityState';
-import { EActivityType } from '../interface/EActivityType';
-
+import {EActivityCancellationReason} from '../interface/EActivityCancellationReason';
+import {EActivityState} from '../interface/EActivityState';
+import {EActivityType} from '../interface/EActivityType';
 
 @injectable()
 export class ActivityBuilder {
@@ -19,11 +18,13 @@ export class ActivityBuilder {
   public async build(page: IText): Promise<Activity | null> {
     const $ = cheerio.load(page.html);
     const items: string[] = [];
-    const hostname = (new URL(page.url)).hostname;
-
+    const hostname = new URL(page.url).hostname;
 
     $('.row-start-1 .text-gray-600').each((_i, el) => {
-      const text = $(el).text().replace((/  |\r\n|\n|\r/gm), "").trim();
+      const text = $(el)
+        .text()
+        .replace(/  |\r\n|\n|\r/gm, '')
+        .trim();
       items.push(text);
     });
 
@@ -74,20 +75,20 @@ export class ActivityBuilder {
     }
     if (jobUrl) {
       activity.jobUrl = jobUrl;
+      activity.state = EActivityState.PUBLISHED;
     }
     activity.processedAt = new Date();
-    activity.state = EActivityState.PUBLISHED;
     activity.type = EActivityType.IMPORT;
 
     if (page.html.indexOf('Looks like this career opportunity is no longer available') > -1) {
       activity.cancelledAt = new Date();
-      activity.state = EActivityState.REMOVED;
+      activity.state = EActivityState.ARCHIVED;
       activity.cancellationReason = EActivityCancellationReason.FILLED_OR_CLOSED;
     }
     // skip if hostname is mentioned withing the body
     if (activity.text.indexOf(hostname) > -1) {
       activity.cancelledAt = new Date();
-      activity.state = EActivityState.REMOVED;
+      activity.state = EActivityState.ARCHIVED;
       activity.cancellationReason = EActivityCancellationReason.EXTRA_LINKS;
     }
 

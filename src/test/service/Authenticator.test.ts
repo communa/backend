@@ -1,14 +1,14 @@
-import { suite, test } from '@testdeck/mocha';
+import {suite, test} from '@testdeck/mocha';
 import faker from 'faker';
-import { expect } from 'chai';
+import {expect} from 'chai';
 import * as jwt from 'jsonwebtoken';
 import * as web3 from 'web3';
 
-import { Authenticator } from '../../service/Authenticator';
-import { User } from '../../entity/User';
-import { UserFixture } from '../fixture/UserFixture';
-import { AbstractDatabaseIntegration } from '../AbstractDatabase.integration';
-import { UserRepository } from '../../repository/UserRepository';
+import {Authenticator} from '../../service/Authenticator';
+import {User} from '../../entity/User';
+import {UserFixture} from '../fixture/UserFixture';
+import {AbstractDatabaseIntegration} from '../AbstractDatabase.integration';
+import {UserRepository} from '../../repository/UserRepository';
 
 @suite()
 export class AuthenticatorTest extends AbstractDatabaseIntegration {
@@ -112,7 +112,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
 
     const payload = jwt.verify(refreshToken, this.parameters.jwtSecret);
 
-    expect(payload).to.include({ id: user.id });
+    expect(payload).to.include({id: user.id});
     expect(payload).to.include.all.keys('exp', 'iat');
   }
 
@@ -131,7 +131,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
 
   @test()
   async getUserFromRefreshToken_failNotValid() {
-    const refreshToken = jwt.sign({ id: '' }, this.parameters.jwtSecret, {
+    const refreshToken = jwt.sign({id: ''}, this.parameters.jwtSecret, {
       expiresIn: 60 * 60 * 24,
     });
 
@@ -149,7 +149,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     const iat = Math.floor(
       new Date(date.setDate(date.getDate() - 1)).setHours(date.getHours() - 1).valueOf() / 1000
     );
-    const refreshToken = jwt.sign({ id: faker.random.word(), iat }, this.parameters.jwtSecret, {
+    const refreshToken = jwt.sign({id: faker.random.word(), iat}, this.parameters.jwtSecret, {
       expiresIn: 60 * 60 * 24,
     });
 
@@ -162,7 +162,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
 
   @test()
   async getUserFromRefreshToken_failUserDoesNotExist() {
-    const refreshToken = jwt.sign({ id: faker.datatype.number() }, this.parameters.jwtSecret, {
+    const refreshToken = jwt.sign({id: faker.datatype.number()}, this.parameters.jwtSecret, {
       expiresIn: 60 * 60 * 24,
     });
 
@@ -222,7 +222,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     const account = web3.eth.accounts.create();
 
     const nonce = await this.authenticator.getNonce(account.address);
-    const signature = web3.eth.accounts.sign(nonce, account.privateKey)
+    const signature = web3.eth.accounts.sign(nonce, account.privateKey);
     const tokens = await this.authenticator.loginWeb3(signature.signature, account.address);
 
     const userDB = await this.userRepository.findByAddressPublicOrFail(account.address);
@@ -237,7 +237,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     const user = await this.userFixture.createUserFromKeypair(account);
 
     const nonce = await this.authenticator.getNonce(user.address);
-    const signature = web3.eth.accounts.sign(nonce, account.privateKey)
+    const signature = web3.eth.accounts.sign(nonce, account.privateKey);
     const tokens = await this.authenticator.loginWeb3(signature.signature, account.address);
 
     const userDB = await this.userRepository.findByAddressPublicOrFail(account.address);
@@ -252,7 +252,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     const accountB = web3.eth.accounts.create();
 
     const nonce = await this.authenticator.getNonce(accountA.address);
-    const signature = web3.eth.accounts.sign(nonce, accountB.privateKey)
+    const signature = web3.eth.accounts.sign(nonce, accountB.privateKey);
 
     let err = null;
 

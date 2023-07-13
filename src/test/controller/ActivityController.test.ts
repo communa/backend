@@ -1,15 +1,15 @@
 import faker from 'faker';
-import { expect } from 'chai';
-import { suite, test } from '@testdeck/mocha';
+import {expect} from 'chai';
+import {suite, test} from '@testdeck/mocha';
 
-import { Http } from '../../service/Http';
-import { BaseControllerTest } from './BaseController.test';
-import { UserFixture } from '../fixture/UserFixture';
-import { ActivityManager } from '../../service/ActivityManager';
-import { ActivityFixture } from '../fixture/ActivityFixture';
-import { ActivityRepository } from '../../repository/ActivityRepository';
-import { EActivityState } from '../../interface/EActivityState';
-import { Authenticator } from '../../service/Authenticator';
+import {Http} from '../../service/Http';
+import {BaseControllerTest} from './BaseController.test';
+import {UserFixture} from '../fixture/UserFixture';
+import {ActivityManager} from '../../service/ActivityManager';
+import {ActivityFixture} from '../fixture/ActivityFixture';
+import {ActivityRepository} from '../../repository/ActivityRepository';
+import {EActivityState} from '../../interface/EActivityState';
+import {Authenticator} from '../../service/Authenticator';
 
 @suite
 export class ActivityControllerTest extends BaseControllerTest {
@@ -111,7 +111,7 @@ export class ActivityControllerTest extends BaseControllerTest {
         filter: {
           userId: user.id,
         },
-        sort: { createdAt: 'ASC' },
+        sort: {createdAt: 'ASC'},
         page: 0,
       },
     };

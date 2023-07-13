@@ -4,24 +4,24 @@ import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 import express from 'express';
 import bodyParser from 'body-parser';
-import { Container } from 'inversify';
-import { Connection } from 'typeorm';
-import { useExpressServer } from 'routing-controllers';
-import { Browser } from 'puppeteer';
+import {Container} from 'inversify';
+import {Connection} from 'typeorm';
+import {useExpressServer} from 'routing-controllers';
+import {Browser} from 'puppeteer';
 
-import { AppContainer } from './AppContainer';
-import { DbConnector } from '../connector/DbConnector';
-import { OpenApi } from '../service/OpenApi';
+import {AppContainer} from './AppContainer';
+import {DbConnector} from '../connector/DbConnector';
+import {OpenApi} from '../service/OpenApi';
 
-import { HelpController } from '../controller/HelpController';
-import { ErrorHandler } from '../middleware/ErrorHandler';
-import { AppConfig } from './AppConfig';
-import { IConfigParameters } from '../interface/IConfigParameters';
+import {HelpController} from '../controller/HelpController';
+import {ErrorHandler} from '../middleware/ErrorHandler';
+import {AppConfig} from './AppConfig';
+import {IConfigParameters} from '../interface/IConfigParameters';
 
-import { AuthController } from '../controller/AuthController';
-import { ValidateRoles } from '../middleware/ValidateRoles';
-import { UserController } from '../controller/UserController';
-import { ActivityController } from '../controller/ActivityController';
+import {AuthController} from '../controller/AuthController';
+import {ValidateRoles} from '../middleware/ValidateRoles';
+import {UserController} from '../controller/UserController';
+import {ActivityController} from '../controller/ActivityController';
 
 const swaggerUiExpress = require('swagger-ui-express');
 const boolParser = require('express-query-boolean');
@@ -48,7 +48,6 @@ export class App {
 
     App.conn = await dbConnector.connect();
     App.container = AppContainer.build(this.parameters, this.env);
-
   }
 
   public start() {
@@ -59,8 +58,8 @@ export class App {
       Sentry.init({
         dsn: this.parameters.sentry,
         integrations: [
-          new Sentry.Integrations.Http({ tracing: true }),
-          new Tracing.Integrations.Express({ app: this.express }),
+          new Sentry.Integrations.Http({tracing: true}),
+          new Tracing.Integrations.Express({app: this.express}),
         ],
         environment: this.env,
         tracesSampleRate: 1.0,
@@ -117,12 +116,7 @@ export class App {
         exposedHeaders: ['Authorization', 'Location', 'Refresh-Token', 'sentry-trace'],
       },
       routePrefix: '/api',
-      controllers: [
-        HelpController,
-        ActivityController,
-        AuthController,
-        UserController,
-      ],
+      controllers: [HelpController, ActivityController, AuthController, UserController],
     });
   }
 

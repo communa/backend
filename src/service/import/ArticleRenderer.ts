@@ -1,6 +1,6 @@
-import { injectable } from 'inversify';
+import {injectable} from 'inversify';
 import * as puppeteer from 'puppeteer';
-import { App } from '../../app/App';
+import {App} from '../../app/App';
 
 @injectable()
 export class ArticleRenderer {

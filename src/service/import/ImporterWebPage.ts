@@ -1,11 +1,11 @@
-import { inject, injectable } from 'inversify';
+import {inject, injectable} from 'inversify';
 
-import { PageReader } from './PageReader';
-import { Activity } from '../../entity/Activity';
-import { WebPage } from '../../entity/WebPage';
-import { WebPageRepository } from '../../repository/WebPageRepository';
-import { ActivityBuilder } from '../ActivityBuilder';
-import { App } from '../../app/App';
+import {PageReader} from './PageReader';
+import {Activity} from '../../entity/Activity';
+import {WebPage} from '../../entity/WebPage';
+import {WebPageRepository} from '../../repository/WebPageRepository';
+import {ActivityBuilder} from '../ActivityBuilder';
+import {App} from '../../app/App';
 import puppeteer from 'puppeteer';
 
 @injectable()

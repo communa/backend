@@ -1,9 +1,9 @@
 import * as web3 from 'web3';
-import { expect } from 'chai';
-import { suite, test } from '@testdeck/mocha';
+import {expect} from 'chai';
+import {suite, test} from '@testdeck/mocha';
 
-import { AbstractDatabaseIntegration } from '../AbstractDatabase.integration';
-import { Signer } from '../../service/Signer';
+import {AbstractDatabaseIntegration} from '../AbstractDatabase.integration';
+import {Signer} from '../../service/Signer';
 
 @suite()
 export class SignerTest extends AbstractDatabaseIntegration {
@@ -27,8 +27,8 @@ export class SignerTest extends AbstractDatabaseIntegration {
     const account = web3.eth.accounts.create();
     const nonce = this.signer.generateNonce();
 
-    const signature = web3.eth.accounts.sign(nonce, account.privateKey)
-    const isValid = this.signer.verify(nonce, signature.signature, account.address)
+    const signature = web3.eth.accounts.sign(nonce, account.privateKey);
+    const isValid = this.signer.verify(nonce, signature.signature, account.address);
 
     expect(isValid).to.be.true;
   }
@@ -39,8 +39,8 @@ export class SignerTest extends AbstractDatabaseIntegration {
     const nonceA = this.signer.generateNonce();
     const nonceB = this.signer.generateNonce();
 
-    const signature = web3.eth.accounts.sign(nonceB, account.privateKey)
-    const isValid = this.signer.verify(nonceA, signature.signature, account.address)
+    const signature = web3.eth.accounts.sign(nonceB, account.privateKey);
+    const isValid = this.signer.verify(nonceA, signature.signature, account.address);
 
     expect(isValid).to.be.false;
   }

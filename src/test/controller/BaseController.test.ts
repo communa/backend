@@ -1,13 +1,13 @@
 import nock from 'nock';
-import { Container } from 'inversify';
-import { timeout } from '@testdeck/mocha';
+import {Container} from 'inversify';
+import {timeout} from '@testdeck/mocha';
 
-import { App } from '../../app/App';
-import { AppConfig } from '../../app/AppConfig';
-import { AppContainer } from '../../app/AppContainer';
-import { createAppTest } from '../../app/AppBootstrap';
-import { IConfigParameters } from '../../interface/IConfigParameters';
-import { Http } from '../../service/Http';
+import {App} from '../../app/App';
+import {AppConfig} from '../../app/AppConfig';
+import {AppContainer} from '../../app/AppContainer';
+import {createAppTest} from '../../app/AppBootstrap';
+import {IConfigParameters} from '../../interface/IConfigParameters';
+import {Http} from '../../service/Http';
 
 export class BaseControllerTest {
   protected url: string;

@@ -1,21 +1,21 @@
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import validator from 'validator';
-import { inject, injectable } from 'inversify';
-import { isEmail } from 'class-validator';
+import {inject, injectable} from 'inversify';
+import {isEmail} from 'class-validator';
 
-import { User } from '../entity/User';
-import { Mailer } from './Mailer';
+import {User} from '../entity/User';
+import {Mailer} from './Mailer';
 
-import { IAuthTokenData } from '../interface/IAuthTokenData';
-import { UserRepository } from '../repository/UserRepository';
-import { EUserRole } from '../interface/EUserRole';
-import { IAuthTokens } from '../interface/IAuthTokens';
-import { IConfigParameters } from '../interface/IConfigParameters';
+import {IAuthTokenData} from '../interface/IAuthTokenData';
+import {UserRepository} from '../repository/UserRepository';
+import {EUserRole} from '../interface/EUserRole';
+import {IAuthTokens} from '../interface/IAuthTokens';
+import {IConfigParameters} from '../interface/IConfigParameters';
 import AuthenticationException from '../exception/AuthenticationException';
-import { UserManager } from './UserManager';
-import { RedisClient } from './RedisClient';
-import { Signer } from './Signer';
+import {UserManager} from './UserManager';
+import {RedisClient} from './RedisClient';
+import {Signer} from './Signer';
 
 @injectable()
 export class Authenticator {
@@ -176,11 +176,11 @@ export class Authenticator {
     const accessToken = this.generateJwtToken(user);
     const refreshToken = this.generateRefreshToken(user);
 
-    return { accessToken, refreshToken };
+    return {accessToken, refreshToken};
   }
 
   public generateRefreshToken(user: User): string {
-    return jwt.sign({ id: user.id }, this.parameters.jwtSecret, {
+    return jwt.sign({id: user.id}, this.parameters.jwtSecret, {
       expiresIn: this.refreshTokenExpiresIn,
     });
   }

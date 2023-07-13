@@ -1,13 +1,13 @@
 import faker from 'faker';
-import { expect } from 'chai';
+import {expect} from 'chai';
 import * as web3 from 'web3';
 
-import { suite, test } from '@testdeck/mocha';
-import { UserRepository } from '../../repository/UserRepository';
-import { AbstractDatabaseIntegration } from '../AbstractDatabase.integration';
-import { User } from '../../entity/User';
-import { EUserRole } from '../../interface/EUserRole';
-import { Signer } from '../../service/Signer';
+import {suite, test} from '@testdeck/mocha';
+import {UserRepository} from '../../repository/UserRepository';
+import {AbstractDatabaseIntegration} from '../AbstractDatabase.integration';
+import {User} from '../../entity/User';
+import {EUserRole} from '../../interface/EUserRole';
+import {Signer} from '../../service/Signer';
 
 @suite()
 export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
@@ -87,7 +87,7 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
       filter: {
         id: user.id,
       },
-      sort: { createdAt: 'ASC' },
+      sort: {createdAt: 'ASC'},
       page: 0,
     });
     const positiveB = await this.userRepository.findAndCount({
@@ -95,13 +95,13 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
         id: user.id,
         role: EUserRole.ROLE_USER,
       },
-      sort: { createdAt: 'ASC' },
+      sort: {createdAt: 'ASC'},
       page: 0,
     });
     const positiveC = await this.userRepository.findAndCount({
       filter: {},
       query: user.email,
-      sort: { createdAt: 'ASC' },
+      sort: {createdAt: 'ASC'},
       page: 0,
     });
 

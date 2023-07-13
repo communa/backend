@@ -1,6 +1,6 @@
-import { inject, injectable } from 'inversify';
-import { WebSiteRepository } from '../repository/WebSiteRepository';
-import { WebSite } from '../entity/WebSite';
+import {inject, injectable} from 'inversify';
+import {WebSiteRepository} from '../repository/WebSiteRepository';
+import {WebSite} from '../entity/WebSite';
 
 @injectable()
 export class WebsiteManager {
@@ -10,7 +10,7 @@ export class WebsiteManager {
   public async findOrCreateBySitemap(sitemap: string): Promise<WebSite> {
     const webSiteExisting = await this.webSiteRepository.findOneBy({
       where: {
-        sitemap
+        sitemap,
       },
     });
 

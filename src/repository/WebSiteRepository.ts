@@ -1,7 +1,7 @@
-import { injectable } from 'inversify';
+import {injectable} from 'inversify';
 
-import { AbstractRepositoryTemplate } from './AbstractRepositoryTemplate';
-import { WebSite } from '../entity/WebSite';
+import {AbstractRepositoryTemplate} from './AbstractRepositoryTemplate';
+import {WebSite} from '../entity/WebSite';
 
 @injectable()
 export class WebSiteRepository extends AbstractRepositoryTemplate<WebSite> {
@@ -11,7 +11,7 @@ export class WebSiteRepository extends AbstractRepositoryTemplate<WebSite> {
     return this.getRepo().findOne({
       where: {
         sitemap,
-      }
-    })
+      },
+    });
   }
 }

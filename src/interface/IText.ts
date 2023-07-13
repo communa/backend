@@ -4,7 +4,7 @@ export interface IText {
   text: {
     plain: string;
     html: string;
-  },
+  };
   error: string;
   html: string;
 }

@@ -1,13 +1,13 @@
-import { validate } from 'class-validator';
-import { inject, injectable } from 'inversify';
+import {validate} from 'class-validator';
+import {inject, injectable} from 'inversify';
 
-import { User } from '../entity/User';
+import {User} from '../entity/User';
 import AuthenticationException from '../exception/AuthenticationException';
 import ConstraintsValidationException from '../exception/ConstraintsValidationException';
-import { UserEqualPasswordsException } from '../exception/UserEqualPasswordsException';
-import { UserRepository } from '../repository/UserRepository';
-import { Authenticator } from './Authenticator';
-import { Mailer } from './Mailer';
+import {UserEqualPasswordsException} from '../exception/UserEqualPasswordsException';
+import {UserRepository} from '../repository/UserRepository';
+import {Authenticator} from './Authenticator';
+import {Mailer} from './Mailer';
 
 @injectable()
 export class UserManager {
@@ -49,7 +49,7 @@ export class UserManager {
     user.tz = data.tz;
     user.userName = data.userName;
 
-    const errors = await validate(user, { groups: ['edit'] });
+    const errors = await validate(user, {groups: ['edit']});
 
     if (errors.length) {
       throw new ConstraintsValidationException(errors);

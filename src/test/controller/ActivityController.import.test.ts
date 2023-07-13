@@ -1,15 +1,15 @@
 import fs from 'fs';
-import { join } from 'path';
+import {join} from 'path';
 import nock from 'nock';
-import { expect } from 'chai';
-import { suite, test, timeout } from '@testdeck/mocha';
+import {expect} from 'chai';
+import {suite, test, timeout} from '@testdeck/mocha';
 
-import { Http } from '../../service/Http';
-import { BaseControllerTest } from './BaseController.test';
-import { UserRepository } from '../../repository/UserRepository';
-import { UserFixture } from '../fixture/UserFixture';
-import { Authenticator } from '../../service/Authenticator';
-import { ActivityRepository } from '../../repository/ActivityRepository';
+import {Http} from '../../service/Http';
+import {BaseControllerTest} from './BaseController.test';
+import {UserRepository} from '../../repository/UserRepository';
+import {UserFixture} from '../fixture/UserFixture';
+import {Authenticator} from '../../service/Authenticator';
+import {ActivityRepository} from '../../repository/ActivityRepository';
 
 @suite
 export class ActivityControllerImportTest extends BaseControllerTest {

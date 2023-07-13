@@ -10,20 +10,20 @@ import {
   Res,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
-import { OpenAPI } from 'routing-controllers-openapi';
+import {OpenAPI} from 'routing-controllers-openapi';
 
-import { App } from '../app/App';
-import { User } from '../entity/User';
-import { Activity } from '../entity/Activity';
-import { EntityFromParam } from '../decorator/EntityFromParam';
-import { ExtendedResponseSchema } from '../decorator/ExtendedResponseSchema';
-import { EUserRole } from '../interface/EUserRole';
-import { AbstractController } from './AbstractController';
-import { CurrentUser } from '../decorator/CurrentUser';
-import { ActivityRepository } from '../repository/ActivityRepository';
-import { ActivitySearchDto } from '../validator/dto/ActivitySearchDto';
-import { ActivityManager } from '../service/ActivityManager';
-import { EActivityType } from '../interface/EActivityType';
+import {App} from '../app/App';
+import {User} from '../entity/User';
+import {Activity} from '../entity/Activity';
+import {EntityFromParam} from '../decorator/EntityFromParam';
+import {ExtendedResponseSchema} from '../decorator/ExtendedResponseSchema';
+import {EUserRole} from '../interface/EUserRole';
+import {AbstractController} from './AbstractController';
+import {CurrentUser} from '../decorator/CurrentUser';
+import {ActivityRepository} from '../repository/ActivityRepository';
+import {ActivitySearchDto} from '../validator/dto/ActivitySearchDto';
+import {ActivityManager} from '../service/ActivityManager';
+import {EActivityType} from '../interface/EActivityType';
 
 @JsonController('/activity')
 export class ActivityController extends AbstractController {
@@ -38,25 +38,22 @@ export class ActivityController extends AbstractController {
   }
 
   @Post('/search')
-  @ExtendedResponseSchema(Activity, { isPagination: true })
-  @ResponseClassTransformOptions({ groups: ['search'] })
+  @ExtendedResponseSchema(Activity, {isPagination: true})
+  @ResponseClassTransformOptions({groups: ['search']})
   public search(@Body() search: ActivitySearchDto) {
     return this.activityRepository.findAndCount(search);
   }
 
   @Post('/search/publishing')
   @Authorized([EUserRole.ROLE_USER])
-  @ExtendedResponseSchema(Activity, { isPagination: true })
-  @ResponseClassTransformOptions({ groups: ['search'] })
-  public searchPublishing(
-    @CurrentUser() currentUser: User,
-    @Body() search: ActivitySearchDto
-  ) {
+  @ExtendedResponseSchema(Activity, {isPagination: true})
+  @ResponseClassTransformOptions({groups: ['search']})
+  public searchPublishing(@CurrentUser() currentUser: User, @Body() search: ActivitySearchDto) {
     return this.activityRepository.findAndCountPublishing(search, currentUser);
   }
 
   @Get('/:id')
-  @ResponseClassTransformOptions({ groups: ['search'] })
+  @ResponseClassTransformOptions({groups: ['search']})
   public get(@EntityFromParam('id') activity: Activity) {
     return activity;
   }
@@ -67,9 +64,9 @@ export class ActivityController extends AbstractController {
   public edit(
     @CurrentUser() currentUser: User,
     @EntityFromParam('id') activity: Activity,
-    @Body({ validate: { groups: ['edit'] }, transform: { groups: ['edit'] } }) data: Activity
+    @Body({validate: {groups: ['edit']}, transform: {groups: ['edit']}}) data: Activity
   ) {
-    if (currentUser.id !== activity.id) {
+    if (currentUser.id !== activity.user.id) {
       throw new Error('Wrong user');
     }
 
@@ -95,7 +92,7 @@ export class ActivityController extends AbstractController {
   @HttpCode(201)
   public async create(
     @CurrentUser() currentUser: User,
-    @Body({ validate: { groups: ['create'] }, transform: { groups: ['create'] } }) data: Activity,
+    @Body({validate: {groups: ['create']}, transform: {groups: ['create']}}) data: Activity,
     @Res() res: any
   ) {
     data.user = currentUser;
@@ -126,7 +123,7 @@ export class ActivityController extends AbstractController {
   @Authorized([EUserRole.ROLE_USER])
   public async import(
     @CurrentUser() currentUser: User,
-    @Body() payload: { url: string },
+    @Body() payload: {url: string},
     @Res() res: any
   ) {
     const activity = await this.activityManager.import(currentUser, payload.url);

@@ -1,7 +1,7 @@
-import { App } from '../app/App';
-import { createApp } from '../app/AppBootstrap';
-import { WebsiteManager } from '../service/WebsiteManager';
-import { ImporterWebSite } from '../service/import/ImporterWebSite';
+import {App} from '../app/App';
+import {createApp} from '../app/AppBootstrap';
+import {WebsiteManager} from '../service/WebsiteManager';
+import {ImporterWebSite} from '../service/import/ImporterWebSite';
 
 (async () => {
   const app = await createApp();

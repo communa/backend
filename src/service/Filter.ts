@@ -1,8 +1,8 @@
-import { injectable } from 'inversify';
+import {injectable} from 'inversify';
 import * as _ from 'lodash';
-import { OrderByCondition } from 'typeorm';
+import {OrderByCondition} from 'typeorm';
 
-import { ISearch } from '../interface/search/ISearch';
+import {ISearch} from '../interface/search/ISearch';
 
 @injectable()
 export class Filter {
