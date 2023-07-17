@@ -54,7 +54,13 @@ NODE_ENV=development npm run typeorm:cli -- schema:drop && NODE_ENV=development 
 NODE_ENV=test npm run typeorm:cli -- schema:drop && NODE_ENV=test npm run typeorm:cli -- schema:sync
 ```
 
-## Tests
+## Deployment
+```sh
+cap deploy:setup
+cap deploy production
+```
+
+## Testing
 
 ```sh
 npm yarn test
