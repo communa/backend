@@ -42,12 +42,7 @@ export class UserManager {
       user.password = Authenticator.hashPassword(data.passwordPlain);
     }
 
-    user.email = data.email;
-    user.bio = data.bio;
-    user.phone = data.phone;
-    user.roles = data.roles;
-    user.tz = data.tz;
-    user.userName = data.userName;
+    user = Object.assign(user, data);
 
     const errors = await validate(user, {groups: ['edit']});
 

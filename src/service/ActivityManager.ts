@@ -33,8 +33,6 @@ export class ActivityManager {
   editValidateAndSave(activity: Activity, data: Activity) {
     activity = Object.assign(activity, data);
 
-    console.log(data);
-
     void this.validateAndSave(activity);
   }
 

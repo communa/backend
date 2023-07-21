@@ -2,6 +2,9 @@
   "name": "communa",
   "version": "0.0.0",
   "description": "Web3 freelancing platform that connects businesses with talented professionals worldwide, making remote work more convenient than ever before.",
+  "private": false,
+  "author": "ivan.proskuryakov",
+  "license": "MIT",
   "engines": {
     "node": "^16"
   },
@@ -23,9 +26,6 @@
     "api",
     "crud"
   ],
-  "private": true,
-  "author": "ivan.proskuryakov",
-  "license": "ISC",
   "dependencies": {
     "@mozilla/readability": "^0.4.2",
     "@sentry/node": "^6.12.0",
