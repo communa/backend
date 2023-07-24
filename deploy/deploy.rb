@@ -23,11 +23,11 @@ after 'deploy:update', 'deploy:cleanup'
 
 namespace :deploy do
   task :npminstall, :roles => :app do
-    try_sudo "cd #{latest_release} && npm install"
+    try_sudo "cd #{latest_release} && yarn install"
     try_sudo "cd #{latest_release} && NODE_ENV=production npm run typeorm:cli -- schema:sync"
-    try_sudo "cd #{latest_release} && npm run build"
+    try_sudo "cd #{latest_release} && yarn run build"
     try_sudo "cd #{latest_release} && pm2 delete server"
-    try_sudo "cd #{latest_release} && npm run pm2"
+    try_sudo "cd #{latest_release} && yarn run pm2"
   end
 end
 
