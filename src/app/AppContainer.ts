@@ -1,32 +1,33 @@
-import {Container} from 'inversify';
+import { Container } from 'inversify';
 
-import {IConfigParameters} from '../interface/IConfigParameters';
+import { IConfigParameters } from '../interface/IConfigParameters';
 
-import {Http} from '../service/Http';
-import {OpenApi} from '../service/OpenApi';
-import {PageReader} from '../service/import/PageReader';
+import { Http } from '../service/Http';
+import { OpenApi } from '../service/OpenApi';
+import { PageReader } from '../service/import/PageReader';
 
-import {ArticleRenderer} from '../service/import/ArticleRenderer';
-import {Signer} from '../service/Signer';
-import {RedisClient} from '../service/RedisClient';
-import {UserFixture} from '../test/fixture/UserFixture';
-import {UserRepository} from '../repository/UserRepository';
-import {Filter} from '../service/Filter';
-import {UserManager} from '../service/UserManager';
-import {Mailer} from '../service/Mailer';
-import {Faker} from '../service/Faker';
-import {Authenticator} from '../service/Authenticator';
-import {ActivityRepository} from '../repository/ActivityRepository';
-import {ActivityFixture} from '../test/fixture/ActivityFixture';
-import {ActivityManager} from '../service/ActivityManager';
-import {ImporterWebPage} from '../service/import/ImporterWebPage';
-import {ImporterWebSite} from '../service/import/ImporterWebSite';
-import {WebPageFixture} from '../test/fixture/WebPageFixture';
-import {WebSiteFixture} from '../test/fixture/WebSiteFixture';
-import {WebPageRepository} from '../repository/WebPageRepository';
-import {WebSiteRepository} from '../repository/WebSiteRepository';
-import {ActivityBuilder} from '../service/ActivityBuilder';
-import {WebsiteManager} from '../service/WebsiteManager';
+import { ArticleRenderer } from '../service/import/ArticleRenderer';
+import { Signer } from '../service/Signer';
+import { RedisClient } from '../service/RedisClient';
+import { UserFixture } from '../test/fixture/UserFixture';
+import { UserRepository } from '../repository/UserRepository';
+import { Filter } from '../service/Filter';
+import { UserManager } from '../service/UserManager';
+import { Mailer } from '../service/Mailer';
+import { Faker } from '../service/Faker';
+import { Authenticator } from '../service/Authenticator';
+import { ActivityRepository } from '../repository/ActivityRepository';
+import { ActivityFixture } from '../test/fixture/ActivityFixture';
+import { ActivityManager } from '../service/ActivityManager';
+import { ImporterWebPage } from '../service/import/ImporterWebPage';
+import { ImporterWebSite } from '../service/import/ImporterWebSite';
+import { WebPageFixture } from '../test/fixture/WebPageFixture';
+import { WebSiteFixture } from '../test/fixture/WebSiteFixture';
+import { WebPageRepository } from '../repository/WebPageRepository';
+import { WebSiteRepository } from '../repository/WebSiteRepository';
+import { ActivityBuilder } from '../service/ActivityBuilder';
+import { WebsiteManager } from '../service/WebsiteManager';
+import { ImporterLinkedIn } from '../service/import/ImporterLinkedIn';
 
 export class AppContainer {
   private static container: Container;
@@ -40,7 +41,7 @@ export class AppContainer {
       return AppContainer.getContainer();
     }
 
-    const container = new Container({skipBaseClassChecks: true});
+    const container = new Container({ skipBaseClassChecks: true });
 
     container.bind<string>('env').toConstantValue(env);
     container.bind<IConfigParameters>('parameters').toConstantValue(parameters);
@@ -63,6 +64,7 @@ export class AppContainer {
     container.bind<Filter>('Filter').to(Filter);
     container.bind<UserManager>('UserManager').to(UserManager);
     container.bind<WebsiteManager>('WebsiteManager').to(WebsiteManager);
+    container.bind<ImporterLinkedIn>('ImporterLinkedIn').to(ImporterLinkedIn);
 
     container.bind<Mailer>('Mailer').to(Mailer);
     container.bind<ActivityManager>('ActivityManager').to(ActivityManager);

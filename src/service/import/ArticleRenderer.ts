@@ -1,6 +1,6 @@
-import {injectable} from 'inversify';
+import { injectable } from 'inversify';
 import * as puppeteer from 'puppeteer';
-import {App} from '../../app/App';
+import { App } from '../../app/App';
 
 @injectable()
 export class ArticleRenderer {
@@ -72,6 +72,13 @@ export class ArticleRenderer {
         width: 1600,
         height: 900,
       });
+      const cookies = [{
+        name: 'li_at',
+        value: process.env['LI_AT_COOKIE'],
+        domain: '.www.linkedin.com'
+      }];
+      // console.log(cookies);
+      await page.setCookie(...cookies as any);
       await page.goto(url, {
         // waitUntil: 'domcontentloaded'
         waitUntil: 'networkidle2',
