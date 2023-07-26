@@ -22,8 +22,8 @@ server {
         client_max_body_size 5000m;
     }
 
-    error_log /var/www/html/communa.network.log error;
-    access_log /var/www/html/communa.network.log combined;
+    error_log /var/www/communa.network.log error;
+    access_log /var/www/communa.network.log combined;
 
     listen 443 ssl; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/communa.network/fullchain.pem; # managed by Certbot

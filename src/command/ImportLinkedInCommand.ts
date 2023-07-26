@@ -9,7 +9,7 @@ import {ImporterLinkedIn} from '../service/import/ImporterLinkedIn';
 
   const limit = Number(process.argv[3]);
   const keywords = String(process.argv[2]).split(',');
-  const authCookie = String(process.argv[4]);
+  const authCookie = process.env['LI_AT_COOKIE'] as string;
   const importerLinkedIn: ImporterLinkedIn = App.container.get('ImporterLinkedIn');
 
   await importerLinkedIn.process(keywords, limit, authCookie);

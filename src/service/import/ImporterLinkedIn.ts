@@ -39,6 +39,7 @@ export class ImporterLinkedIn {
   private async processKeyword(keyword: string, limit: number, authCookie: string) {
     const scraper = new LinkedinScraper({
       headless: true,
+      timeout: 10000,
       slowMo: 300,
     });
 
@@ -66,6 +67,7 @@ export class ImporterLinkedIn {
       const description = $.html()?.trim() as string;
 
       console.log(url);
+      console.log(description);
 
       if (url && url.indexOf('https://www.linkedin.com') !== 0 && description) {
         data.applyLink = url;
