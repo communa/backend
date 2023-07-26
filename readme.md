@@ -31,6 +31,9 @@ Ensure there are no errors by execution of all tests
 ```sh
 */5 * * * * cd /var/www/html/communa-backend && NODE_ENV=production node build/command/ImportPagesCommand.js 50 5
 */5 * * * * cd /var/www/html/communa-backend && NODE_ENV=production node build/command/ImportWebsiteCommand.js
+0 0 * * * cd /var/www/html/communa-backend/current && LI_AT_COOKIE=XXXX NODE_ENV=production node build/command/ImportLinkedInCommand.js "Web3,Blockchain,Ethereum,Smart Contract" 100
+
+
 ```
 
 ## Commands
@@ -38,7 +41,7 @@ Ensure there are no errors by execution of all tests
 ```sh
 NODE_ENV=development ts-node src/command/ImportPagesCommand.ts 50 5
 NODE_ENV=development ts-node src/command/ImportWebsiteCommand.ts
-LI_AT_COOKIE=XXX ts-node src/command/ImportLinkedInCommand.ts
+LI_AT_COOKIE=XXX ts-node src/command/ImportLinkedInCommand.ts "Web3,Blockchain,Ethereum,Smart Contract" 100
 ```
 
 ## DB
