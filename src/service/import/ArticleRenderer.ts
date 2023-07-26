@@ -1,6 +1,6 @@
-import { injectable } from 'inversify';
+import {injectable} from 'inversify';
 import * as puppeteer from 'puppeteer';
-import { App } from '../../app/App';
+import {App} from '../../app/App';
 
 @injectable()
 export class ArticleRenderer {
@@ -34,21 +34,11 @@ export class ArticleRenderer {
     'tiqcdn',
   ];
 
-  public renderByUrl(url: string): Promise<string> {
+  public renderByUrl(
+    url: string,
+    cookies: puppeteer.Protocol.Network.CookieParam[] = []
+  ): Promise<string> {
     return (async () => {
-      // console.log(App.browser);
-      // if (!App.browser) {
-      //   App.browser = await puppeteer.launch({
-      //     args: [
-      //       '--no-sandbox',
-      //       '--disable-setuid-sandbox',
-      //       '--disable-dev-shm-usage',
-      //       // '--disable-accelerated-2d-canvas',
-      //       '--disable-gpu',
-      //       '--window-size=1920x1080',
-      //     ],
-      //   });
-      // }
       const page = await App.browser.newPage();
 
       page.on('request', (request: puppeteer.HTTPRequest) => {
@@ -72,13 +62,7 @@ export class ArticleRenderer {
         width: 1600,
         height: 900,
       });
-      const cookies = [{
-        name: 'li_at',
-        value: process.env['LI_AT_COOKIE'],
-        domain: '.www.linkedin.com'
-      }];
-      // console.log(cookies);
-      await page.setCookie(...cookies as any);
+      await page.setCookie(...(cookies as any));
       await page.goto(url, {
         // waitUntil: 'domcontentloaded'
         waitUntil: 'networkidle2',

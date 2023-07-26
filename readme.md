@@ -38,6 +38,7 @@ Ensure there are no errors by execution of all tests
 ```sh
 NODE_ENV=development ts-node src/command/ImportPagesCommand.ts 50 5
 NODE_ENV=development ts-node src/command/ImportWebsiteCommand.ts
+LI_AT_COOKIE=XXX ts-node src/command/ImportLinkedInCommand.ts
 ```
 
 ## DB

@@ -1,25 +1,22 @@
-import { inject, injectable } from 'inversify';
-import { validate } from 'class-validator';
+import {inject, injectable} from 'inversify';
+import {validate} from 'class-validator';
 import * as cheerio from 'cheerio';
 
-import { Activity } from '../entity/Activity';
-import { ActivityRepository } from '../repository/ActivityRepository';
-import { IText } from '../interface/IText';
+import {Activity} from '../entity/Activity';
+import {ActivityRepository} from '../repository/ActivityRepository';
+import {IText} from '../interface/IText';
 import ConstraintsValidationException from '../exception/ConstraintsValidationException';
-import { EActivityCancellationReason } from '../interface/EActivityCancellationReason';
-import { EActivityState } from '../interface/EActivityState';
-import { EActivityType } from '../interface/EActivityType';
-import { IData } from 'linkedin-jobs-scraper/build/scraper/events';
-import { PageReader } from './import/PageReader';
+import {EActivityCancellationReason} from '../interface/EActivityCancellationReason';
+import {EActivityState} from '../interface/EActivityState';
+import {EActivityType} from '../interface/EActivityType';
+import {IData} from 'linkedin-jobs-scraper/build/scraper/events';
 
 @injectable()
 export class ActivityBuilder {
   @inject('ActivityRepository')
   protected activityRepository: ActivityRepository;
-  @inject('PageReader')
-  protected pageReader: PageReader;
 
-  public async buildLinkedIn(data: IData): Promise<Activity | null> {
+  public async buildLinkedIn(data: IData, keyword: string): Promise<Activity | null> {
     const existing = await this.activityRepository.findOneByUrl(data.link);
 
     if (existing) {
@@ -27,32 +24,21 @@ export class ActivityBuilder {
     }
 
     const activity = new Activity();
-    // const text = await this.pageReader.read(data.description, data.link);
     const content = data.descriptionHTML;
-    // let contentLen = 0;
 
-    // while (contentLen !== content.length) {
-    //   content = content.replace('\n\n', '\n');
-    //   contentLen = content.length;
-    // }
-
-    // content = content.replace('About the job', '');
-    // content = content.replace(/\n\n/g, '');
-
-    activity.title = `${data.title} at ${data.company}`;
+    activity.title = `${data.title} @ ${data.company}`;
     activity.text = content;
     activity.sourceUrl = data.link;
     activity.location = data.place;
     activity.jobUrl = data.applyLink as string;
     activity.state = EActivityState.PUBLISHED;
     activity.keywords = [
+      keyword,
       // data.location,
       // data.company,
       // data.place,
     ];
 
-    // console.log(data.descriptionHTML);
-    // console.log(data.description);
     console.log(content);
 
     activity.processedAt = new Date();
@@ -83,11 +69,6 @@ export class ActivityBuilder {
     if (items.length === 0) {
       return null;
     }
-
-    // // skip if hostname is mentioned withing the body
-    // if (body.indexOf(hostname) > -1) {
-    //   return null;
-    // }
 
     let activity = await this.activityRepository.findOneByUrl(page.url);
 
