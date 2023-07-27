@@ -40,7 +40,7 @@ export class ImporterLinkedIn {
     const scraper = new LinkedinScraper({
       headless: true,
       timeout: 10000,
-      slowMo: 300,
+      slowMo: 500,
     });
 
     scraper.on(events.scraper.data, async data => {
@@ -83,7 +83,11 @@ export class ImporterLinkedIn {
       {
         limit,
         filters: {
-          // onSiteOrRemote: [onSiteOrRemoteFilter.REMOTE, onSiteOrRemoteFilter.HYBRID],
+          onSiteOrRemote: [
+            onSiteOrRemoteFilter.REMOTE,
+            onSiteOrRemoteFilter.HYBRID,
+            onSiteOrRemoteFilter.ON_SITE,
+          ],
         },
       }
     );
