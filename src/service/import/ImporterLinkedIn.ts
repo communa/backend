@@ -64,12 +64,12 @@ export class ImporterLinkedIn {
         })
         .remove();
 
-      const description = $.html()?.trim() as string;
+      const description = String($.html()?.trim());
 
       console.log(url);
       console.log(description);
 
-      if (url && url.indexOf('https://www.linkedin.com') !== 0 && description) {
+      if (url && !url.includes('https://www.linkedin.com') && description.length > 0) {
         data.applyLink = url;
         data.descriptionHTML = description;
         data.link = `https://www.linkedin.com/jobs/view/${data.jobId}`;
@@ -83,7 +83,7 @@ export class ImporterLinkedIn {
       {
         limit,
         filters: {
-          onSiteOrRemote: [onSiteOrRemoteFilter.REMOTE, onSiteOrRemoteFilter.HYBRID],
+          // onSiteOrRemote: [onSiteOrRemoteFilter.REMOTE, onSiteOrRemoteFilter.HYBRID],
         },
       }
     );
