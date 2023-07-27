@@ -86,7 +86,7 @@ export class ImporterLinkedIn {
           onSiteOrRemote: [
             onSiteOrRemoteFilter.REMOTE,
             onSiteOrRemoteFilter.HYBRID,
-            onSiteOrRemoteFilter.ON_SITE,
+            // onSiteOrRemoteFilter.ON_SITE,
           ],
         },
       }
