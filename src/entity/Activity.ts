@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne} from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany, OneToOne} from 'typeorm';
 import faker from 'faker';
 import {Exclude, Expose, Type} from 'class-transformer';
 import {JSONSchema} from 'class-validator-jsonschema';
@@ -9,6 +9,9 @@ import {EActivityCancellationReason} from '../interface/EActivityCancellationRea
 import {EActivityType} from '../interface/EActivityType';
 import {IsNotEmpty} from 'class-validator';
 import {EActivityState} from '../interface/EActivityState';
+import {Application} from './Application';
+import {Payment} from './Payment';
+import {Time} from './Time';
 
 @JSONSchema({
   example: {
@@ -70,6 +73,12 @@ export class Activity extends AbstractBaseEntity {
   @Column('timestamptz', {nullable: true})
   cancelledAt: Date;
   @Expose({groups: ['search']})
+  @Column('timestamptz', {nullable: true})
+  startedAt: Date;
+  @Expose({groups: ['search']})
+  @Column('timestamptz', {nullable: true})
+  finishedAt: Date;
+  @Expose({groups: ['search']})
   @Column('text', {nullable: true})
   cancellationReason: EActivityCancellationReason;
 
@@ -77,4 +86,22 @@ export class Activity extends AbstractBaseEntity {
   @Type(() => User)
   @ManyToOne(() => User, {eager: true, nullable: true})
   user: User;
+
+  @Expose({groups: ['search']})
+  @Type(() => Application)
+  @OneToMany(() => Application, application => application.activity)
+  applications: Application[];
+  @Expose({groups: ['search']})
+  @Type(() => Payment)
+  @OneToMany(() => Payment, payment => payment.activity)
+  payments: Payment[];
+  @Expose({groups: ['search']})
+  @Type(() => Time)
+  @OneToMany(() => Time, time => time.activity)
+  time: Time[];
+
+  @Expose({groups: ['search']})
+  @Type(() => Application)
+  @OneToOne(() => Application, application => application.activity)
+  applicationAccepted: Application;
 }

@@ -28,4 +28,8 @@ export class Faker {
       .alpha({count: 2})
       .toUpperCase()}_!${faker.datatype.number(9)}`;
   }
+
+  public getFaker(): Faker.FakerStatic {
+    return faker;
+  }
 }

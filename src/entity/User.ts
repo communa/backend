@@ -13,6 +13,9 @@ import {EUserRole} from '../interface/EUserRole';
 import {IUser} from '../interface/IUser';
 import {PasswordConstraint} from '../validator/constraint/PasswordConstraint';
 import {Activity} from './Activity';
+import {Application} from './Application';
+import {Payment} from './Payment';
+import {Time} from './Time';
 
 @JSONSchema({
   example: {
@@ -76,6 +79,8 @@ export class User extends AbstractBaseEntity implements IUser {
   @Expose({groups: ['search', 'edit']})
   @Column('text', {nullable: true})
   telegram: string;
+  @Column('text', {nullable: true})
+  whatsapp: string;
 
   // Address
   @Expose({groups: ['search', 'edit']})
@@ -105,6 +110,13 @@ export class User extends AbstractBaseEntity implements IUser {
 
   @OneToMany(() => Activity, activity => activity.user)
   activities: Activity[];
+  @OneToMany(() => Application, application => application.user)
+  applications: Application[];
+  @OneToMany(() => Payment, payment => payment.user)
+  payments: Payment[];
+  @OneToMany(() => Time, time => time.user)
+  time: Time[];
+
   @Expose({groups: ['search']})
   @Column('integer', {nullable: true})
   activitiesCount: number;

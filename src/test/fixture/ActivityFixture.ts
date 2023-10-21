@@ -11,13 +11,14 @@ export class ActivityFixture {
   @inject('ActivityRepository')
   protected activityRepository: ActivityRepository;
 
-  public create(user: User): Promise<Activity> {
+  public create(user: User, state: EActivityState, keywords: string[] = []): Promise<Activity> {
     const activity = new Activity();
 
     activity.title = faker.datatype.uuid();
     activity.text = faker.datatype.uuid();
     activity.user = user;
-    activity.state = EActivityState.PUBLISHED;
+    activity.state = state;
+    activity.keywords = keywords;
     activity.jobUrl = faker.internet.url();
 
     return this.activityRepository.saveSingle(activity);

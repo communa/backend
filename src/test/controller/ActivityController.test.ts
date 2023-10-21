@@ -34,7 +34,7 @@ export class ActivityControllerTest extends BaseControllerTest {
   @test
   async get() {
     const user = await this.userFixture.createUser();
-    const activity = await this.activityFixture.create(user);
+    const activity = await this.activityFixture.create(user, EActivityState.PUBLISHED);
 
     const res = await this.http.request({
       url: `${this.url}/api/activity/${activity.id}`,
@@ -80,7 +80,7 @@ export class ActivityControllerTest extends BaseControllerTest {
   @test
   async delete() {
     const user = await this.userFixture.createUser();
-    const activity = await this.activityFixture.create(user);
+    const activity = await this.activityFixture.create(user, EActivityState.PUBLISHED);
 
     const res = await this.http.request({
       url: `${this.url}/api/activity/${activity.id}`,
@@ -96,9 +96,10 @@ export class ActivityControllerTest extends BaseControllerTest {
   }
 
   @test()
-  async search() {
+  async searchKeywordsPositive() {
+    const keywords = [faker.datatype.uuid(), faker.datatype.uuid(), faker.datatype.uuid()];
     const user = await this.userFixture.createUser();
-    const activity = await this.activityFixture.create(user);
+    const activity = await this.activityFixture.create(user, EActivityState.PUBLISHED, keywords);
 
     const config = {
       url: `${this.url}/api/activity/search`,
@@ -110,6 +111,67 @@ export class ActivityControllerTest extends BaseControllerTest {
       data: {
         filter: {
           userId: user.id,
+          keywords: [keywords[0], keywords[1]],
+        },
+        sort: {createdAt: 'ASC'},
+        page: 0,
+      },
+    };
+
+    const res = await this.http.request(config);
+
+    console.log(res.data[0]);
+
+    expect(res.data[0].length).to.be.eq(1);
+    expect(res.data[0][0].id).to.be.eq(activity.id);
+  }
+
+  @test()
+  async searchKeywordsNegatve() {
+    const keywords = [faker.datatype.uuid(), faker.datatype.uuid(), faker.datatype.uuid()];
+    const user = await this.userFixture.createUser();
+
+    await this.activityFixture.create(user, EActivityState.PUBLISHED, keywords);
+
+    const config = {
+      url: `${this.url}/api/activity/search`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(user).accessToken,
+      },
+      data: {
+        filter: {
+          userId: user.id,
+          keywords: [keywords[2]],
+        },
+        sort: {createdAt: 'ASC'},
+        page: 0,
+      },
+    };
+
+    const res = await this.http.request(config);
+
+    expect(res.data[0].length).to.be.eq(0);
+    expect(res.data[0][0]).to.be.deep.eq([]);
+  }
+
+  @test()
+  async searchPublishingDraft() {
+    const user = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(user, EActivityState.DRAFT);
+
+    const config = {
+      url: `${this.url}/api/activity/search/publishing`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(user).accessToken,
+      },
+      data: {
+        filter: {
+          userId: user.id,
+          state: EActivityState.DRAFT,
         },
         sort: {createdAt: 'ASC'},
         page: 0,
@@ -120,6 +182,35 @@ export class ActivityControllerTest extends BaseControllerTest {
 
     expect(res.data[0].length).to.be.eq(1);
     expect(res.data[0][0].id).to.be.eq(activity.id);
-    // expect(res.data[0][0].user.id).to.be.eq(user.id);
+    expect(res.data[0][0].state).to.be.eq(EActivityState.DRAFT);
+  }
+
+  @test()
+  async searchPublishingArchived() {
+    const user = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(user, EActivityState.ARCHIVED);
+
+    const config = {
+      url: `${this.url}/api/activity/search/publishing`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(user).accessToken,
+      },
+      data: {
+        filter: {
+          userId: user.id,
+          state: EActivityState.ARCHIVED,
+        },
+        sort: {createdAt: 'ASC'},
+        page: 0,
+      },
+    };
+
+    const res = await this.http.request(config);
+
+    expect(res.data[0].length).to.be.eq(1);
+    expect(res.data[0][0].id).to.be.eq(activity.id);
+    expect(res.data[0][0].state).to.be.eq(EActivityState.ARCHIVED);
   }
 }

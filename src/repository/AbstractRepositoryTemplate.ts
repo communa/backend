@@ -14,6 +14,8 @@ import {
 import {Repository} from 'typeorm/repository/Repository';
 import {ISearch} from '../interface/search/ISearch';
 import {Filter} from '../service/Filter';
+import ConstraintsValidationException from '../exception/ConstraintsValidationException';
+import {validate} from 'class-validator';
 
 export interface ObjectLiteral {
   [key: string]: any;
@@ -26,6 +28,16 @@ export type TSelectOptions = TRelations;
 export abstract class AbstractRepositoryTemplate<T extends ObjectLiteral> {
   protected filter: Filter;
   protected target: EntityTarget<T> & {name: string};
+
+  async validateAndSave(activity: T): Promise<T> {
+    const errors = await validate(activity);
+
+    if (errors.length) {
+      throw new ConstraintsValidationException(errors);
+    }
+
+    return this.saveSingle(activity);
+  }
 
   public async findBy(options: FindManyOptions<T>): Promise<T[]> {
     return this.getRepo().find(options);

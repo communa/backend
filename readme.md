@@ -29,8 +29,6 @@ Ensure there are no errors by execution of all tests
 ## Cron
 
 ```sh
-*/5 * * * * cd /var/www/html/communa-backend && NODE_ENV=production node build/command/ImportPagesCommand.js 50 5
-*/5 * * * * cd /var/www/html/communa-backend && NODE_ENV=production node build/command/ImportWebsiteCommand.js
 0 0 * * * cd /var/www/html/communa-backend/current && LI_AT_COOKIE=XXXX NODE_ENV=production node build/command/ImportLinkedInCommand.js "Web3,Ethereum" 100
 
 

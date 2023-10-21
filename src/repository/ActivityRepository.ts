@@ -23,10 +23,6 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
     });
   }
 
-  public async validateAndCreate(activity: Activity): Promise<Activity> {
-    return this.getRepo().save(activity);
-  }
-
   public async findAndCount(search: ISearchActivity): Promise<[Activity[], number]> {
     const s = _.assign(
       {
@@ -41,22 +37,20 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
     const sort = this.filter.buildOrderByCondition('activity', s);
     const limit = this.filter.buildLimit(search);
 
-    return (
-      this.getRepo()
-        .createQueryBuilder('activity')
-        .select()
-        .where((qb: SelectQueryBuilder<Activity>) => {
-          this.buildSearchQueries(qb, search);
-        })
-        // .andWhere('activity.type = :type', { type: EActivityType.IMPORT })
-        .andWhere('activity.state = :state', {state: EActivityState.PUBLISHED})
-        .andWhere('activity.cancelledAt IS NULL')
-        // .andWhere('activity.jobUrl IS NOT NULL')
-        .orderBy(sort)
-        .skip(limit * s.page)
-        .take(limit)
-        .getManyAndCount()
-    );
+    console.log(s.filter.keywords);
+
+    return this.getRepo()
+      .createQueryBuilder('activity')
+      .select()
+      .where((qb: SelectQueryBuilder<Activity>) => {
+        this.buildSearchQueries(qb, search);
+      })
+      .andWhere('activity.state = :state', {state: EActivityState.PUBLISHED})
+      .andWhere('activity.cancelledAt IS NULL')
+      .orderBy(sort)
+      .skip(limit * s.page)
+      .take(limit)
+      .getManyAndCount();
   }
 
   public async findAndCountPublishing(
@@ -77,8 +71,6 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
     );
     const sort = this.filter.buildOrderByCondition('activity', s);
     const limit = this.filter.buildLimit(search);
-
-    console.log(s.filter.state);
 
     return this.getRepo()
       .createQueryBuilder('activity')
@@ -102,6 +94,9 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
   ): SelectQueryBuilder<Activity> {
     if ('userId' in search.filter) {
       qb.andWhere('activity.user.id = :userId', {userId: search.filter.userId});
+    }
+    if ('keywords' in search.filter) {
+      qb.andWhere('activity.keywords IN (:...keywords)', {keywords: search.filter.keywords});
     }
 
     return qb;

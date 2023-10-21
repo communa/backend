@@ -6,7 +6,7 @@
   "author": "ivan.proskuryakov",
   "license": "MIT",
   "engines": {
-    "node": "^16"
+    "node": "^18"
   },
   "scripts": {
     "pm2": "NODE_ENV=production pm2 start build/server.js --watch",

@@ -19,14 +19,7 @@ import {Authenticator} from '../service/Authenticator';
 import {ActivityRepository} from '../repository/ActivityRepository';
 import {ActivityFixture} from '../test/fixture/ActivityFixture';
 import {ActivityManager} from '../service/ActivityManager';
-import {ImporterWebPage} from '../service/import/ImporterWebPage';
-import {ImporterWebSite} from '../service/import/ImporterWebSite';
-import {WebPageFixture} from '../test/fixture/WebPageFixture';
-import {WebSiteFixture} from '../test/fixture/WebSiteFixture';
-import {WebPageRepository} from '../repository/WebPageRepository';
-import {WebSiteRepository} from '../repository/WebSiteRepository';
 import {ActivityBuilder} from '../service/ActivityBuilder';
-import {WebsiteManager} from '../service/WebsiteManager';
 import {ImporterLinkedIn} from '../service/import/ImporterLinkedIn';
 
 export class AppContainer {
@@ -51,8 +44,6 @@ export class AppContainer {
     // Repositories
     container.bind<UserRepository>('UserRepository').to(UserRepository);
     container.bind<ActivityRepository>('ActivityRepository').to(ActivityRepository);
-    container.bind<WebPageRepository>('WebPageRepository').to(WebPageRepository);
-    container.bind<WebSiteRepository>('WebSiteRepository').to(WebSiteRepository);
 
     // Services
     container.bind<Signer>('Signer').to(Signer);
@@ -63,15 +54,11 @@ export class AppContainer {
     container.bind<RedisClient>('RedisClient').to(RedisClient);
     container.bind<Filter>('Filter').to(Filter);
     container.bind<UserManager>('UserManager').to(UserManager);
-    container.bind<WebsiteManager>('WebsiteManager').to(WebsiteManager);
+
     container.bind<ImporterLinkedIn>('ImporterLinkedIn').to(ImporterLinkedIn);
 
     container.bind<Mailer>('Mailer').to(Mailer);
     container.bind<ActivityManager>('ActivityManager').to(ActivityManager);
-    container.bind<ImporterWebPage>('ImporterWebPage').to(ImporterWebPage);
-    container.bind<ImporterWebSite>('ImporterWebSite').to(ImporterWebSite);
-    container.bind<WebPageFixture>('WebPageFixture').to(WebPageFixture);
-    container.bind<WebSiteFixture>('WebSiteFixture').to(WebSiteFixture);
 
     container.bind<Faker>('Faker').to(Faker);
 

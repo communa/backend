@@ -8,6 +8,7 @@ import {AppContainer} from '../../app/AppContainer';
 import {createAppTest} from '../../app/AppBootstrap';
 import {IConfigParameters} from '../../interface/IConfigParameters';
 import {Http} from '../../service/Http';
+import {Faker} from '../../service/Faker';
 
 export class BaseControllerTest {
   protected url: string;
@@ -15,6 +16,7 @@ export class BaseControllerTest {
   protected container: Container;
   protected parameters: IConfigParameters;
   protected http: Http;
+  protected faker: Faker;
 
   constructor() {
     const env = AppConfig.getEnv();
@@ -23,6 +25,7 @@ export class BaseControllerTest {
     this.container = AppContainer.build(parameters, env);
     this.parameters = this.container.get('parameters');
     this.http = this.container.get('Http');
+    this.faker = this.container.get('Faker');
 
     this.url = `http://${this.parameters.host}:${this.parameters.port}`;
   }

@@ -4,7 +4,6 @@ import puppeteer from 'puppeteer';
 import {LinkedinScraper, events, onSiteOrRemoteFilter} from 'linkedin-jobs-scraper';
 
 import {App} from '../../app/App';
-import {WebPageRepository} from '../../repository/WebPageRepository';
 import {ActivityBuilder} from '../ActivityBuilder';
 import {ArticleRenderer} from './ArticleRenderer';
 
@@ -14,8 +13,6 @@ export class ImporterLinkedIn {
   protected activityBuilder: ActivityBuilder;
   @inject('ArticleRenderer')
   protected articleRenderer: ArticleRenderer;
-  @inject('WebPageRepository')
-  protected webPageRepository: WebPageRepository;
 
   public async process(keywords: string[], limit: number, authCookie: string) {
     App.browser = await puppeteer.launch({

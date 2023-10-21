@@ -5,5 +5,6 @@ export interface ISearchActivity extends ISearch {
   filter: {
     userId?: string;
     state?: EActivityState;
+    keywords?: string[];
   };
 }
