@@ -2,11 +2,8 @@ import {validate} from 'class-validator';
 import {inject, injectable} from 'inversify';
 
 import {User} from '../entity/User';
-import AuthenticationException from '../exception/AuthenticationException';
 import ConstraintsValidationException from '../exception/ConstraintsValidationException';
-import {UserEqualPasswordsException} from '../exception/UserEqualPasswordsException';
 import {UserRepository} from '../repository/UserRepository';
-import {Authenticator} from './Authenticator';
 import {Mailer} from './Mailer';
 
 @injectable()
@@ -17,31 +14,10 @@ export class UserManager {
   protected mailer: Mailer;
 
   public async saveSingle(user: User): Promise<User> {
-    if (user.passwordPlain) {
-      user.password = Authenticator.hashPassword(user.passwordPlain);
-    }
-
     return this.userRepository.saveSingle(user);
   }
 
   async editValidateAndSave(user: User, data: User): Promise<User> {
-    if (data.passwordPlain && data.passwordOld) {
-      if (data.passwordPlain === data.passwordOld) {
-        throw new UserEqualPasswordsException(
-          'Password cannot be the same as the previous password'
-        );
-      }
-      const isValid = Authenticator.isPlainPasswordValid(user, data.passwordOld);
-
-      if (!isValid) {
-        throw new AuthenticationException('The old password is wrong');
-      }
-    }
-
-    if (data.passwordPlain) {
-      user.password = Authenticator.hashPassword(data.passwordPlain);
-    }
-
     user = Object.assign(user, data);
 
     const errors = await validate(user, {groups: ['edit']});

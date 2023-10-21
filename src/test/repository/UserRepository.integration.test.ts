@@ -1,4 +1,3 @@
-import faker from 'faker';
 import {expect} from 'chai';
 import * as web3 from 'web3';
 
@@ -28,32 +27,27 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
 
     user.address = account.address;
     user.email = this.faker.email();
-    user.passwordPlain = faker.internet.password();
 
     const newUser = await this.userRepository.saveSingle(user);
 
     expect(newUser).to.have.property('id');
     expect(newUser.email).to.be.equal(user.email);
-    expect(newUser).to.have.property('password');
     expect(newUser).to.have.property('createdAt');
     expect(newUser).to.have.property('updatedAt');
   }
 
   @test()
   async createAndFind() {
-    const password = faker.internet.password();
     const user = new User();
     const account = web3.eth.accounts.create();
 
     user.address = account.address;
     user.email = this.faker.email();
-    user.passwordPlain = password;
 
     const newUser = await this.userRepository.saveSingle(user);
     const foundUser = await this.userRepository.findByEmailPhoneOrFail(user.email);
 
     expect(newUser.id).to.be.eq(foundUser.id);
-    expect(newUser.password).not.to.be.eq(password);
   }
 
   @test()
@@ -63,7 +57,6 @@ export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {
 
     user.address = account.address;
     user.email = this.faker.email();
-    user.passwordPlain = faker.internet.password();
 
     const newUser = await this.userRepository.saveSingle(user);
     const removedUser = await this.userRepository.remove(newUser);

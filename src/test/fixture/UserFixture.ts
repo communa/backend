@@ -21,21 +21,20 @@ export class UserFixture {
   @inject('Faker')
   protected faker: Faker;
 
-  public async createWithEmailAndPassword(email: string, passwordPlain: string): Promise<User> {
+  public async createWithEmailAndPassword(email: string): Promise<User> {
     const account = web3.eth.accounts.create();
     const user = new User();
 
     user.address = account.address;
     user.email = email;
     user.emailOrPhone = email;
-    user.passwordPlain = passwordPlain;
     user.roles = [EUserRole.ROLE_USER];
     user.tz = 'UTC';
 
     return this.userManager.saveSingle(user);
   }
 
-  public async createWithPhoneAndPassword(phone: string, passwordPlain: string): Promise<User> {
+  public async createWithPhoneAndPassword(phone: string): Promise<User> {
     const account = web3.eth.accounts.create();
     const user = new User();
 
@@ -43,7 +42,6 @@ export class UserFixture {
 
     user.phone = phone;
     user.tz = 'UTC';
-    user.passwordPlain = passwordPlain;
     user.roles = [EUserRole.ROLE_USER];
 
     return this.userManager.saveSingle(user);
@@ -60,7 +58,6 @@ export class UserFixture {
     user.email = email;
     user.emailOrPhone = email;
     user.roles = [EUserRole.ROLE_USER];
-    user.passwordPlain = this.faker.validatedPassword();
 
     return this.userManager.saveSingle(user);
   }
@@ -75,7 +72,6 @@ export class UserFixture {
     user.email = email;
     user.emailOrPhone = email;
     user.roles = [EUserRole.ROLE_USER];
-    user.passwordPlain = this.faker.validatedPassword();
 
     return this.userManager.saveSingle(user);
   }
@@ -89,7 +85,6 @@ export class UserFixture {
     user.emailOrPhone = phone;
     user.phone = phone;
     user.roles = [EUserRole.ROLE_USER];
-    user.passwordPlain = faker.datatype.uuid();
 
     return this.userManager.saveSingle(user);
   }

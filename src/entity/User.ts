@@ -3,7 +3,7 @@ import * as faker from 'faker';
 import {JSONSchema} from 'class-validator-jsonschema';
 import {Exclude, Expose} from 'class-transformer';
 
-import {IsOptional, Length, Validate} from 'class-validator';
+import {IsOptional, Validate} from 'class-validator';
 import {AbstractBaseEntity} from './AbstractBaseEntity';
 import {UserNameExistConstraint} from '../validator/constraint/UserNameExistConstraint';
 import {EmailOrPhoneConstraint} from '../validator/constraint/EmailOrPhoneConstraint';
@@ -11,7 +11,6 @@ import {PhoneConstraint} from '../validator/constraint/PhoneConstraint';
 import {EmailConstraint} from '../validator/constraint/EmailConstraint';
 import {EUserRole} from '../interface/EUserRole';
 import {IUser} from '../interface/IUser';
-import {PasswordConstraint} from '../validator/constraint/PasswordConstraint';
 import {Activity} from './Activity';
 import {Application} from './Application';
 import {Payment} from './Payment';
@@ -127,24 +126,6 @@ export class User extends AbstractBaseEntity implements IUser {
   @Expose({groups: ['search', 'edit']})
   @Column('text', {array: true})
   roles: EUserRole[] = [];
-
-  @Column('text', {nullable: true})
-  password: string;
-
-  @Expose({groups: ['create', 'edit', 'register']})
-  @Length(8, 100, {
-    groups: ['register', 'edit'],
-    message: 'Password must be longer than or equal to 8 characters',
-  })
-  @IsOptional({groups: ['edit']})
-  @Validate(PasswordConstraint, {groups: ['register', 'edit']})
-  passwordPlain: string;
-
-  @Expose({groups: ['create', 'edit']})
-  @Length(8, 100, {groups: ['edit']})
-  @IsOptional({groups: ['edit']})
-  @Validate(PasswordConstraint, {groups: ['edit']})
-  passwordOld: string;
 
   @Column('text', {nullable: true})
   resetPasswordJwtIat: string | null;

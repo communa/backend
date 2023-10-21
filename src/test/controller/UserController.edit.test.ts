@@ -31,8 +31,6 @@ export class UserControllerEditTest extends BaseControllerTest {
 
     const data = {
       bio: faker.datatype.number(),
-      passwordPlain: this.faker.validatedPassword(),
-      passwordOld: user.passwordPlain,
       roles: [EUserRole.ROLE_USER, EUserRole.ROLE_BUSINESS],
       tz: 'America/Los_Angeles',
       phone: this.faker.phone(),
@@ -86,62 +84,6 @@ export class UserControllerEditTest extends BaseControllerTest {
       expect(e.response.status).to.be.equal(400);
       expect(e.response.data.errors).to.have.length(1);
     }
-  }
-
-  @test()
-  async updatePasswordSuccess() {
-    const user = await this.userFixture.createUser();
-    const data = {
-      passwordPlain: this.faker.validatedPassword(),
-      passwordOld: user.passwordPlain,
-    };
-
-    const res = await this.http.request({
-      url: `${this.url}/api/user`,
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(user).accessToken,
-      },
-      data,
-    });
-
-    const updated = await this.userRepository.findByEmailPhoneOrFail(user.email);
-    const hashedPassword = Authenticator.isPlainPasswordValid(updated, data.passwordPlain);
-
-    expect(res.status).to.be.equal(204);
-    expect(res.data).to.be.empty;
-    expect(hashedPassword).to.be.true;
-  }
-
-  @test()
-  async updatePasswordWithWrongOldPassword() {
-    const user = await this.userFixture.createUser();
-    const data = {
-      passwordPlain: this.faker.validatedPassword(),
-      passwordOld: this.faker.validatedPassword(),
-      phone: this.faker.phone(),
-    };
-
-    const config = {
-      url: `${this.url}/api/user`,
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(user).accessToken,
-      },
-      data,
-    };
-
-    let error = null;
-    try {
-      await this.http.request(config);
-    } catch (e: any) {
-      error = e;
-    }
-
-    expect(error.response.status).to.be.eq(401);
-    expect(error.response.data.message).to.be.eq('Authentication error: The old password is wrong');
   }
 
   @test()
@@ -205,14 +147,8 @@ export class UserControllerEditTest extends BaseControllerTest {
   async duplicateEmailException() {
     const emailA = faker.internet.email();
     const emailB = faker.internet.email();
-    const userA = await this.userFixture.createWithEmailAndPassword(
-      emailA,
-      this.faker.validatedPassword()
-    );
-    const userB = await this.userFixture.createWithEmailAndPassword(
-      emailB,
-      this.faker.validatedPassword()
-    );
+    const userA = await this.userFixture.createWithEmailAndPassword(emailA);
+    const userB = await this.userFixture.createWithEmailAndPassword(emailB);
 
     userB.email = userA.email;
 

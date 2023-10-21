@@ -1,6 +1,5 @@
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import validator from 'validator';
 import {inject, injectable} from 'inversify';
 import {isEmail} from 'class-validator';
 
@@ -69,39 +68,6 @@ export class Authenticator {
     }
 
     return this.getTokens(user);
-  }
-
-  public async register(userNew: User): Promise<User> {
-    const isEmail = validator.isEmail(userNew.emailOrPhone);
-
-    if (isEmail) {
-      userNew.email = userNew.emailOrPhone;
-    } else {
-      userNew.phone = userNew.emailOrPhone;
-    }
-
-    userNew.roles = [EUserRole.ROLE_USER];
-
-    const user = await this.userManager.saveSingle(userNew);
-
-    if (userNew.email) {
-      this.mailer.sendUserNewEmail(user);
-    }
-    if (user.phone) {
-      // send SMS ?
-    }
-
-    return user;
-  }
-
-  public async login(emailOrPhone: string, password: string): Promise<User> {
-    const user: User | undefined = await this.userRepository.findByEmailPhone(emailOrPhone);
-
-    if (!user || !Authenticator.isPlainPasswordValid(user, password)) {
-      throw new AuthenticationException('username or password is incorrect');
-    }
-
-    return user;
   }
 
   public async getUserFromRefreshToken(token: string): Promise<User> {
@@ -199,10 +165,6 @@ export class Authenticator {
 
   public static hashPassword(plainPassword: string): string {
     return bcrypt.hashSync(plainPassword, 8);
-  }
-
-  public static isPlainPasswordValid(user: User, plainPassword: string): boolean {
-    return bcrypt.compareSync(plainPassword, user.password);
   }
 
   public async forgotPassword(emailOrPhone: string) {

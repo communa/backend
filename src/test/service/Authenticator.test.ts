@@ -25,47 +25,9 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
   }
 
   @test()
-  async login_email() {
-    const email = faker.internet.email();
-    const password = faker.internet.password();
-    await this.userFixture.createWithEmailAndPassword(email, password);
-
-    const user = await this.authenticator.login(email, password);
-
-    expect(user.email).to.be.equal(email);
-  }
-
-  @test()
-  async login_phone() {
-    const phone = faker.phone.phoneNumber();
-    const password = faker.internet.password();
-    await this.userFixture.createWithPhoneAndPassword(phone, password);
-
-    const user = await this.authenticator.login(phone, password);
-
-    expect(user.phone).to.be.equal(phone);
-  }
-
-  @test()
-  async register_email() {
-    const account = web3.eth.accounts.create();
-    const data = {
-      address: account.address,
-      emailOrPhone: faker.internet.email(),
-      passwordPlain: faker.internet.password(),
-    };
-
-    const user = await this.authenticator.register(data as User);
-
-    expect(user.passwordPlain).to.be.eq(data.passwordPlain);
-    expect(user.emailOrPhone).to.be.eq(data.emailOrPhone);
-  }
-
-  @test()
   async getUserFromJwtToken() {
     const email = faker.internet.email();
-    const password = faker.internet.password();
-    const user = await this.userFixture.createWithEmailAndPassword(email, password);
+    const user = await this.userFixture.createWithEmailAndPassword(email);
 
     const token = this.authenticator.generateJwtToken(user);
     const userFromToken = await this.authenticator.getUserFromJwtToken(token);
@@ -76,8 +38,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
   @test()
   async getUserFromJwtToken_afterEmailChange() {
     const email = faker.internet.email();
-    const password = faker.internet.password();
-    const user = await this.userFixture.createWithEmailAndPassword(email, password);
+    const user = await this.userFixture.createWithEmailAndPassword(email);
     const token = this.authenticator.generateJwtToken(user);
 
     // email change
@@ -94,7 +55,6 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
   generateJwtToken() {
     const user = new User();
     user.email = faker.internet.email();
-    user.password = faker.internet.password();
 
     const token = this.authenticator.generateJwtToken(user);
 
@@ -106,7 +66,6 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     const user = new User();
     user.id = faker.datatype.uuid();
     user.email = faker.internet.email();
-    user.password = faker.internet.password();
 
     const refreshToken = this.authenticator.generateRefreshToken(user);
 
@@ -119,8 +78,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
   @test()
   async getUserFromRefreshToken_success() {
     const email = faker.internet.email();
-    const password = faker.internet.password();
-    const user = await this.userFixture.createWithEmailAndPassword(email, password);
+    const user = await this.userFixture.createWithEmailAndPassword(email);
 
     const tokens = this.authenticator.getTokens(user);
 
@@ -178,7 +136,6 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
   getEmailFromJwtOrThrowError_success() {
     const user = new User();
     user.email = faker.internet.email();
-    user.password = faker.internet.password();
 
     const token = this.authenticator.generateJwtToken(user);
     const email = this.authenticator.getEmailOrPhoneOrThrowError(token);

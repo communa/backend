@@ -23,12 +23,6 @@ export class Faker {
     return faker.datatype.uuid().replace('-', '');
   }
 
-  public validatedPassword(): string {
-    return `${faker.internet.password(10).toLowerCase()}${faker.random
-      .alpha({count: 2})
-      .toUpperCase()}_!${faker.datatype.number(9)}`;
-  }
-
   public getFaker(): Faker.FakerStatic {
     return faker;
   }
