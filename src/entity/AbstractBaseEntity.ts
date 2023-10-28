@@ -11,7 +11,7 @@ export abstract class AbstractBaseEntity {
   id: string;
 
   @Expose({groups: ['search']})
-  @Column('datetime')
+  @Column('timestamptz')
   @CreateDateColumn()
   @Index()
   @IsDate()
@@ -19,7 +19,7 @@ export abstract class AbstractBaseEntity {
   createdAt: Date;
 
   @Expose({groups: ['search']})
-  @Column('datetime')
+  @Column('timestamptz')
   @UpdateDateColumn()
   @Index()
   @IsDate()

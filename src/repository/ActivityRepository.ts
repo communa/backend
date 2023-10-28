@@ -36,10 +36,7 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
     );
     const sort = this.filter.buildOrderByCondition('activity', s);
     const limit = this.filter.buildLimit(search);
-
-    console.log(s.filter.keywords);
-
-    return this.getRepo()
+    const query = this.getRepo()
       .createQueryBuilder('activity')
       .select()
       .where((qb: SelectQueryBuilder<Activity>) => {
@@ -49,8 +46,9 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
       .andWhere('activity.cancelledAt IS NULL')
       .orderBy(sort)
       .skip(limit * s.page)
-      .take(limit)
-      .getManyAndCount();
+      .take(limit);
+
+    return query.getManyAndCount();
   }
 
   public async findAndCountPublishing(
@@ -96,7 +94,10 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
       qb.andWhere('activity.user.id = :userId', {userId: search.filter.userId});
     }
     if ('keywords' in search.filter) {
-      qb.andWhere('activity.keywords IN (:...keywords)', {keywords: search.filter.keywords});
+      // qb.andWhere(`activity.keywords ::jsonb @> \'([:...keywords])\'`, { keywords: search.filter.keywords });
+      qb.andWhere(`activity.keywords::jsonb ?| ARRAY[:...keywords]`, {
+        keywords: search.filter.keywords,
+      });
     }
 
     return qb;

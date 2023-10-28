@@ -96,7 +96,7 @@ export class ActivityControllerTest extends BaseControllerTest {
   }
 
   @test()
-  async searchKeywordsPositive() {
+  async searchKeywordsPositiveA() {
     const keywords = [faker.datatype.uuid(), faker.datatype.uuid(), faker.datatype.uuid()];
     const user = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(user, EActivityState.PUBLISHED, keywords);
@@ -120,10 +120,39 @@ export class ActivityControllerTest extends BaseControllerTest {
 
     const res = await this.http.request(config);
 
-    console.log(res.data[0]);
+    expect(res.data[0].length).to.be.eq(1);
+    expect(res.data[0][0].id).to.be.eq(activity.id);
+    expect(res.data[0][0].keywords).to.be.deep.eq(keywords);
+  }
+
+  @test()
+  async searchKeywordsPositiveB() {
+    const keywords = [faker.datatype.uuid(), faker.datatype.uuid(), faker.datatype.uuid()];
+    const user = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(user, EActivityState.PUBLISHED, keywords);
+
+    const config = {
+      url: `${this.url}/api/activity/search`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(user).accessToken,
+      },
+      data: {
+        filter: {
+          userId: user.id,
+          keywords: [keywords[0], keywords[1], 'AAAA'],
+        },
+        sort: {createdAt: 'ASC'},
+        page: 0,
+      },
+    };
+
+    const res = await this.http.request(config);
 
     expect(res.data[0].length).to.be.eq(1);
     expect(res.data[0][0].id).to.be.eq(activity.id);
+    expect(res.data[0][0].keywords).to.be.deep.eq(keywords);
   }
 
   @test()
@@ -143,7 +172,7 @@ export class ActivityControllerTest extends BaseControllerTest {
       data: {
         filter: {
           userId: user.id,
-          keywords: [keywords[2]],
+          keywords: ['AAAA'],
         },
         sort: {createdAt: 'ASC'},
         page: 0,
@@ -152,8 +181,7 @@ export class ActivityControllerTest extends BaseControllerTest {
 
     const res = await this.http.request(config);
 
-    expect(res.data[0].length).to.be.eq(0);
-    expect(res.data[0][0]).to.be.deep.eq([]);
+    expect(res.data).to.be.deep.eq([[], 0]);
   }
 
   @test()
