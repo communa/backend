@@ -13,7 +13,6 @@ import {
 
 import {App} from '../app/App';
 import {User} from '../entity/User';
-import {ExtendedResponseSchema} from '../decorator/ExtendedResponseSchema';
 import {EUserRole} from '../interface/EUserRole';
 import {AbstractController} from './AbstractController';
 import {CurrentUser} from '../decorator/CurrentUser';
@@ -51,7 +50,6 @@ export class ApplicationController extends AbstractController {
 
   @Post('/search/business')
   @Authorized([EUserRole.ROLE_USER])
-  @ExtendedResponseSchema(Application, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
   public searchBusiness(@CurrentUser() currentUser: User, @Body() search: ApplicationSearchDto) {
     return this.applicationRepository.findAndCountBusiness(search, currentUser);
@@ -59,7 +57,6 @@ export class ApplicationController extends AbstractController {
 
   @Post('/search/freelancer')
   @Authorized([EUserRole.ROLE_USER])
-  @ExtendedResponseSchema(Application, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
   public search(@CurrentUser() currentUser: User, @Body() search: ApplicationSearchDto) {
     return this.applicationRepository.findAndCountFreelancer(search, currentUser);

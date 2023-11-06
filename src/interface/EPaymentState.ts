@@ -1,4 +1,4 @@
 export enum EPaymentState {
-  PAID = 'Paid',
-  RECEIVED = 'Received',
+  PAID = 'PAID',
+  REQUESTED = 'Requested',
 }

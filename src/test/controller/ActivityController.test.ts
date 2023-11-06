@@ -6,6 +6,7 @@ import {BaseControllerTest} from './BaseController.test';
 import {ActivityManager} from '../../service/ActivityManager';
 import {ActivityRepository} from '../../repository/ActivityRepository';
 import {EActivityState} from '../../interface/EActivityState';
+import {Activity} from '../../entity/Activity';
 
 @suite
 export class ActivityControllerTest extends BaseControllerTest {
@@ -38,8 +39,58 @@ export class ActivityControllerTest extends BaseControllerTest {
   }
 
   @test
+  async accept() {
+    const business = await this.userFixture.createUser();
+    const freelancer = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
+    const application = await this.applicationFixture.create(activity, freelancer);
+
+    const res = await this.http.request({
+      url: `${this.url}/api/activity/${activity.id}/accept/${application.id}`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(business).accessToken,
+      },
+    });
+
+    const updated = await this.activityRepository.findOneByQueryBuilder(
+      {id: activity.id},
+      null,
+      {applicationAccepted: true}
+    ) as Activity;
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data).to.be.deep.equal({});
+    expect(updated.state).to.be.eq(EActivityState.STARTED);
+    expect(updated.startedAt).to.be.not.null
+  }
+
+  @test
+  async close() {
+    const business = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
+
+    const res = await this.http.request({
+      url: `${this.url}/api/activity/${activity.id}/close`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(business).accessToken,
+      },
+    });
+
+    const updated = await this.activityRepository.findOneByIdOrFail(activity.id);
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data).to.be.deep.equal({});
+    expect(updated.state).to.be.eq(EActivityState.CLOSED);
+    expect(updated.closedAt).to.be.not.null;
+  }
+
+  @test
   async post() {
-    const user = await this.userFixture.createUser();
+    const business = await this.userFixture.createUser();
     const data = {
       title: faker.datatype.uuid(),
       text: faker.datatype.uuid(),
@@ -51,7 +102,7 @@ export class ActivityControllerTest extends BaseControllerTest {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(user).accessToken,
+        Authorization: this.authenticator.getTokens(business).accessToken,
       },
       data,
     });
@@ -67,8 +118,8 @@ export class ActivityControllerTest extends BaseControllerTest {
 
   @test
   async edit() {
-    const user = await this.userFixture.createUser();
-    const activity = await this.activityFixture.create(user, EActivityState.DRAFT);
+    const business = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(business, EActivityState.DRAFT);
 
     const data = {
       title: faker.datatype.uuid(),
@@ -81,7 +132,7 @@ export class ActivityControllerTest extends BaseControllerTest {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(user).accessToken,
+        Authorization: this.authenticator.getTokens(business).accessToken,
       },
       data,
     });
@@ -98,15 +149,15 @@ export class ActivityControllerTest extends BaseControllerTest {
 
   @test
   async delete() {
-    const user = await this.userFixture.createUser();
-    const activity = await this.activityFixture.create(user, EActivityState.PUBLISHED);
+    const business = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
 
     const res = await this.http.request({
       url: `${this.url}/api/activity/${activity.id}`,
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(user).accessToken,
+        Authorization: this.authenticator.getTokens(business).accessToken,
       },
     });
 

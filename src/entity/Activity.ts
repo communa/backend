@@ -5,7 +5,6 @@ import {JSONSchema} from 'class-validator-jsonschema';
 
 import {User} from './User';
 import {AbstractBaseEntity} from './AbstractBaseEntity';
-import {EActivityCancellationReason} from '../interface/EActivityCancellationReason';
 import {EActivityType} from '../interface/EActivityType';
 import {IsNotEmpty} from 'class-validator';
 import {EActivityState} from '../interface/EActivityState';
@@ -76,13 +75,7 @@ export class Activity extends AbstractBaseEntity {
   startedAt: Date;
   @Expose({groups: ['search']})
   @Column('timestamptz', {nullable: true})
-  finishedAt: Date;
-  @Expose({groups: ['search']})
-  @Column('timestamptz', {nullable: true})
-  acceptedAt: Date;
-  @Expose({groups: ['search']})
-  @Column('text', {nullable: true})
-  cancellationReason: EActivityCancellationReason;
+  closedAt: Date;
 
   @Expose({groups: ['search']})
   @Type(() => User)

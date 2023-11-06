@@ -47,4 +47,12 @@ export class PaymentController extends AbstractController {
   ) {
     return this.paymentRepository.findOneConfirmUser(payment, currentUser);
   }
+
+  @Post('/:id/fullfill')
+  public fullFill(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('id', null, {activity: true}) payment: Payment
+  ) {
+    return this.paymentRepository.findOneConfirmUser(payment, currentUser);
+  }
 }

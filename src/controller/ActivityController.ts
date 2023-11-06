@@ -59,11 +59,10 @@ export class ActivityController extends AbstractController {
     return activity;
   }
 
-  @Post('/:id/assign/:applicationId')
+  @Post('/:id/accept/:applicationId')
   @Authorized([EUserRole.ROLE_USER])
-  @ExtendedResponseSchema(Activity, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
-  public async assignApplication(
+  public async acceptApplication(
     @CurrentUser() currentUser: User,
     @EntityFromParam('id') activity: Activity,
     @EntityFromParam('applicationId') application: Application
@@ -79,7 +78,6 @@ export class ActivityController extends AbstractController {
 
   @Post('/:id/close')
   @Authorized([EUserRole.ROLE_USER])
-  @ExtendedResponseSchema(Activity, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
   public async close(@EntityFromParam('id') activity: Activity, @CurrentUser() currentUser: User) {
     if (currentUser.id !== activity.user.id) {
