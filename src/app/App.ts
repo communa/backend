@@ -24,7 +24,7 @@ import {UserController} from '../controller/UserController';
 import {ActivityController} from '../controller/ActivityController';
 import {ApplicationController} from '../controller/ApplicationController';
 import {TimeController} from '../controller/TimeController';
-import {PaymentController} from '../controller/PaymentController';
+import {InvoiceController} from '../controller/InvoiceController';
 
 const swaggerUiExpress = require('swagger-ui-express');
 const boolParser = require('express-query-boolean');
@@ -126,7 +126,7 @@ export class App {
         UserController,
         ApplicationController,
         TimeController,
-        PaymentController,
+        InvoiceController,
       ],
     });
   }

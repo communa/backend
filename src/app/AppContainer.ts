@@ -18,13 +18,13 @@ import {ActivityFixture} from '../test/fixture/ActivityFixture';
 import {ActivityManager} from '../service/ActivityManager';
 import {ApplicationFixture} from '../test/fixture/ApplicationFixture';
 import {TimeFixture} from '../test/fixture/TimeFixture';
-import {PaymentFixture} from '../test/fixture/PaymentFixture ';
+import {InvoiceFixture} from '../test/fixture/InvoiceFixture ';
 import {ApplicationRepository} from '../repository/ApplicationRepository';
 import {TimeRepository} from '../repository/TimeRepository';
-import {PaymentRepository} from '../repository/PaymentRepository';
+import {InvoiceRepository} from '../repository/InvoiceRepository';
 import {ApplicationManager} from '../service/ApplicationManager';
 import {TimeManager} from '../service/TimeManager';
-import {PaymentManager} from '../service/PaymentManager';
+import {InvoiceManager} from '../service/InvoiceManager';
 
 export class AppContainer {
   private static container: Container;
@@ -50,7 +50,7 @@ export class AppContainer {
     container.bind<ActivityRepository>('ActivityRepository').to(ActivityRepository);
     container.bind<ApplicationRepository>('ApplicationRepository').to(ApplicationRepository);
     container.bind<TimeRepository>('TimeRepository').to(TimeRepository);
-    container.bind<PaymentRepository>('PaymentRepository').to(PaymentRepository);
+    container.bind<InvoiceRepository>('InvoiceRepository').to(InvoiceRepository);
 
     // Services
     container.bind<Signer>('Signer').to(Signer);
@@ -60,7 +60,7 @@ export class AppContainer {
     container.bind<UserManager>('UserManager').to(UserManager);
     container.bind<ApplicationManager>('ApplicationManager').to(ApplicationManager);
     container.bind<TimeManager>('TimeManager').to(TimeManager);
-    container.bind<PaymentManager>('PaymentManager').to(PaymentManager);
+    container.bind<InvoiceManager>('InvoiceManager').to(InvoiceManager);
     container.bind<Mailer>('Mailer').to(Mailer);
     container.bind<ActivityManager>('ActivityManager').to(ActivityManager);
     container.bind<Faker>('Faker').to(Faker);
@@ -69,7 +69,7 @@ export class AppContainer {
     container.bind<UserFixture>('UserFixture').to(UserFixture);
     container.bind<ActivityFixture>('ActivityFixture').to(ActivityFixture);
     container.bind<ApplicationFixture>('ApplicationFixture').to(ApplicationFixture);
-    container.bind<PaymentFixture>('PaymentFixture').to(PaymentFixture);
+    container.bind<InvoiceFixture>('InvoiceFixture').to(InvoiceFixture);
     container.bind<TimeFixture>('TimeFixture').to(TimeFixture);
 
     AppContainer.container = container;

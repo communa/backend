@@ -3,38 +3,38 @@ import {inject, injectable} from 'inversify';
 
 import {Filter} from '../service/Filter';
 import {AbstractRepositoryTemplate} from './AbstractRepositoryTemplate';
-import {Payment} from '../entity/Payment';
+import {Invoice} from '../entity/Invoice';
 import {ISearch} from '../interface/search/ISearch';
 import {User} from '../entity/User';
 import RejectedExecutionException from '../exception/RejectedExecutionException';
 
 @injectable()
-export class PaymentRepository extends AbstractRepositoryTemplate<Payment> {
+export class InvoiceRepository extends AbstractRepositoryTemplate<Invoice> {
   @inject('Filter')
   protected filter: Filter;
-  protected target = Payment;
+  protected target = Invoice;
 
-  public async findOneConfirmUser(payment: Payment, user: User): Promise<Payment> {
-    const paymentBusiness = await this.getRepo()
-      .createQueryBuilder('payment')
-      .innerJoinAndSelect('payment.activity', 'activity')
+  public async findOneConfirmUser(invoice: Invoice, user: User): Promise<Invoice> {
+    const invoiceBusiness = await this.getRepo()
+      .createQueryBuilder('invoice')
+      .innerJoinAndSelect('invoice.activity', 'activity')
       .innerJoin('activity.user', 'business')
-      .andWhere('payment.id = :paymentId', {paymentId: payment.id})
+      .andWhere('invoice.id = :invoiceId', {invoiceId: invoice.id})
       .andWhere('business.id = :businessId', {businessId: user.id})
       .select()
       .getOne();
 
-    const paymentFreelancer = await this.getRepo()
-      .createQueryBuilder('payment')
-      .innerJoinAndSelect('payment.activity', 'activity')
+    const invoiceFreelancer = await this.getRepo()
+      .createQueryBuilder('invoice')
+      .innerJoinAndSelect('invoice.activity', 'activity')
       .innerJoin('activity.applicationAccepted', 'application')
       .innerJoin('application.user', 'freelancer')
-      .andWhere('payment.id = :paymentId', {paymentId: payment.id})
+      .andWhere('invoice.id = :invoiceId', {invoiceId: invoice.id})
       .andWhere('freelancer.id = :freelancerId', {freelancerId: user.id})
       .select()
       .getOne();
 
-    const p = paymentFreelancer || paymentBusiness;
+    const p = invoiceFreelancer || invoiceBusiness;
 
     if (!p) {
       throw new RejectedExecutionException('Wrong user');
@@ -43,7 +43,7 @@ export class PaymentRepository extends AbstractRepositoryTemplate<Payment> {
     return p;
   }
 
-  public async findAndCount(search: ISearch): Promise<[Payment[], number]> {
+  public async findAndCount(search: ISearch): Promise<[Invoice[], number]> {
     const s = _.assign(
       {
         filter: {},
@@ -54,11 +54,11 @@ export class PaymentRepository extends AbstractRepositoryTemplate<Payment> {
       },
       search
     );
-    const sort = this.filter.buildOrderByCondition('payment', s);
+    const sort = this.filter.buildOrderByCondition('invoice', s);
     const limit = this.filter.buildLimit(search);
 
     return this.getRepo()
-      .createQueryBuilder('payment')
+      .createQueryBuilder('invoice')
       .select()
       .orderBy(sort)
       .skip(limit * s.page)

@@ -4,11 +4,11 @@ import {suite, test} from '@testdeck/mocha';
 import {BaseControllerTest} from './BaseController.test';
 import {ActivityManager} from '../../service/ActivityManager';
 import {EActivityState} from '../../interface/EActivityState';
-import {EPaymentState} from '../../interface/EPaymentState';
+import {EInvoiceState} from '../../interface/EInvoiceState';
 import {ApplicationRepository} from '../../repository/ApplicationRepository';
 
 @suite
-export class PaymentControllerTest extends BaseControllerTest {
+export class InvoiceControllerTest extends BaseControllerTest {
   protected activityManager: ActivityManager;
   protected applicationRepository: ApplicationRepository;
 
@@ -28,10 +28,10 @@ export class PaymentControllerTest extends BaseControllerTest {
 
     await this.activityManager.acceptApplication(activity, application);
 
-    const payment = await this.paymentFixture.create(activity, 50, EPaymentState.PAID);
+    const invoice = await this.invoiceFixture.create(activity, 50, EInvoiceState.PAID);
 
     const res = await this.http.request({
-      url: `${this.url}/api/payment/${payment.id}`,
+      url: `${this.url}/api/invoice/${invoice.id}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export class PaymentControllerTest extends BaseControllerTest {
     });
 
     expect(res.status).to.be.equal(200);
-    expect(res.data.id).to.be.equal(payment.id);
+    expect(res.data.id).to.be.equal(invoice.id);
     expect(res.data.activity.id).to.be.equal(activity.id);
   }
 
@@ -53,10 +53,10 @@ export class PaymentControllerTest extends BaseControllerTest {
 
     await this.activityManager.acceptApplication(activity, application);
 
-    const payment = await this.paymentFixture.create(activity, 50, EPaymentState.PAID);
+    const invoice = await this.invoiceFixture.create(activity, 50, EInvoiceState.PAID);
 
     const res = await this.http.request({
-      url: `${this.url}/api/payment/${payment.id}`,
+      url: `${this.url}/api/invoice/${invoice.id}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ export class PaymentControllerTest extends BaseControllerTest {
     });
 
     expect(res.status).to.be.equal(200);
-    expect(res.data.id).to.be.equal(payment.id);
+    expect(res.data.id).to.be.equal(invoice.id);
     expect(res.data.activity.id).to.be.equal(activity.id);
   }
 }

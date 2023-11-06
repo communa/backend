@@ -14,7 +14,7 @@ import {UserFixture} from '../fixture/UserFixture';
 import {ActivityFixture} from '../fixture/ActivityFixture';
 import {ApplicationRepository} from '../../repository/ApplicationRepository';
 import {ApplicationFixture} from '../fixture/ApplicationFixture';
-import {PaymentFixture} from '../fixture/PaymentFixture ';
+import {InvoiceFixture} from '../fixture/InvoiceFixture ';
 import {TimeFixture} from '../fixture/TimeFixture';
 import {Authenticator} from '../../service/Authenticator';
 
@@ -28,7 +28,7 @@ export class BaseControllerTest {
   protected authenticator: Authenticator;
 
   protected activityFixture: ActivityFixture;
-  protected paymentFixture: PaymentFixture;
+  protected invoiceFixture: InvoiceFixture;
   protected timeFixture: TimeFixture;
   protected applicationFixture: ApplicationFixture;
   protected applicationRepository: ApplicationRepository;
@@ -49,7 +49,7 @@ export class BaseControllerTest {
     this.activityFixture = this.container.get('ActivityFixture');
     this.timeFixture = this.container.get('TimeFixture');
     this.applicationFixture = this.container.get('ApplicationFixture');
-    this.paymentFixture = this.container.get('PaymentFixture');
+    this.invoiceFixture = this.container.get('InvoiceFixture');
 
     this.url = `http://${this.parameters.host}:${this.parameters.port}`;
   }

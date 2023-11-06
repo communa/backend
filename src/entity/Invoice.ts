@@ -6,7 +6,7 @@ import {JSONSchema} from 'class-validator-jsonschema';
 import {AbstractBaseEntity} from './AbstractBaseEntity';
 import {Activity} from './Activity';
 import {IsNotEmpty} from 'class-validator';
-import {EPaymentState} from '../interface/EPaymentState';
+import {EInvoiceState} from '../interface/EInvoiceState';
 
 @JSONSchema({
   example: {
@@ -15,7 +15,7 @@ import {EPaymentState} from '../interface/EPaymentState';
 })
 @Entity()
 @Exclude()
-export class Payment extends AbstractBaseEntity {
+export class Invoice extends AbstractBaseEntity {
   @Expose({groups: ['search']})
   @Type(() => Activity)
   @ManyToOne(() => Activity, {eager: true, nullable: false})
@@ -27,5 +27,5 @@ export class Payment extends AbstractBaseEntity {
   @IsNotEmpty()
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('text', {nullable: true})
-  state: EPaymentState;
+  state: EInvoiceState;
 }

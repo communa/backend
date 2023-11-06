@@ -9,7 +9,7 @@ import {EActivityType} from '../interface/EActivityType';
 import {IsNotEmpty} from 'class-validator';
 import {EActivityState} from '../interface/EActivityState';
 import {Application} from './Application';
-import {Payment} from './Payment';
+import {Invoice} from './Invoice';
 import {Time} from './Time';
 
 @JSONSchema({
@@ -88,9 +88,9 @@ export class Activity extends AbstractBaseEntity {
   applications: Application[];
 
   @Expose({groups: ['search']})
-  @Type(() => Payment)
-  @OneToMany(() => Payment, payment => payment.activity)
-  payments: Payment[];
+  @Type(() => Invoice)
+  @OneToMany(() => Invoice, invoice => invoice.activity)
+  invoices: Invoice[];
   @Expose({groups: ['search']})
   @Type(() => Time)
   @OneToMany(() => Time, time => time.activity)
