@@ -1,9 +1,12 @@
 import {
   Authorized,
   Body,
+  Delete,
+  Get,
   HttpCode,
   JsonController,
   Post,
+  Put,
   Res,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
@@ -18,25 +21,48 @@ import {ApplicationManager} from '../service/ApplicationManager';
 import {ApplicationRepository} from '../repository/ApplicationRepository';
 import {Application} from '../entity/Application';
 import {ApplicationSearchDto} from '../validator/dto/ApplicationSearchDto';
+import {EntityFromParam} from '../decorator/EntityFromParam';
+import RejectedExecutionException from '../exception/RejectedExecutionException';
+import {ActivityRepository} from '../repository/ActivityRepository';
 
-@JsonController('/applicaton')
+@JsonController('/application')
 export class ApplicationController extends AbstractController {
   protected applicationManager: ApplicationManager;
-  protected applicatonRepository: ApplicationRepository;
+  protected applicationRepository: ApplicationRepository;
+  protected activityRepository: ActivityRepository;
 
   constructor() {
     super();
 
     this.applicationManager = App.container.get('ApplicationManager');
-    this.applicatonRepository = App.container.get('ApplicatonRepository');
+    this.applicationRepository = App.container.get('ApplicationRepository');
+    this.activityRepository = App.container.get('ActivityRepository');
   }
 
-  @Post('/search')
+  @Get('/:id')
+  @ResponseClassTransformOptions({groups: ['search']})
+  public get(@CurrentUser() currentUser: User, @EntityFromParam('id') application: Application) {
+    if (currentUser.id !== application.user.id) {
+      throw new RejectedExecutionException('Wrong user');
+    }
+
+    return application;
+  }
+
+  @Post('/search/business')
   @Authorized([EUserRole.ROLE_USER])
   @ExtendedResponseSchema(Application, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
-  public search(@Body() search: ApplicationSearchDto) {
-    return this.applicatonRepository.findAndCount(search);
+  public searchBusiness(@CurrentUser() currentUser: User, @Body() search: ApplicationSearchDto) {
+    return this.applicationRepository.findAndCountBusiness(search, currentUser);
+  }
+
+  @Post('/search/freelancer')
+  @Authorized([EUserRole.ROLE_USER])
+  @ExtendedResponseSchema(Application, {isPagination: true})
+  @ResponseClassTransformOptions({groups: ['search']})
+  public search(@CurrentUser() currentUser: User, @Body() search: ApplicationSearchDto) {
+    return this.applicationRepository.findAndCountFreelancer(search, currentUser);
   }
 
   @Post()
@@ -53,6 +79,38 @@ export class ApplicationController extends AbstractController {
 
     res.status(201);
     res.location(`/api/application/${application.id}`);
+
+    return {};
+  }
+
+  @Put('/:id')
+  @Authorized([EUserRole.ROLE_USER])
+  @HttpCode(200)
+  public async edit(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('id') application: Application,
+    @Body({validate: {groups: ['edit']}, transform: {groups: ['edit']}}) data: Application
+  ) {
+    if (currentUser.id !== application.user.id) {
+      throw new RejectedExecutionException('Wrong user');
+    }
+
+    await this.applicationManager.editAndSave(application, data);
+
+    return {};
+  }
+
+  @Delete('/:id')
+  @Authorized([EUserRole.ROLE_USER])
+  @HttpCode(200)
+  public async delete(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('id') application: Application
+  ) {
+    await this.applicationRepository.delete({
+      id: application.id,
+      user: currentUser,
+    });
 
     return {};
   }

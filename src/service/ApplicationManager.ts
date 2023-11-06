@@ -8,7 +8,13 @@ export class ApplicationManager {
   @inject('ApplicationRepository')
   protected applicationRepository: ApplicationRepository;
 
-  public async save(time: Application) {
-    return this.applicationRepository.validateAndSave(time);
+  public save(application: Application) {
+    return this.applicationRepository.validateAndSave(application);
+  }
+
+  public async editAndSave(application: Application, data: Application) {
+    application = Object.assign(application, data);
+
+    await this.applicationRepository.validateAndSave(application);
   }
 }

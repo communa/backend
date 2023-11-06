@@ -78,6 +78,37 @@ export class ActivityControllerTest extends BaseControllerTest {
   }
 
   @test
+  async edit() {
+    const user = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(user, EActivityState.DRAFT);
+
+    const data = {
+      title: faker.datatype.uuid(),
+      text: faker.datatype.uuid(),
+      state: EActivityState.PUBLISHED,
+    };
+
+    const res = await this.http.request({
+      url: `${this.url}/api/activity/${activity.id}`,
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(user).accessToken,
+      },
+      data,
+    });
+
+    const activityUpdated = await this.activityRepository.findOneByIdOrFail(activity.id);
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data).to.be.deep.equal({});
+
+    expect(activityUpdated.title).to.be.eq(data.title);
+    expect(activityUpdated.state).to.be.eq(data.state);
+    expect(activityUpdated.text).to.be.eq(data.text);
+  }
+
+  @test
   async delete() {
     const user = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(user, EActivityState.PUBLISHED);

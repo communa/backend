@@ -1,6 +1,6 @@
 server {
     root /var/www/html/communa;
-    server_name communa.network;
+    server_name app.communa.network;
 
     location / {
         proxy_pass                              http://0.0.0.0:3000/;
@@ -22,22 +22,22 @@ server {
         client_max_body_size 5000m;
     }
 
-    error_log /var/www/communa.network.log error;
-    access_log /var/www/communa.network.log combined;
+    error_log /var/www/app.communa.network.log error;
+    access_log /var/www/app.communa.network.log combined;
 
     listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/communa.network/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/communa.network/privkey.pem; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/app.communa.network/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/app.communa.network/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 }
 
 server {
-    if ($host = communa.network) {
+    if ($host = app.communa.network) {
         return 301 https://$host$request_uri;
     } # managed by Certbot
 
-    server_name communa.network;
+    server_name app.communa.network;
     listen 80;
     return 404; # managed by Certbot
 }

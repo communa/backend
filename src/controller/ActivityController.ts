@@ -10,7 +10,6 @@ import {
   Res,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
-import {OpenAPI} from 'routing-controllers-openapi';
 
 import {App} from '../app/App';
 import {User} from '../entity/User';
@@ -24,6 +23,8 @@ import {ActivityRepository} from '../repository/ActivityRepository';
 import {ActivitySearchDto} from '../validator/dto/ActivitySearchDto';
 import {ActivityManager} from '../service/ActivityManager';
 import {EActivityType} from '../interface/EActivityType';
+import {Application} from '../entity/Application';
+import RejectedExecutionException from '../exception/RejectedExecutionException';
 
 @JsonController('/activity')
 export class ActivityController extends AbstractController {
@@ -58,19 +59,51 @@ export class ActivityController extends AbstractController {
     return activity;
   }
 
+  @Post('/:id/assign/:applicationId')
+  @Authorized([EUserRole.ROLE_USER])
+  @ExtendedResponseSchema(Activity, {isPagination: true})
+  @ResponseClassTransformOptions({groups: ['search']})
+  public async assignApplication(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('id') activity: Activity,
+    @EntityFromParam('applicationId') application: Application
+  ) {
+    if (currentUser.id !== activity.user.id) {
+      throw new RejectedExecutionException('Wrong user');
+    }
+
+    await this.activityManager.acceptApplication(activity, application);
+
+    return {};
+  }
+
+  @Post('/:id/close')
+  @Authorized([EUserRole.ROLE_USER])
+  @ExtendedResponseSchema(Activity, {isPagination: true})
+  @ResponseClassTransformOptions({groups: ['search']})
+  public async close(@EntityFromParam('id') activity: Activity, @CurrentUser() currentUser: User) {
+    if (currentUser.id !== activity.user.id) {
+      throw new RejectedExecutionException('Wrong user');
+    }
+
+    await this.activityManager.close(activity);
+
+    return {};
+  }
+
   @Put('/:id')
   @Authorized([EUserRole.ROLE_USER])
   @HttpCode(200)
-  public edit(
+  public async edit(
     @CurrentUser() currentUser: User,
     @EntityFromParam('id') activity: Activity,
     @Body({validate: {groups: ['edit']}, transform: {groups: ['edit']}}) data: Activity
   ) {
     if (currentUser.id !== activity.user.id) {
-      throw new Error('Wrong user');
+      throw new RejectedExecutionException('Wrong user');
     }
 
-    this.activityManager.editValidateAndSave(activity, data);
+    await this.activityManager.editAndSave(activity, data);
 
     return {};
   }
@@ -98,35 +131,7 @@ export class ActivityController extends AbstractController {
     data.user = currentUser;
     data.type = EActivityType.INPUT;
 
-    const activity = await this.activityManager.validateAndSave(data);
-
-    res.status(201);
-    res.location(`/api/activity/${activity.id}`);
-
-    return {};
-  }
-
-  @Post('/import')
-  @HttpCode(201)
-  @OpenAPI({
-    requestBody: {
-      content: {
-        'application/json': {
-          example: {
-            url: 'https://www.sothebysrealty.com/extraordinary-living-blog/life-of-luxury-miami-beach-opens-a-doorway-of-discovery',
-          },
-        },
-      },
-      required: false,
-    },
-  })
-  @Authorized([EUserRole.ROLE_USER])
-  public async import(
-    @CurrentUser() currentUser: User,
-    @Body() payload: {url: string},
-    @Res() res: any
-  ) {
-    const activity = await this.activityManager.import(currentUser, payload.url);
+    const activity = await this.activityManager.save(data);
 
     res.status(201);
     res.location(`/api/activity/${activity.id}`);

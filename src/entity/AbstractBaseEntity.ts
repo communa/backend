@@ -3,7 +3,7 @@ import {Expose} from 'class-transformer';
 import {IsOptional, IsDate, IsNotEmpty, IsUUID} from 'class-validator';
 
 export abstract class AbstractBaseEntity {
-  @Expose({groups: ['search']})
+  @Expose({groups: ['search', 'create']})
   @PrimaryGeneratedColumn('uuid')
   @IsUUID()
   @IsOptional()

@@ -122,7 +122,7 @@ export class ActivityBuilder {
     return this.validateAndSave(activity);
   }
 
-  async validateAndSave(activity: Activity) {
+  private async validateAndSave(activity: Activity) {
     const errors = await validate(activity);
 
     // console.log(errors);

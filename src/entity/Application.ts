@@ -18,17 +18,17 @@ import {Activity} from './Activity';
 export class Application extends AbstractBaseEntity {
   @IsNotEmpty()
   @Expose({groups: ['search', 'create', 'edit']})
-  @Column('text', {nullable: true})
+  @Column('text', {nullable: false})
   text: any;
   @Expose({groups: ['search', 'create', 'edit']})
-  @Column('text', {nullable: true})
-  rate: string;
+  @Column('float', {nullable: false})
+  rate: number;
 
   @Expose({groups: ['search']})
   @Type(() => User)
   @ManyToOne(() => User, {eager: true, nullable: false})
   user: User;
-  @Expose({groups: ['search']})
+  @Expose({groups: ['search', 'create']})
   @Type(() => Activity)
   @ManyToOne(() => Activity, {eager: true, nullable: false})
   activity: Activity;

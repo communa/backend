@@ -1,13 +1,9 @@
-import {validate} from 'class-validator';
 import {inject, injectable} from 'inversify';
 
 import {Activity} from '../entity/Activity';
-import {User} from '../entity/User';
-import ConstraintsValidationException from '../exception/ConstraintsValidationException';
 import {ActivityRepository} from '../repository/ActivityRepository';
 import {PageReader} from './import/PageReader';
-import {EActivityState} from '../interface/EActivityState';
-import {EActivityType} from '../interface/EActivityType';
+import {Application} from '../entity/Application';
 
 @injectable()
 export class ActivityManager {
@@ -16,44 +12,26 @@ export class ActivityManager {
   @inject('PageReader')
   protected pageReader: PageReader;
 
-  async import(user: User, url: string) {
-    const data = await this.pageReader.readByUrl(url);
-    const activity = new Activity();
+  public async close(activity: Activity): Promise<void> {
+    activity.finishedAt = new Date();
 
-    activity.text = data.text;
-    activity.user = user;
-    activity.sourceUrl = url;
-    activity.title = this.getTitle(activity);
-    activity.state = EActivityState.PUBLISHED;
-    activity.type = EActivityType.IMPORT;
-
-    return this.validateAndSave(activity);
+    await this.save(activity);
   }
 
-  editValidateAndSave(activity: Activity, data: Activity) {
+  public async acceptApplication(activity: Activity, application: Application): Promise<void> {
+    activity.applicationAccepted = application;
+    activity.acceptedAt = new Date();
+
+    await this.save(activity);
+  }
+
+  public async editAndSave(activity: Activity, data: Activity): Promise<void> {
     activity = Object.assign(activity, data);
 
-    void this.validateAndSave(activity);
+    await this.save(activity);
   }
 
-  async validateAndSave(activity: Activity) {
-    const errors = await validate(activity);
-
-    if (errors.length) {
-      throw new ConstraintsValidationException(errors);
-    }
-
+  public save(activity: Activity) {
     return this.activityRepository.saveSingle(activity);
-  }
-
-  public getTitle(activity: Activity): string {
-    if (activity.text.blocks) {
-      const blocks = activity.text.blocks.filter((b: any) => b.type === 'header');
-
-      if (blocks.length > 0) {
-        return blocks[0].data.text;
-      }
-    }
-    return 'Empty title';
   }
 }

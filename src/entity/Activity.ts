@@ -68,7 +68,6 @@ export class Activity extends AbstractBaseEntity {
   @Expose({groups: ['search']})
   @Column('timestamptz', {nullable: true})
   processedAt: Date;
-
   @Expose({groups: ['search']})
   @Column('timestamptz', {nullable: true})
   cancelledAt: Date;
@@ -78,6 +77,9 @@ export class Activity extends AbstractBaseEntity {
   @Expose({groups: ['search']})
   @Column('timestamptz', {nullable: true})
   finishedAt: Date;
+  @Expose({groups: ['search']})
+  @Column('timestamptz', {nullable: true})
+  acceptedAt: Date;
   @Expose({groups: ['search']})
   @Column('text', {nullable: true})
   cancellationReason: EActivityCancellationReason;

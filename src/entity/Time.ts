@@ -29,7 +29,6 @@ export class Time extends AbstractBaseEntity {
   @Column('timestamptz')
   @IsDate()
   fromAt: Date;
-
   @Expose({groups: ['search']})
   @Column('timestamptz')
   @IsDate()

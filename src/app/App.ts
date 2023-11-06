@@ -22,6 +22,9 @@ import {AuthController} from '../controller/AuthController';
 import {ValidateRoles} from '../middleware/ValidateRoles';
 import {UserController} from '../controller/UserController';
 import {ActivityController} from '../controller/ActivityController';
+import {ApplicationController} from '../controller/ApplicationController';
+import {TimeController} from '../controller/TimeController';
+import {PaymentController} from '../controller/PaymentController';
 
 const swaggerUiExpress = require('swagger-ui-express');
 const boolParser = require('express-query-boolean');
@@ -116,7 +119,15 @@ export class App {
         exposedHeaders: ['Authorization', 'Location', 'Refresh-Token', 'sentry-trace'],
       },
       routePrefix: '/api',
-      controllers: [HelpController, ActivityController, AuthController, UserController],
+      controllers: [
+        HelpController,
+        ActivityController,
+        AuthController,
+        UserController,
+        ApplicationController,
+        TimeController,
+        PaymentController,
+      ],
     });
   }
 

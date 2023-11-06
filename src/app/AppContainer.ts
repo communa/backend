@@ -21,6 +21,15 @@ import {ActivityFixture} from '../test/fixture/ActivityFixture';
 import {ActivityManager} from '../service/ActivityManager';
 import {ActivityBuilder} from '../service/ActivityBuilder';
 import {ImporterLinkedIn} from '../service/import/ImporterLinkedIn';
+import {ApplicationFixture} from '../test/fixture/ApplicationFixture';
+import {TimeFixture} from '../test/fixture/TimeFixture';
+import {PaymentFixture} from '../test/fixture/PaymentFixture ';
+import {ApplicationRepository} from '../repository/ApplicationRepository';
+import {TimeRepository} from '../repository/TimeRepository';
+import {PaymentRepository} from '../repository/PaymentRepository';
+import {ApplicationManager} from '../service/ApplicationManager';
+import {TimeManager} from '../service/TimeManager';
+import {PaymentManager} from '../service/PaymentManager';
 
 export class AppContainer {
   private static container: Container;
@@ -44,6 +53,9 @@ export class AppContainer {
     // Repositories
     container.bind<UserRepository>('UserRepository').to(UserRepository);
     container.bind<ActivityRepository>('ActivityRepository').to(ActivityRepository);
+    container.bind<ApplicationRepository>('ApplicationRepository').to(ApplicationRepository);
+    container.bind<TimeRepository>('TimeRepository').to(TimeRepository);
+    container.bind<PaymentRepository>('PaymentRepository').to(PaymentRepository);
 
     // Services
     container.bind<Signer>('Signer').to(Signer);
@@ -54,17 +66,22 @@ export class AppContainer {
     container.bind<RedisClient>('RedisClient').to(RedisClient);
     container.bind<Filter>('Filter').to(Filter);
     container.bind<UserManager>('UserManager').to(UserManager);
+    container.bind<ApplicationManager>('ApplicationManager').to(ApplicationManager);
+    container.bind<TimeManager>('TimeManager').to(TimeManager);
+    container.bind<PaymentManager>('PaymentManager').to(PaymentManager);
 
     container.bind<ImporterLinkedIn>('ImporterLinkedIn').to(ImporterLinkedIn);
 
     container.bind<Mailer>('Mailer').to(Mailer);
     container.bind<ActivityManager>('ActivityManager').to(ActivityManager);
-
     container.bind<Faker>('Faker').to(Faker);
 
     // Fixture
     container.bind<UserFixture>('UserFixture').to(UserFixture);
     container.bind<ActivityFixture>('ActivityFixture').to(ActivityFixture);
+    container.bind<ApplicationFixture>('ApplicationFixture').to(ApplicationFixture);
+    container.bind<PaymentFixture>('PaymentFixture').to(PaymentFixture);
+    container.bind<TimeFixture>('TimeFixture').to(TimeFixture);
 
     AppContainer.container = container;
 
