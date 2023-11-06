@@ -58,7 +58,6 @@
     "inversify-inject-decorators": "^3.1.0",
     "jsdom": "^20.0.0",
     "jsonwebtoken": "^8.5.1",
-    "linkedin-jobs-scraper": "^15.0.3",
     "lodash": "^4.17.21",
     "moment": "^2.29.2",
     "moment-timezone": "^0.5.35",

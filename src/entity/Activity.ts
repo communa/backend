@@ -93,6 +93,7 @@ export class Activity extends AbstractBaseEntity {
   @Type(() => Application)
   @OneToMany(() => Application, application => application.activity)
   applications: Application[];
+
   @Expose({groups: ['search']})
   @Type(() => Payment)
   @OneToMany(() => Payment, payment => payment.activity)

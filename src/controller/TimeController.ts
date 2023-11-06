@@ -1,10 +1,9 @@
 import {
   Authorized,
   Body,
-  HttpCode,
+  Get,
   JsonController,
   Post,
-  Res,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
 
@@ -18,6 +17,7 @@ import {TimeManager} from '../service/TimeManager';
 import {TimeRepository} from '../repository/TimeRepository';
 import {TimeSearchDto} from '../validator/dto/TimeSearchDto';
 import {Time} from '../entity/Time';
+import {EntityFromParam} from '../decorator/EntityFromParam';
 
 @JsonController('/time')
 export class TimeController extends AbstractController {
@@ -31,29 +31,28 @@ export class TimeController extends AbstractController {
     this.timeRepository = App.container.get('TimeRepository');
   }
 
-  @Post('/search')
+  @Post('/search/freelancer')
   @Authorized([EUserRole.ROLE_USER])
   @ExtendedResponseSchema(Time, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
-  public search(@Body() search: TimeSearchDto) {
+  public searchFreelancer(@Body() search: TimeSearchDto) {
     return this.timeRepository.findAndCount(search);
   }
 
-  @Post()
+  @Post('/search/freelancer')
   @Authorized([EUserRole.ROLE_USER])
-  @HttpCode(201)
-  public async create(
+  @ExtendedResponseSchema(Time, {isPagination: true})
+  @ResponseClassTransformOptions({groups: ['search']})
+  public searchBusiness(@Body() search: TimeSearchDto) {
+    return this.timeRepository.findAndCount(search);
+  }
+
+  @Get('/:id')
+  @ResponseClassTransformOptions({groups: ['search']})
+  public get(
     @CurrentUser() currentUser: User,
-    @Body({validate: {groups: ['create']}, transform: {groups: ['create']}}) data: Time,
-    @Res() res: any
+    @EntityFromParam('id', null, {activity: true}) time: Time
   ) {
-    data.user = currentUser;
-
-    const time = await this.timeManager.save(data);
-
-    res.status(201);
-    res.location(`/api/time/${time.id}`);
-
-    return {};
+    return this.timeRepository.findOneConfirmUser(time, currentUser);
   }
 }

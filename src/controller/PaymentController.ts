@@ -1,10 +1,9 @@
 import {
   Authorized,
   Body,
-  HttpCode,
+  Get,
   JsonController,
   Post,
-  Res,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
 
@@ -18,6 +17,7 @@ import {PaymentManager} from '../service/PaymentManager';
 import {PaymentRepository} from '../repository/PaymentRepository';
 import {PaymentSearchDto} from '../validator/dto/PaymentSearchDto';
 import {Payment} from '../entity/Payment';
+import {EntityFromParam} from '../decorator/EntityFromParam';
 
 @JsonController('/payment')
 export class PaymentController extends AbstractController {
@@ -39,21 +39,12 @@ export class PaymentController extends AbstractController {
     return this.paymentRepository.findAndCount(search);
   }
 
-  @Post()
-  @Authorized([EUserRole.ROLE_USER])
-  @HttpCode(201)
-  public async create(
+  @Get('/:id')
+  @ResponseClassTransformOptions({groups: ['search']})
+  public get(
     @CurrentUser() currentUser: User,
-    @Body({validate: {groups: ['create']}, transform: {groups: ['create']}}) data: Payment,
-    @Res() res: any
+    @EntityFromParam('id', null, {activity: true}) payment: Payment
   ) {
-    data.user = currentUser;
-
-    const payment = await this.paymentManager.save(data);
-
-    res.status(201);
-    res.location(`/api/payment/${payment.id}`);
-
-    return {};
+    return this.paymentRepository.findOneConfirmUser(payment, currentUser);
   }
 }

@@ -2,15 +2,12 @@ import {inject, injectable} from 'inversify';
 
 import {Activity} from '../entity/Activity';
 import {ActivityRepository} from '../repository/ActivityRepository';
-import {PageReader} from './import/PageReader';
 import {Application} from '../entity/Application';
 
 @injectable()
 export class ActivityManager {
   @inject('ActivityRepository')
   protected activityRepository: ActivityRepository;
-  @inject('PageReader')
-  protected pageReader: PageReader;
 
   public async close(activity: Activity): Promise<void> {
     activity.finishedAt = new Date();

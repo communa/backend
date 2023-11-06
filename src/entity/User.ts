@@ -13,8 +13,6 @@ import {EUserRole} from '../interface/EUserRole';
 import {IUser} from '../interface/IUser';
 import {Activity} from './Activity';
 import {Application} from './Application';
-import {Payment} from './Payment';
-import {Time} from './Time';
 
 @JSONSchema({
   example: {
@@ -111,10 +109,6 @@ export class User extends AbstractBaseEntity implements IUser {
   activities: Activity[];
   @OneToMany(() => Application, application => application.user)
   applications: Application[];
-  @OneToMany(() => Payment, payment => payment.user)
-  payments: Payment[];
-  @OneToMany(() => Time, time => time.user)
-  time: Time[];
 
   @Expose({groups: ['search']})
   @Column('integer', {nullable: true})

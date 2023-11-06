@@ -3,26 +3,17 @@ import faker from 'faker';
 import {suite, test} from '@testdeck/mocha';
 
 import {BaseControllerTest} from './BaseController.test';
-import {UserFixture} from '../fixture/UserFixture';
 import {UserRepository} from '../../repository/UserRepository';
 import {EUserRole} from '../../interface/EUserRole';
-import {Faker} from '../../service/Faker';
-import {Authenticator} from '../../service/Authenticator';
 
 @suite()
 export class UserControllerEditTest extends BaseControllerTest {
-  protected userFixture: UserFixture;
   protected userRepository: UserRepository;
-  protected authenticator: Authenticator;
-  protected faker: Faker;
 
   constructor() {
     super();
 
-    this.userFixture = this.container.get('UserFixture');
     this.userRepository = this.container.get('UserRepository');
-    this.authenticator = this.container.get('Authenticator');
-    this.faker = this.container.get('Faker');
   }
 
   @test()

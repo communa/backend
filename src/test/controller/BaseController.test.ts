@@ -10,6 +10,14 @@ import {IConfigParameters} from '../../interface/IConfigParameters';
 import {Http} from '../../service/Http';
 import {Faker} from '../../service/Faker';
 
+import {UserFixture} from '../fixture/UserFixture';
+import {ActivityFixture} from '../fixture/ActivityFixture';
+import {ApplicationRepository} from '../../repository/ApplicationRepository';
+import {ApplicationFixture} from '../fixture/ApplicationFixture';
+import {PaymentFixture} from '../fixture/PaymentFixture ';
+import {TimeFixture} from '../fixture/TimeFixture';
+import {Authenticator} from '../../service/Authenticator';
+
 export class BaseControllerTest {
   protected url: string;
   protected app: App;
@@ -17,6 +25,14 @@ export class BaseControllerTest {
   protected parameters: IConfigParameters;
   protected http: Http;
   protected faker: Faker;
+  protected authenticator: Authenticator;
+
+  protected activityFixture: ActivityFixture;
+  protected paymentFixture: PaymentFixture;
+  protected timeFixture: TimeFixture;
+  protected applicationFixture: ApplicationFixture;
+  protected applicationRepository: ApplicationRepository;
+  protected userFixture: UserFixture;
 
   constructor() {
     const env = AppConfig.getEnv();
@@ -26,6 +42,14 @@ export class BaseControllerTest {
     this.parameters = this.container.get('parameters');
     this.http = this.container.get('Http');
     this.faker = this.container.get('Faker');
+
+    this.authenticator = this.container.get('Authenticator');
+
+    this.userFixture = this.container.get('UserFixture');
+    this.activityFixture = this.container.get('ActivityFixture');
+    this.timeFixture = this.container.get('TimeFixture');
+    this.applicationFixture = this.container.get('ApplicationFixture');
+    this.paymentFixture = this.container.get('PaymentFixture');
 
     this.url = `http://${this.parameters.host}:${this.parameters.port}`;
   }

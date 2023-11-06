@@ -2,34 +2,19 @@ import faker from 'faker';
 import {expect} from 'chai';
 import {suite, test} from '@testdeck/mocha';
 
-import {Http} from '../../service/Http';
 import {BaseControllerTest} from './BaseController.test';
-import {UserFixture} from '../fixture/UserFixture';
 import {ActivityManager} from '../../service/ActivityManager';
-import {ActivityFixture} from '../fixture/ActivityFixture';
 import {ApplicationRepository} from '../../repository/ApplicationRepository';
 import {EActivityState} from '../../interface/EActivityState';
-import {Authenticator} from '../../service/Authenticator';
-import {ApplicationFixture} from '../fixture/ApplicationFixture';
 
 @suite
 export class ApplicationControllerTest extends BaseControllerTest {
-  protected http: Http;
-  protected authenticator: Authenticator;
   protected activityManager: ActivityManager;
-  protected activityFixture: ActivityFixture;
-  protected applicationFixture: ApplicationFixture;
   protected applicationRepository: ApplicationRepository;
-  protected userFixture: UserFixture;
 
   constructor() {
     super();
 
-    this.authenticator = this.container.get('Authenticator');
-    this.userFixture = this.container.get('UserFixture');
-    this.http = this.container.get('Http');
-    this.activityFixture = this.container.get('ActivityFixture');
-    this.applicationFixture = this.container.get('ApplicationFixture');
     this.applicationRepository = this.container.get('ApplicationRepository');
     this.activityManager = this.container.get('ActivityManager');
   }

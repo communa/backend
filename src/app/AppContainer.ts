@@ -4,9 +4,6 @@ import {IConfigParameters} from '../interface/IConfigParameters';
 
 import {Http} from '../service/Http';
 import {OpenApi} from '../service/OpenApi';
-import {PageReader} from '../service/import/PageReader';
-
-import {ArticleRenderer} from '../service/import/ArticleRenderer';
 import {Signer} from '../service/Signer';
 import {RedisClient} from '../service/RedisClient';
 import {UserFixture} from '../test/fixture/UserFixture';
@@ -19,8 +16,6 @@ import {Authenticator} from '../service/Authenticator';
 import {ActivityRepository} from '../repository/ActivityRepository';
 import {ActivityFixture} from '../test/fixture/ActivityFixture';
 import {ActivityManager} from '../service/ActivityManager';
-import {ActivityBuilder} from '../service/ActivityBuilder';
-import {ImporterLinkedIn} from '../service/import/ImporterLinkedIn';
 import {ApplicationFixture} from '../test/fixture/ApplicationFixture';
 import {TimeFixture} from '../test/fixture/TimeFixture';
 import {PaymentFixture} from '../test/fixture/PaymentFixture ';
@@ -60,18 +55,12 @@ export class AppContainer {
     // Services
     container.bind<Signer>('Signer').to(Signer);
     container.bind<Authenticator>('Authenticator').to(Authenticator);
-    container.bind<ActivityBuilder>('ActivityBuilder').to(ActivityBuilder);
-    container.bind<PageReader>('PageReader').to(PageReader);
-    container.bind<ArticleRenderer>('ArticleRenderer').to(ArticleRenderer);
     container.bind<RedisClient>('RedisClient').to(RedisClient);
     container.bind<Filter>('Filter').to(Filter);
     container.bind<UserManager>('UserManager').to(UserManager);
     container.bind<ApplicationManager>('ApplicationManager').to(ApplicationManager);
     container.bind<TimeManager>('TimeManager').to(TimeManager);
     container.bind<PaymentManager>('PaymentManager').to(PaymentManager);
-
-    container.bind<ImporterLinkedIn>('ImporterLinkedIn').to(ImporterLinkedIn);
-
     container.bind<Mailer>('Mailer').to(Mailer);
     container.bind<ActivityManager>('ActivityManager').to(ActivityManager);
     container.bind<Faker>('Faker').to(Faker);

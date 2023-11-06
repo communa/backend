@@ -5,24 +5,15 @@ import {suite, test} from '@testdeck/mocha';
 
 import {UserRepository} from '../../repository/UserRepository';
 import {BaseControllerTest} from './BaseController.test';
-import {UserFixture} from '../fixture/UserFixture';
-import {Faker} from '../../service/Faker';
-import {Authenticator} from '../../service/Authenticator';
 
 @suite()
 export class AuthControllerTest extends BaseControllerTest {
   protected userRepository: UserRepository;
-  protected authenticator: Authenticator;
-  protected userFixture: UserFixture;
-  protected faker: Faker;
 
   constructor() {
     super();
 
-    this.authenticator = this.container.get('Authenticator');
     this.userRepository = this.container.get('UserRepository');
-    this.userFixture = this.container.get('UserFixture');
-    this.faker = this.container.get('Faker');
   }
 
   @test()
