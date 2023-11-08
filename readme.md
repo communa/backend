@@ -26,22 +26,6 @@ Ensure there are no errors by execution of all tests
 
 `NODE_ENV=production pm2 start build/server.js --watch`
 
-## Cron
-
-```sh
-0 0 * * * cd /var/www/html/communa-backend/current && LI_AT_COOKIE=XXXX NODE_ENV=production node build/command/ImportLinkedInCommand.js "Web3,Ethereum" 100
-
-
-```
-
-## Commands
-
-```sh
-NODE_ENV=development ts-node src/command/ImportPagesCommand.ts 50 5
-NODE_ENV=development ts-node src/command/ImportWebsiteCommand.ts
-LI_AT_COOKIE=XXX ts-node src/command/ImportLinkedInCommand.ts "Web3,Ethereum" 100
-```
-
 ## DB
 
 ```sh

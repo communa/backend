@@ -21,11 +21,12 @@ export class Time extends AbstractBaseEntity {
   activity: Activity;
 
   @Expose({groups: ['search']})
-  @Column('timestamptz')
+  @Column('timestamptz', {nullable: false})
   @IsDate()
   fromAt: Date;
+
   @Expose({groups: ['search']})
-  @Column('timestamptz')
+  @Column('timestamptz', {nullable: false})
   @IsDate()
   toAt: Date;
 }

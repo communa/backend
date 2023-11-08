@@ -1,5 +1,4 @@
 import {
-  Authorized,
   Body,
   Delete,
   Get,
@@ -13,7 +12,6 @@ import {
 
 import {App} from '../app/App';
 import {User} from '../entity/User';
-import {EUserRole} from '../interface/EUserRole';
 import {AbstractController} from './AbstractController';
 import {CurrentUser} from '../decorator/CurrentUser';
 import {ApplicationManager} from '../service/ApplicationManager';
@@ -49,21 +47,18 @@ export class ApplicationController extends AbstractController {
   }
 
   @Post('/search/business')
-  @Authorized([EUserRole.ROLE_USER])
   @ResponseClassTransformOptions({groups: ['search']})
   public searchBusiness(@CurrentUser() currentUser: User, @Body() search: ApplicationSearchDto) {
     return this.applicationRepository.findAndCountBusiness(search, currentUser);
   }
 
   @Post('/search/freelancer')
-  @Authorized([EUserRole.ROLE_USER])
   @ResponseClassTransformOptions({groups: ['search']})
   public search(@CurrentUser() currentUser: User, @Body() search: ApplicationSearchDto) {
     return this.applicationRepository.findAndCountFreelancer(search, currentUser);
   }
 
   @Post()
-  @Authorized([EUserRole.ROLE_USER])
   @HttpCode(201)
   public async create(
     @CurrentUser() currentUser: User,
@@ -81,7 +76,6 @@ export class ApplicationController extends AbstractController {
   }
 
   @Put('/:id')
-  @Authorized([EUserRole.ROLE_USER])
   @HttpCode(200)
   public async edit(
     @CurrentUser() currentUser: User,
@@ -98,7 +92,6 @@ export class ApplicationController extends AbstractController {
   }
 
   @Delete('/:id')
-  @Authorized([EUserRole.ROLE_USER])
   @HttpCode(200)
   public async delete(
     @CurrentUser() currentUser: User,

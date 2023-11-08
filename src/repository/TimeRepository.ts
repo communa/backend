@@ -7,6 +7,7 @@ import {Time} from '../entity/Time';
 import {ISearch} from '../interface/search/ISearch';
 import {User} from '../entity/User';
 import RejectedExecutionException from '../exception/RejectedExecutionException';
+import {Activity} from '../entity/Activity';
 
 @injectable()
 export class TimeRepository extends AbstractRepositoryTemplate<Time> {
@@ -66,5 +67,31 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       .skip(limit * s.page)
       .take(limit)
       .getManyAndCount();
+  }
+
+  public findTimeByFreelancerOrFail(time: Time, freelancer: User): Promise<Time> {
+    return this.getRepo()
+      .createQueryBuilder('time')
+      .innerJoinAndSelect('time.activity', 'activity')
+      .innerJoinAndSelect('activity.applicationAccepted', 'applicationAccepted')
+      .innerJoinAndSelect('applicationAccepted.user', 'freelancer')
+      .andWhere('freelancer.id = :freelancerId', {freelancerId: freelancer.id})
+      .andWhere('time.id = :timeId', {timeId: time.id})
+      .select()
+      .getOneOrFail();
+  }
+
+  public findTimeBetweenForActivity(from: number, to: number, activity: Activity, freelancer: User): Promise<Time[]> {
+    return this.getRepo()
+      .createQueryBuilder('time')
+      .innerJoinAndSelect('time.activity', 'activity')
+      .innerJoinAndSelect('activity.applicationAccepted', 'applicationAccepted')
+      .innerJoinAndSelect('applicationAccepted.user', 'freelancer')
+      .andWhere('time.fromAt >= :from', {from})
+      .andWhere('time.toAt =< :to', {to})
+      .andWhere('freelancer.id = :freelancerId', {freelancerId: freelancer.id})
+      .andWhere('activity.id = :activityId', {activityId: activity.id})
+      .select()
+      .getMany();
   }
 }

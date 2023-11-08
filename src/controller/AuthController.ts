@@ -8,6 +8,7 @@ import {
   Body,
   Req,
   ResponseClassTransformOptions,
+  Authorized,
 } from 'routing-controllers';
 
 import faker from 'faker';
@@ -21,6 +22,7 @@ import {UserManager} from '../service/UserManager';
 import {UserRepository} from '../repository/UserRepository';
 import {IConfigParameters} from '../interface/IConfigParameters';
 import {AuthForgotPasswordDto} from '../validator/dto/AuthDto';
+import {EUserRole} from '../interface/EUserRole';
 
 @JsonController('/auth')
 export class AuthController {
@@ -107,6 +109,7 @@ export class AuthController {
     return this.authenticator.getNonce(payload.address);
   }
 
+  @Authorized([EUserRole.ROLE_USER])
   @Post('/refresh')
   @OpenAPI({
     responses: {

@@ -1,9 +1,13 @@
 import {
   Authorized,
   Body,
+  Delete,
   Get,
+  HttpCode,
   JsonController,
   Post,
+  Put,
+  Res,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
 
@@ -18,7 +22,9 @@ import {TimeRepository} from '../repository/TimeRepository';
 import {TimeSearchDto} from '../validator/dto/TimeSearchDto';
 import {Time} from '../entity/Time';
 import {EntityFromParam} from '../decorator/EntityFromParam';
+import {Activity} from '../entity/Activity';
 
+@Authorized([EUserRole.ROLE_USER])
 @JsonController('/time')
 export class TimeController extends AbstractController {
   protected timeManager: TimeManager;
@@ -32,15 +38,13 @@ export class TimeController extends AbstractController {
   }
 
   @Post('/search/freelancer')
-  @Authorized([EUserRole.ROLE_USER])
   @ExtendedResponseSchema(Time, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
   public searchFreelancer(@Body() search: TimeSearchDto) {
     return this.timeRepository.findAndCount(search);
   }
 
-  @Post('/search/freelancer')
-  @Authorized([EUserRole.ROLE_USER])
+  @Post('/search/business')
   @ExtendedResponseSchema(Time, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
   public searchBusiness(@Body() search: TimeSearchDto) {
@@ -54,5 +58,44 @@ export class TimeController extends AbstractController {
     @EntityFromParam('id', null, {activity: true}) time: Time
   ) {
     return this.timeRepository.findOneConfirmUser(time, currentUser);
+  }
+
+  @Post('/activity/:activityId')
+  @HttpCode(201)
+  public async create(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('activityId') activity: Activity,
+    @Body({validate: {groups: ['create']}, transform: {groups: ['create']}}) data: Time,
+    @Res() res: any
+  ) {
+    const time = await this.timeManager.save(data, activity, currentUser);
+
+    res.status(201);
+    res.location(`/api/time/${time.id}`);
+
+    return {};
+  }
+
+  @Put('/:id')
+  @HttpCode(200)
+  public async edit(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('id') time: Time,
+    @Body({validate: {groups: ['edit']}, transform: {groups: ['edit']}}) data: Time
+  ) {
+    await this.timeManager.editAndSave(time, data, currentUser);
+
+    return {};
+  }
+
+  @Delete('/:id')
+  @HttpCode(200)
+  public async delete(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('id') time: Time
+  ) {
+    await this.timeManager.remove(time, currentUser);
+
+    return {};
   }
 }

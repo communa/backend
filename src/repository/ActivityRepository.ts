@@ -23,6 +23,17 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
     });
   }
 
+  public findActivityByFreelancerOrFail(activity: Activity, freelancer: User): Promise<Activity> {
+    return this.getRepo()
+      .createQueryBuilder('activity')
+      .innerJoinAndSelect('activity.applicationAccepted', 'application')
+      .innerJoinAndSelect('application.user', 'freelancer')
+      .andWhere('activity.id = :id', {id: activity.id})
+      .andWhere('freelancer.id = :freelancerId', {freelancerId: freelancer.id})
+      .select()
+      .getOneOrFail();
+  }
+
   public async findAndCount(search: ISearchActivity): Promise<[Activity[], number]> {
     const s = _.assign(
       {

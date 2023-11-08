@@ -7,7 +7,6 @@ import bodyParser from 'body-parser';
 import {Container} from 'inversify';
 import {Connection} from 'typeorm';
 import {useExpressServer} from 'routing-controllers';
-import {Browser} from 'puppeteer';
 
 import {AppContainer} from './AppContainer';
 import {DbConnector} from '../connector/DbConnector';
@@ -33,8 +32,6 @@ export class App {
   public static server: http.Server;
   public static conn: Connection;
   public static container: Container;
-
-  public static browser: Browser;
 
   private readonly env: string;
   private readonly parameters: IConfigParameters;
@@ -99,7 +96,6 @@ export class App {
   }
 
   public async stop() {
-    // void App.substrate.api.disconnect();
     await App.conn.close();
     App.server.close();
   }
@@ -138,8 +134,6 @@ export class App {
           `App[${this.env}] listening on ${this.parameters.host}:${this.parameters.port}`
         );
       }
-
-      // void App.substrate.connectAndListenNewBlocks();
     });
 
     App.server.keepAliveTimeout = 65000;

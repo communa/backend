@@ -38,6 +38,12 @@ export class ActivityController extends AbstractController {
     this.activityRepository = App.container.get('ActivityRepository');
   }
 
+  @Get('/:id')
+  @ResponseClassTransformOptions({groups: ['search']})
+  public get(@EntityFromParam('id') activity: Activity) {
+    return activity;
+  }
+
   @Post('/search')
   @ExtendedResponseSchema(Activity, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
@@ -51,12 +57,6 @@ export class ActivityController extends AbstractController {
   @ResponseClassTransformOptions({groups: ['search']})
   public searchPublishing(@CurrentUser() currentUser: User, @Body() search: ActivitySearchDto) {
     return this.activityRepository.findAndCountPublishing(search, currentUser);
-  }
-
-  @Get('/:id')
-  @ResponseClassTransformOptions({groups: ['search']})
-  public get(@EntityFromParam('id') activity: Activity) {
-    return activity;
   }
 
   @Post('/:id/accept/:applicationId')
@@ -90,8 +90,8 @@ export class ActivityController extends AbstractController {
   }
 
   @Put('/:id')
-  @Authorized([EUserRole.ROLE_USER])
   @HttpCode(200)
+  @Authorized([EUserRole.ROLE_USER])
   public async edit(
     @CurrentUser() currentUser: User,
     @EntityFromParam('id') activity: Activity,
@@ -107,7 +107,6 @@ export class ActivityController extends AbstractController {
   }
 
   @Delete('/:id')
-  @Authorized([EUserRole.ROLE_USER])
   @HttpCode(200)
   public async delete(@CurrentUser() currentUser: User, @EntityFromParam('id') activity: Activity) {
     await this.activityRepository.delete({
@@ -119,8 +118,8 @@ export class ActivityController extends AbstractController {
   }
 
   @Post()
-  @Authorized([EUserRole.ROLE_USER])
   @HttpCode(201)
+  @Authorized([EUserRole.ROLE_USER])
   public async create(
     @CurrentUser() currentUser: User,
     @Body({validate: {groups: ['create']}, transform: {groups: ['create']}}) data: Activity,

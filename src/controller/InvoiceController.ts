@@ -18,7 +18,10 @@ import {InvoiceRepository} from '../repository/InvoiceRepository';
 import {InvoiceSearchDto} from '../validator/dto/InvoiceSearchDto';
 import {Invoice} from '../entity/Invoice';
 import {EntityFromParam} from '../decorator/EntityFromParam';
+import {InvoiceCreateDto} from '../validator/dto/InvoiceCreateDto';
+import {Activity} from '../entity/Activity';
 
+@Authorized([EUserRole.ROLE_USER])
 @JsonController('/invoice')
 export class InvoiceController extends AbstractController {
   protected invoiceManager: InvoiceManager;
@@ -32,7 +35,6 @@ export class InvoiceController extends AbstractController {
   }
 
   @Post('/search')
-  @Authorized([EUserRole.ROLE_USER])
   @ExtendedResponseSchema(Invoice, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
   public search(@Body() search: InvoiceSearchDto) {
@@ -46,6 +48,15 @@ export class InvoiceController extends AbstractController {
     @EntityFromParam('id', null, {activity: true}) invoice: Invoice
   ) {
     return this.invoiceRepository.findOneConfirmUser(invoice, currentUser);
+  }
+
+  @Post('/activity/:activityId')
+  public create(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('activityId') activity: Activity,
+    @Body() data: InvoiceCreateDto,
+  ) {
+    return this.invoiceManager.create(data, activity, currentUser);
   }
 
   @Post('/:id/fullfill')
