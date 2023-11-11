@@ -54,6 +54,9 @@ export class Activity extends AbstractBaseEntity {
   @Expose({groups: ['search']})
   @Column('text', {nullable: true})
   jobUrl: string;
+  @Expose({groups: ['search']})
+  @Column('text', {nullable: true})
+  hash: string;
 
   @IsNotEmpty()
   @Expose({groups: ['search', 'create']})
