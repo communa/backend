@@ -7,6 +7,7 @@ import bodyParser from 'body-parser';
 import {Container} from 'inversify';
 import {Connection} from 'typeorm';
 import {useExpressServer} from 'routing-controllers';
+import AuthClient from '@walletconnect/auth-client';
 
 import {AppContainer} from './AppContainer';
 import {DbConnector} from '../connector/DbConnector';
@@ -32,6 +33,7 @@ export class App {
   public static server: http.Server;
   public static conn: Connection;
   public static container: Container;
+  public static authClient: AuthClient;
 
   private readonly env: string;
   private readonly parameters: IConfigParameters;
@@ -48,6 +50,26 @@ export class App {
 
     App.conn = await dbConnector.connect();
     App.container = AppContainer.build(this.parameters, this.env);
+
+        
+    App.authClient = await AuthClient.init({
+      projectId: 'f72f23676636bdae1b917bd2da168a95',
+      metadata: {
+        name: 'my-auth-dapp',
+        description: 'A dapp using WalletConnect AuthClient',
+        url: 'my-auth-dapp.com',
+        icons: ['https://communa.network/logo.png']
+      }
+    });
+
+    App.authClient.on('auth_request', async ({ id, params }) => {
+      console.log(id, params);
+    })
+    
+    App.authClient.on('auth_response', async ({ id, params }) => {
+      console.log(id, params);
+    })
+
   }
 
   public start() {

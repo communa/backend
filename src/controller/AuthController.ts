@@ -9,6 +9,7 @@ import {
   Req,
   ResponseClassTransformOptions,
   Authorized,
+  Param,
 } from 'routing-controllers';
 
 import faker from 'faker';
@@ -152,6 +153,16 @@ export class AuthController {
     const user = await this.authenticator.getUserFromJwtToken(token);
 
     return user;
+  }
+
+  @Get('/nonceQr')
+  public async qrNonce() {
+    return this.authenticator.getNonceQr();
+  }
+
+  @Get('/qr/:nonce')
+  public async qr(@Param('nonce') nonce: string) {
+    return this.authenticator.generateQr(nonce);
   }
 
   @OpenAPI({

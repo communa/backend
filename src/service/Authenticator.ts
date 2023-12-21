@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import {inject, injectable} from 'inversify';
 import {isEmail} from 'class-validator';
+import QRCode from 'qrcode';
 
 import {User} from '../entity/User';
 import {Mailer} from './Mailer';
@@ -15,6 +16,7 @@ import AuthenticationException from '../exception/AuthenticationException';
 import {UserManager} from './UserManager';
 import {RedisClient} from './RedisClient';
 import {Signer} from './Signer';
+import {App} from '../app/App';
 
 @injectable()
 export class Authenticator {
@@ -42,6 +44,39 @@ export class Authenticator {
     await this.redis.setWithExpiry(key, nonce, seconds);
 
     return nonce;
+  }
+
+  public async getNonceQr(): Promise<string> {
+    return this.signer.generateNonce();
+  }
+
+  public async generateQr(nonce: string): Promise<Buffer> {
+    const authRequest = await App.authClient.request({
+      aud: 'https://communa.network',
+      domain: 'communa.network',
+      chainId: 'eip155:1',
+      type: 'eip4361',
+      nonce,
+    });
+    const data = await QRCode.toDataURL(
+      authRequest.uri as string,
+      {
+        width: 350
+      }
+    );
+    const base64Data = data.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+    const img = Buffer.from(base64Data, 'base64');
+    
+    const key = `qr:${nonce}`;
+    const seconds = 1000 * 60;
+
+    await this.redis.setWithExpiry(key, nonce, seconds);
+
+    // console.log(authRequest);
+    // console.log(nonce);
+    // console.log(img);
+    
+    return img;
   }
 
   public async loginWeb3(signature: string, address: string): Promise<IAuthTokens> {
