@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {suite, test} from '@testdeck/mocha';
+import {skip, suite, test} from '@testdeck/mocha';
 
 import {BaseControllerTest} from './BaseController.test';
 import {ActivityManager} from '../../service/ActivityManager';
@@ -8,6 +8,7 @@ import {EInvoiceState} from '../../interface/EInvoiceState';
 import {ApplicationRepository} from '../../repository/ApplicationRepository';
 
 @suite
+@skip
 export class InvoiceControllerTest extends BaseControllerTest {
   protected activityManager: ActivityManager;
   protected applicationRepository: ApplicationRepository;

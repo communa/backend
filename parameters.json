@@ -1,5 +1,18 @@
 {
   "timezone": "America/Los_Angeles",
   "sentry": "",
-  "redis": ""
+  "redis": "",
+  "domain": "communa.network",
+  "homepage": "https://communa.network",
+  "walletConnect": {
+    "projectId": "f72f23676636bdae1b917bd2da168a95",
+    "metaData": {
+      "name": "communa-network-dapp",
+      "description": "Communa is a web3 platform that connects businesses with talented professionals worldwide",
+      "url": "communa.network",
+      "icons": [
+        "https://communa.network/logo.png"
+      ]
+    }
+  }
 }

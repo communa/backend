@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import {inject, injectable} from 'inversify';
-import {isEmail} from 'class-validator';
+
 import QRCode from 'qrcode';
 
 import {User} from '../entity/User';
@@ -17,11 +17,13 @@ import {UserManager} from './UserManager';
 import {RedisClient} from './RedisClient';
 import {Signer} from './Signer';
 import {App} from '../app/App';
+import {AuthClient} from '@walletconnect/auth-client';
 
 @injectable()
 export class Authenticator {
   protected accessTokenExpiresIn: number = 60 * 60 * 3; // three hours
   protected refreshTokenExpiresIn: number = 60 * 60 * 24; // 24 hours
+  protected loginSeconds: number = 1000 * 60 * 10; // 10 minutes
 
   @inject('UserRepository')
   protected userRepository: UserRepository;
@@ -38,49 +40,79 @@ export class Authenticator {
 
   public async getNonce(address: string): Promise<string> {
     const nonce = this.signer.generateNonce();
-    const key = `login:${address}`;
-    const seconds = 1000 * 60;
+    const key = `nonce:${address}`;
 
-    await this.redis.setWithExpiry(key, nonce, seconds);
+    await this.redis.setWithExpiry(key, nonce, this.loginSeconds);
 
     return nonce;
   }
 
   public async getNonceQr(): Promise<string> {
-    return this.signer.generateNonce();
+    const nonce = this.signer.generateNonce();
+
+    const key = `nonceQr:${nonce}`;
+
+    await this.redis.setWithExpiry(key, nonce, this.loginSeconds);
+
+    return Promise.resolve(nonce);
   }
 
-  public async generateQr(nonce: string): Promise<Buffer> {
+  public async getNonceQrStatus(nonce: string): Promise<IAuthTokens | any> {
+    const key = `nonceQr:${nonce}`;
+
+    const address = await this.redis.get(key);
+
+    if (!address) {
+      return {};
+    }
+
+    const user = await this.userRepository.findByAddressPublic(address);
+
+    if (!user) {
+      return {};
+    }
+
+    return this.getTokens(user);
+  }
+
+  public async generateQrImage(nonce: string): Promise<Buffer> {
+    if (!App.authClient) {
+      App.authClient = await AuthClient.init(this.parameters.walletConnect);
+
+      App.authClient.on('auth_request', ({id, params}) => {
+        console.log(id, params);
+      })
+
+      App.authClient.on('auth_response', ({id, params}) => {
+        console.log(id, params);
+      })
+    }
+
     const authRequest = await App.authClient.request({
-      aud: 'https://communa.network',
-      domain: 'communa.network',
+      aud: this.parameters.homepage,
+      domain: this.parameters.domain,
       chainId: 'eip155:1',
       type: 'eip4361',
       nonce,
     });
-    const data = await QRCode.toDataURL(
-      authRequest.uri as string,
-      {
-        width: 350
-      }
-    );
+    const data = await QRCode.toDataURL(authRequest.uri as string, {
+      width: 350
+    });
     const base64Data = data.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
     const img = Buffer.from(base64Data, 'base64');
-    
-    const key = `qr:${nonce}`;
-    const seconds = 1000 * 60;
+    const key = `nonceQrLogin:${nonce}`;
 
-    await this.redis.setWithExpiry(key, nonce, seconds);
+    await this.redis.setWithExpiry(key, nonce, this.loginSeconds);
 
-    // console.log(authRequest);
-    // console.log(nonce);
-    // console.log(img);
-    
+    console.log(authRequest);
+    console.log(nonce);
+    console.log(img);
+
     return img;
   }
 
   public async loginWeb3(signature: string, address: string): Promise<IAuthTokens> {
-    const key = `login:${address}`;
+    const key = `nonce:${address}`;
     const nonce = await this.redis.get(key);
 
     if (!nonce) {
@@ -200,22 +232,5 @@ export class Authenticator {
 
   public static hashPassword(plainPassword: string): string {
     return bcrypt.hashSync(plainPassword, 8);
-  }
-
-  public async forgotPassword(emailOrPhone: string) {
-    const user = await this.userRepository.findByEmailPhone(emailOrPhone);
-
-    if (!user) {
-      throw new AuthenticationException('e-mail address or phone number is missing in the system');
-    }
-    const token = this.generateJwtToken(user);
-    user.resetPasswordJwtIat = this.getJwtIatOrThrowError(token);
-    await this.userRepository.saveSingle(user);
-
-    const isInputDataAnEmail = isEmail(emailOrPhone);
-
-    if (isInputDataAnEmail) {
-      this.mailer.sendUserResetPasswordEmail(user, token);
-    }
   }
 }

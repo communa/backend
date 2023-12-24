@@ -1,3 +1,4 @@
+import faker from 'faker';
 import {inject, injectable} from 'inversify';
 import {Activity} from '../../entity/Activity';
 
@@ -14,6 +15,10 @@ export class TimeFixture {
 
     time.activity = activity;
     // time.user = user;
+    time.note = faker.datatype.uuid();
+    time.mouseKeys = faker.datatype.number(9);
+    time.keyboardKeys = faker.datatype.number(9);
+    time.mouseDistance = faker.datatype.number(9);
     time.fromAt = from;
     time.toAt = to;
 

@@ -58,6 +58,52 @@ export class AuthControllerTest extends BaseControllerTest {
   }
 
   @test()
+  async nonceQr() {
+    const res = await this.http.request({
+      url: `${this.url}/api/auth/nonceQr`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data.length).to.be.eq(36);
+  }
+
+  @test()
+  async nonceQrStatus() {
+    const nonce = await this.authenticator.getNonceQr();
+
+    const res = await this.http.request({
+      url: `${this.url}/api/auth/nonceQr/${nonce}/status`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data).to.be.deep.eq({});
+  }
+
+  @test()
+  async nonceQrImage() {
+    const nonce = await this.authenticator.getNonceQr();
+
+    const res = await this.http.request({
+      url: `${this.url}/api/auth/nonceQr/${nonce}/image`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data.length).to.be.greaterThan(4000);
+  }
+
+  @test()
   async status_user() {
     const user = await this.userFixture.createUser();
     const token = this.authenticator.generateJwtToken(user);

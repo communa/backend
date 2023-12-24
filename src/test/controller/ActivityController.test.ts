@@ -62,7 +62,7 @@ export class ActivityControllerTest extends BaseControllerTest {
 
     expect(res.status).to.be.equal(200);
     expect(res.data).to.be.deep.equal({});
-    expect(updated.state).to.be.eq(EActivityState.STARTED);
+    expect(updated.state).to.be.eq(EActivityState.ACTIVE);
     expect(updated.startedAt).to.be.not.null
   }
 
@@ -252,6 +252,34 @@ export class ActivityControllerTest extends BaseControllerTest {
     const res = await this.http.request(config);
 
     expect(res.data).to.be.deep.eq([[], 0]);
+  }
+
+  @test()
+  async searchFreelancer() {
+    const freelancer = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(freelancer, EActivityState.PERSONAL);
+
+    await this.applicationFixture.create(activity, freelancer);
+
+    const config = {
+      url: `${this.url}/api/activity/search/freelancer`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(freelancer).accessToken,
+      },
+      data: {
+        filter: {},
+        sort: {createdAt: 'ASC'},
+        page: 0,
+      },
+    };
+
+    const res = await this.http.request(config);
+
+    expect(res.data[0].length).to.be.eq(1);
+    expect(res.data[0][0].id).to.be.eq(activity.id);
+    expect(res.data[0][0].state).to.be.eq(EActivityState.PERSONAL);
   }
 
   @test()

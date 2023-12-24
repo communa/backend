@@ -12,7 +12,6 @@ import {
   Param,
 } from 'routing-controllers';
 
-import faker from 'faker';
 import express from 'express';
 import {OpenAPI, ResponseSchema} from 'routing-controllers-openapi';
 
@@ -22,7 +21,6 @@ import {Authenticator} from '../service/Authenticator';
 import {UserManager} from '../service/UserManager';
 import {UserRepository} from '../repository/UserRepository';
 import {IConfigParameters} from '../interface/IConfigParameters';
-import {AuthForgotPasswordDto} from '../validator/dto/AuthDto';
 import {EUserRole} from '../interface/EUserRole';
 
 @JsonController('/auth')
@@ -155,32 +153,21 @@ export class AuthController {
     return user;
   }
 
-  @Get('/nonceQr')
-  public async qrNonce() {
-    return this.authenticator.getNonceQr();
+  @HttpCode(200)
+  @Post('/nonceQr')
+  public async nonceQr() {
+    return await this.authenticator.getNonceQr();
   }
 
-  @Get('/qr/:nonce')
-  public async qr(@Param('nonce') nonce: string) {
-    return this.authenticator.generateQr(nonce);
+  @HttpCode(200)
+  @Get('/nonceQr/:nonce/image')
+  public async nonceQrImage(@Param('nonce') nonce: string) {
+    return this.authenticator.generateQrImage(nonce);
   }
 
-  @OpenAPI({
-    requestBody: {
-      content: {
-        'application/json': {
-          example: {
-            emailOrPhone: faker.internet.email(),
-          },
-        },
-      },
-      required: false,
-    },
-  })
-  @Post('/forgot-password')
-  public async passwordReset(@Body() payload: AuthForgotPasswordDto) {
-    await this.authenticator.forgotPassword(payload.emailOrPhone);
-
-    return {};
+  @HttpCode(200)
+  @Get('/nonceQr/:nonce/status')
+  public nonceQrStatus(@Param('nonce') nonce: string) {
+    return this.authenticator.getNonceQrStatus(nonce);
   }
 }

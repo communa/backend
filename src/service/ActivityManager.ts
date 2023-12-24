@@ -25,7 +25,7 @@ export class ActivityManager {
 
     activity.applicationAccepted = application;
     activity.startedAt = new Date();
-    activity.state = EActivityState.STARTED;
+    activity.state = EActivityState.ACTIVE;
 
     await this.save(activity);
   }

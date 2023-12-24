@@ -17,6 +17,8 @@ export class TimeManager {
   public async save(time: Time, activity: Activity, freelancer: User): Promise<Time> {
     const activityExisting = await this.activityRepository.findActivityByFreelancerOrFail(activity, freelancer,);
 
+    time.activity = activityExisting;
+
     if (activityExisting.closedAt) {
       throw new RejectedExecutionException(`Time can not be editited on closed activities`);
     }

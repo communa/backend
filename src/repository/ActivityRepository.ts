@@ -34,6 +34,37 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
       .getOneOrFail();
   }
 
+  public async findAndCountFreelancer(
+    search: ISearchActivity,
+    user: User
+  ): Promise<[Activity[], number]> {
+    const s = _.assign(
+      {
+        filter: {},
+        sort: {
+          createdAt: 'ASC',
+        },
+        page: 0,
+      },
+      search
+    );
+    const sort = this.filter.buildOrderByCondition('activity', s);
+    const limit = this.filter.buildLimit(search);
+    const query = this.getRepo()
+      .createQueryBuilder('activity')
+      .select()
+      .where((qb: SelectQueryBuilder<Activity>) => {
+        qb.andWhere('activity.user.id = :userId', {userId: user.id});
+      })
+      .andWhere('activity.state = :state', {state: EActivityState.PERSONAL})
+      .andWhere('activity.cancelledAt IS NULL')
+      .orderBy(sort)
+      .skip(limit * s.page)
+      .take(limit);
+
+    return query.getManyAndCount();
+  }
+
   public async findAndCount(search: ISearchActivity): Promise<[Activity[], number]> {
     const s = _.assign(
       {

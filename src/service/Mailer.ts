@@ -11,7 +11,5 @@ export class Mailer {
   @inject('parameters')
   protected parameters: IConfigParameters;
 
-  public sendUserNewEmail(_user: User): void {}
-
-  public sendUserResetPasswordEmail(_user: User, _token: string): void {}
+  public sendUserNewEmail(_user: User): void { }
 }
