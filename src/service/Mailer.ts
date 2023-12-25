@@ -11,5 +11,5 @@ export class Mailer {
   @inject('parameters')
   protected parameters: IConfigParameters;
 
-  public sendUserNewEmail(_user: User): void { }
+  public sendUserNewEmail(_user: User): void {}
 }

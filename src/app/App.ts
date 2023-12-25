@@ -7,7 +7,6 @@ import bodyParser from 'body-parser';
 import {Container} from 'inversify';
 import {Connection} from 'typeorm';
 import {useExpressServer} from 'routing-controllers';
-import AuthClient from '@walletconnect/auth-client';
 
 import {AppContainer} from './AppContainer';
 import {DbConnector} from '../connector/DbConnector';
@@ -33,7 +32,6 @@ export class App {
   public static server: http.Server;
   public static conn: Connection;
   public static container: Container;
-  public static authClient: AuthClient | null;
 
   private readonly env: string;
   private readonly parameters: IConfigParameters;

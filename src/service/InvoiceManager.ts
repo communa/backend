@@ -19,13 +19,22 @@ export class InvoiceManager {
   @inject('TimeRepository')
   protected timeRepository: TimeRepository;
 
-  public async create(data: InvoiceCreateDto, activity: Activity, freelancer: User): Promise<Invoice> {
+  public async create(
+    data: InvoiceCreateDto,
+    activity: Activity,
+    freelancer: User
+  ): Promise<Invoice> {
     const invoice = new Invoice();
 
-    const activityExisting = await this.activityRepository.findActivityByFreelancerOrFail(activity, freelancer);
+    const activityExisting = await this.activityRepository.findActivityByFreelancerOrFail(
+      activity,
+      freelancer
+    );
 
     if (!activityExisting) {
-      throw new RejectedExecutionException(`Wrong user: the given activity belongs to someone else`);
+      throw new RejectedExecutionException(
+        `Wrong user: the given activity belongs to someone else`
+      );
     }
 
     const times = await this.timeRepository.findTimeBetweenForActivity(

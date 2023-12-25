@@ -5,14 +5,17 @@ import {suite, test} from '@testdeck/mocha';
 
 import {UserRepository} from '../../repository/UserRepository';
 import {BaseControllerTest} from './BaseController.test';
+import {RedisClient} from '../../service/RedisClient';
 
 @suite()
 export class AuthControllerTest extends BaseControllerTest {
   protected userRepository: UserRepository;
+  protected redisClient: RedisClient;
 
   constructor() {
     super();
 
+    this.redisClient = this.container.get('RedisClient');
     this.userRepository = this.container.get('UserRepository');
   }
 
@@ -58,29 +61,62 @@ export class AuthControllerTest extends BaseControllerTest {
   }
 
   @test()
-  async nonceQr() {
+  async timeTrackerNonceCreate() {
     const res = await this.http.request({
-      url: `${this.url}/api/auth/nonceQr`,
+      url: `${this.url}/api/auth/timeTracker/nonce`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
+    const nonce = res.data as string;
+    const key = `timetracker:nonce:${nonce}`;
+    const data = await this.redisClient.get(key);
+
     expect(res.status).to.be.equal(200);
-    expect(res.data.length).to.be.eq(36);
+    expect(nonce.length).to.be.eq(36);
+    expect(data).to.be.deep.eq({
+      nonce,
+      ip: '127.0.0.1',
+    });
   }
 
   @test()
-  async nonceQrStatus() {
-    const nonce = await this.authenticator.getNonceQr();
+  async timeTrackerNonceGet() {
+    const nonce = await this.authenticator.timeTrackerNonceCreate('127.0.0.1');
+    const user = await this.userFixture.createUser();
+    const token = this.authenticator.generateJwtToken(user);
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/nonceQr/${nonce}/status`,
+      url: `${this.url}/api/auth/timeTracker/${nonce}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-      }
+        Authorization: token,
+      },
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data).to.be.deep.equal({
+      nonce,
+      ip: '127.0.0.1',
+    });
+  }
+
+  @test()
+  async timeTrackerLogin() {
+    const nonce = await this.authenticator.timeTrackerNonceCreate('127.0.0.1');
+
+    const res = await this.http.request({
+      url: `${this.url}/api/auth/timeTracker/${nonce}/login`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: {
+        nonce,
+      },
     });
 
     expect(res.status).to.be.equal(200);
@@ -88,19 +124,45 @@ export class AuthControllerTest extends BaseControllerTest {
   }
 
   @test()
-  async nonceQrImage() {
-    const nonce = await this.authenticator.getNonceQr();
+  async timeTrackerConnect() {
+    const nonce = await this.authenticator.timeTrackerNonceCreate('127.0.0.1');
+    const user = await this.userFixture.createUser();
+    const token = this.authenticator.generateJwtToken(user);
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/nonceQr/${nonce}/image`,
-      method: 'GET',
+      url: `${this.url}/api/auth/timeTracker/${nonce}/connect`,
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-      }
+        Authorization: token,
+      },
     });
 
     expect(res.status).to.be.equal(200);
-    expect(res.data.length).to.be.greaterThan(4000);
+    expect(res.data).to.be.deep.eq({});
+  }
+
+  @test()
+  async timeTrackerJwt() {
+    const nonce = await this.authenticator.timeTrackerNonceCreate('127.0.0.1');
+    const user = await this.userFixture.createUser();
+    const token = this.authenticator.generateJwtToken(user);
+
+    await this.authenticator.timeTrackerConnect(nonce, user, '127.0.0.1');
+
+    const res = await this.http.request({
+      url: `${this.url}/api/auth/timeTracker/${nonce}/jwt`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token,
+      },
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data.nonce).to.be.eq(nonce);
+    expect(res.data.ip).to.be.eq('127.0.0.1');
+    expect(res.data).to.have.property('jwt');
   }
 
   @test()

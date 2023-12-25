@@ -90,10 +90,7 @@ export class TimeController extends AbstractController {
 
   @Delete('/:id')
   @HttpCode(200)
-  public async delete(
-    @CurrentUser() currentUser: User,
-    @EntityFromParam('id') time: Time
-  ) {
+  public async delete(@CurrentUser() currentUser: User, @EntityFromParam('id') time: Time) {
     await this.timeManager.remove(time, currentUser);
 
     return {};

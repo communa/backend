@@ -55,10 +55,7 @@ export class ActivityController extends AbstractController {
   @ExtendedResponseSchema(Activity, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
   public searchFreelancer(@CurrentUser() currentUser: User, @Body() search: ActivitySearchDto) {
-    return this.activityRepository.findAndCountFreelancer(
-      search,
-      currentUser
-    );
+    return this.activityRepository.findAndCountFreelancer(search, currentUser);
   }
 
   @Post('/search/publishing')

@@ -22,7 +22,7 @@ export class RedisClient {
     await client.disconnect();
   }
 
-  public async get(key: string): Promise<string> {
+  public async get(key: string): Promise<any | string> {
     const client = await this.getConnectedClient();
     const value = await client.get(key);
 

@@ -54,16 +54,14 @@ export class ActivityControllerTest extends BaseControllerTest {
       },
     });
 
-    const updated = await this.activityRepository.findOneByQueryBuilder(
-      {id: activity.id},
-      null,
-      {applicationAccepted: true}
-    ) as Activity;
+    const updated = (await this.activityRepository.findOneByQueryBuilder({id: activity.id}, null, {
+      applicationAccepted: true,
+    })) as Activity;
 
     expect(res.status).to.be.equal(200);
     expect(res.data).to.be.deep.equal({});
     expect(updated.state).to.be.eq(EActivityState.ACTIVE);
-    expect(updated.startedAt).to.be.not.null
+    expect(updated.startedAt).to.be.not.null;
   }
 
   @test

@@ -15,6 +15,7 @@ import {
 import express from 'express';
 import {OpenAPI, ResponseSchema} from 'routing-controllers-openapi';
 
+import {CurrentUser} from '../decorator/CurrentUser';
 import {User} from '../entity/User';
 import {App} from '../app/App';
 import {Authenticator} from '../service/Authenticator';
@@ -154,20 +155,54 @@ export class AuthController {
   }
 
   @HttpCode(200)
-  @Post('/nonceQr')
-  public async nonceQr() {
-    return await this.authenticator.getNonceQr();
+  @Post('/timeTracker/nonce')
+  public async timeTrackerNonceCreate(@Req() req: express.Request) {
+    return await this.authenticator.timeTrackerNonceCreate(req.ip);
   }
 
+  @OpenAPI({
+    summary: 'Login operation by the timetracker',
+  })
   @HttpCode(200)
-  @Get('/nonceQr/:nonce/image')
-  public async nonceQrImage(@Param('nonce') nonce: string) {
-    return this.authenticator.generateQrImage(nonce);
+  @Post('/timeTracker/:nonce/login')
+  public async timeTrackerLogin(@Param('nonce') nonce: string, @Req() req: express.Request) {
+    await this.authenticator.timeTrackerLogin(nonce, req.ip);
+
+    return {};
   }
 
+  @OpenAPI({
+    summary: 'Used by the frontend to connect a wallet to the timetracker',
+  })
+  @Authorized([EUserRole.ROLE_USER])
   @HttpCode(200)
-  @Get('/nonceQr/:nonce/status')
-  public nonceQrStatus(@Param('nonce') nonce: string) {
-    return this.authenticator.getNonceQrStatus(nonce);
+  @Post('/timeTracker/:nonce/connect')
+  public async timeTrackerConnect(
+    @CurrentUser() currentUser: User,
+    @Param('nonce') nonce: string,
+    @Req() req: express.Request
+  ) {
+    await this.authenticator.timeTrackerConnect(nonce, currentUser, req.ip);
+
+    return {};
+  }
+
+  @OpenAPI({
+    summary: 'Used by the frontend to connect a wallet to the timetracker',
+  })
+  @Authorized([EUserRole.ROLE_USER])
+  @HttpCode(200)
+  @Get('/timeTracker/:nonce')
+  public async timeTrackerNonceGet(@Param('nonce') nonce: string, @Req() req: express.Request) {
+    return this.authenticator.timeTrackerNonceGet(nonce, req.ip);
+  }
+
+  @OpenAPI({
+    summary: 'User retrieval operation by the timetracker',
+  })
+  @HttpCode(200)
+  @Get('/timeTracker/:nonce/jwt')
+  public timeTrackerJwt(@Param('nonce') nonce: string, @Req() req: express.Request) {
+    return this.authenticator.timeTrackerJwt(nonce, req.ip);
   }
 }

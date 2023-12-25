@@ -15,7 +15,10 @@ export class TimeManager {
   protected activityRepository: ActivityRepository;
 
   public async save(time: Time, activity: Activity, freelancer: User): Promise<Time> {
-    const activityExisting = await this.activityRepository.findActivityByFreelancerOrFail(activity, freelancer,);
+    const activityExisting = await this.activityRepository.findActivityByFreelancerOrFail(
+      activity,
+      freelancer
+    );
 
     time.activity = activityExisting;
 

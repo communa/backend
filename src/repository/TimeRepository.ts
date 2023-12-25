@@ -81,7 +81,12 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       .getOneOrFail();
   }
 
-  public findTimeBetweenForActivity(from: number, to: number, activity: Activity, freelancer: User): Promise<Time[]> {
+  public findTimeBetweenForActivity(
+    from: number,
+    to: number,
+    activity: Activity,
+    freelancer: User
+  ): Promise<Time[]> {
     return this.getRepo()
       .createQueryBuilder('time')
       .innerJoinAndSelect('time.activity', 'activity')

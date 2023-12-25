@@ -54,7 +54,7 @@ export class InvoiceController extends AbstractController {
   public create(
     @CurrentUser() currentUser: User,
     @EntityFromParam('activityId') activity: Activity,
-    @Body() data: InvoiceCreateDto,
+    @Body() data: InvoiceCreateDto
   ) {
     return this.invoiceManager.create(data, activity, currentUser);
   }

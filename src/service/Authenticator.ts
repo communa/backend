@@ -2,8 +2,6 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import {inject, injectable} from 'inversify';
 
-import QRCode from 'qrcode';
-
 import {User} from '../entity/User';
 import {Mailer} from './Mailer';
 
@@ -16,8 +14,6 @@ import AuthenticationException from '../exception/AuthenticationException';
 import {UserManager} from './UserManager';
 import {RedisClient} from './RedisClient';
 import {Signer} from './Signer';
-import {App} from '../app/App';
-import {AuthClient} from '@walletconnect/auth-client';
 
 @injectable()
 export class Authenticator {
@@ -38,6 +34,57 @@ export class Authenticator {
   @inject('RedisClient')
   protected redis: RedisClient;
 
+  public async timeTrackerNonceCreate(ip: string): Promise<string> {
+    const nonce = this.signer.generateNonce();
+    const key = `timetracker:nonce:${nonce}`;
+    const data = {
+      nonce,
+      ip,
+    };
+
+    await this.redis.setWithExpiry(key, data, this.loginSeconds);
+
+    return Promise.resolve(nonce);
+  }
+
+  public async timeTrackerNonceGet(nonce: string, _ip: string) {
+    const key = `timetracker:nonce:${nonce}`;
+
+    return this.redis.get(key);
+  }
+
+  public async timeTrackerLogin(nonce: string, ip: string) {
+    const key = `timetracker:login:${nonce}`;
+    const data = {
+      nonce,
+      ip,
+    };
+
+    await this.redis.setWithExpiry(key, data, this.loginSeconds);
+  }
+
+  public async timeTrackerConnect(nonce: string, user: User, ip: string) {
+    const key = `timetracker:jwt:${nonce}`;
+    const data = {
+      nonce,
+      ip,
+      jwt: this.getTokens(user),
+    };
+
+    await this.redis.setWithExpiry(key, data, this.loginSeconds);
+  }
+
+  public async timeTrackerJwt(nonce: string, _ip: string): Promise<IAuthTokens | any> {
+    const key = `timetracker:jwt:${nonce}`;
+    const data = await this.redis.get(key);
+
+    if (!data) {
+      return {};
+    }
+
+    return data;
+  }
+
   public async getNonce(address: string): Promise<string> {
     const nonce = this.signer.generateNonce();
     const key = `nonce:${address}`;
@@ -45,70 +92,6 @@ export class Authenticator {
     await this.redis.setWithExpiry(key, nonce, this.loginSeconds);
 
     return nonce;
-  }
-
-  public async getNonceQr(): Promise<string> {
-    const nonce = this.signer.generateNonce();
-
-    const key = `nonceQr:${nonce}`;
-
-    await this.redis.setWithExpiry(key, nonce, this.loginSeconds);
-
-    return Promise.resolve(nonce);
-  }
-
-  public async getNonceQrStatus(nonce: string): Promise<IAuthTokens | any> {
-    const key = `nonceQr:${nonce}`;
-
-    const address = await this.redis.get(key);
-
-    if (!address) {
-      return {};
-    }
-
-    const user = await this.userRepository.findByAddressPublic(address);
-
-    if (!user) {
-      return {};
-    }
-
-    return this.getTokens(user);
-  }
-
-  public async generateQrImage(nonce: string): Promise<Buffer> {
-    if (!App.authClient) {
-      App.authClient = await AuthClient.init(this.parameters.walletConnect);
-
-      App.authClient.on('auth_request', ({id, params}) => {
-        console.log(id, params);
-      })
-
-      App.authClient.on('auth_response', ({id, params}) => {
-        console.log(id, params);
-      })
-    }
-
-    const authRequest = await App.authClient.request({
-      aud: this.parameters.homepage,
-      domain: this.parameters.domain,
-      chainId: 'eip155:1',
-      type: 'eip4361',
-      nonce,
-    });
-    const data = await QRCode.toDataURL(authRequest.uri as string, {
-      width: 350
-    });
-    const base64Data = data.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
-    const img = Buffer.from(base64Data, 'base64');
-    const key = `nonceQrLogin:${nonce}`;
-
-    await this.redis.setWithExpiry(key, nonce, this.loginSeconds);
-
-    console.log(authRequest);
-    console.log(nonce);
-    console.log(img);
-
-    return img;
   }
 
   public async loginWeb3(signature: string, address: string): Promise<IAuthTokens> {
