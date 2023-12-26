@@ -52,6 +52,7 @@ export class ActivityController extends AbstractController {
   }
 
   @Post('/search/freelancer')
+  @Authorized([EUserRole.ROLE_USER])
   @ExtendedResponseSchema(Activity, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
   public searchFreelancer(@CurrentUser() currentUser: User, @Body() search: ActivitySearchDto) {
@@ -115,7 +116,10 @@ export class ActivityController extends AbstractController {
 
   @Delete('/:id')
   @HttpCode(200)
-  public async delete(@CurrentUser() currentUser: User, @EntityFromParam('id') activity: Activity) {
+  public async delete(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('id') activity: Activity
+  ) {
     await this.activityRepository.delete({
       id: activity.id,
       user: currentUser,

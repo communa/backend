@@ -25,6 +25,7 @@ import {InvoiceRepository} from '../repository/InvoiceRepository';
 import {ApplicationManager} from '../service/ApplicationManager';
 import {TimeManager} from '../service/TimeManager';
 import {InvoiceManager} from '../service/InvoiceManager';
+import {AuthenticatorTimeTracker} from '../service/AuthenticatorTimeTracker';
 
 export class AppContainer {
   private static container: Container;
@@ -55,6 +56,7 @@ export class AppContainer {
     // Services
     container.bind<Signer>('Signer').to(Signer);
     container.bind<Authenticator>('Authenticator').to(Authenticator);
+    container.bind<AuthenticatorTimeTracker>('AuthenticatorTimeTracker').to(AuthenticatorTimeTracker);
     container.bind<RedisClient>('RedisClient').to(RedisClient);
     container.bind<Filter>('Filter').to(Filter);
     container.bind<UserManager>('UserManager').to(UserManager);

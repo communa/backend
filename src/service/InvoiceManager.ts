@@ -26,7 +26,7 @@ export class InvoiceManager {
   ): Promise<Invoice> {
     const invoice = new Invoice();
 
-    const activityExisting = await this.activityRepository.findActivityByFreelancerOrFail(
+    const activityExisting = await this.activityRepository.findActivityByFreelancer(
       activity,
       freelancer
     );

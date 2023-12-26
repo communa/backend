@@ -37,18 +37,17 @@ export class TimeController extends AbstractController {
     this.timeRepository = App.container.get('TimeRepository');
   }
 
-  @Post('/search/freelancer')
+  @Post('/search')
   @ExtendedResponseSchema(Time, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
-  public searchFreelancer(@Body() search: TimeSearchDto) {
-    return this.timeRepository.findAndCount(search);
-  }
-
-  @Post('/search/business')
-  @ExtendedResponseSchema(Time, {isPagination: true})
-  @ResponseClassTransformOptions({groups: ['search']})
-  public searchBusiness(@Body() search: TimeSearchDto) {
-    return this.timeRepository.findAndCount(search);
+  public searchFreelancer(
+    @Body() search: TimeSearchDto,
+    @CurrentUser() currentUser: User,
+  ) {
+    return this.timeRepository.findAndCountPersonal(
+      search,
+      currentUser
+    );
   }
 
   @Get('/:id')

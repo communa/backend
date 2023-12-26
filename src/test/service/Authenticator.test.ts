@@ -138,6 +138,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     user.email = faker.internet.email();
 
     const token = this.authenticator.generateJwtToken(user);
+    console.log(token);
     const email = this.authenticator.getEmailOrPhoneOrThrowError(token);
 
     expect(user.email).to.be.equal(email);
@@ -162,7 +163,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
   getEmailFromJwtOrThrowError_errorExpired() {
     let error;
     const oldToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkxhdmluaWEzM0BnbWFpbC5jb20iLCJpYXQiOjE2MTcyNzU5MDYsImV4cCI6MTYxNzI3NTkwN30.vk-jE9sboEMGjcuvVg0e_RVG2QuTh6yZ4fSSOOjptb0';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbE9yUGhvbmUiOiJPbGdhNTBAeWFob28uY29tIiwiaWF0IjoxNzAzNTg5NzE4LCJleHAiOjE3MDM2MDA1MTh9.Y2De_m7g_ZLmugywlDseKLmPPnJqek_CJl1VIfJe-2o';
 
     try {
       this.authenticator.getEmailOrPhoneOrThrowError(oldToken);

@@ -27,7 +27,7 @@ namespace :deploy do
     try_sudo "cd #{latest_release} && NODE_ENV=production npm run typeorm:cli -- schema:sync"
     try_sudo "cd #{latest_release} && yarn run build"
     try_sudo "cd #{latest_release} && pm2 delete server"
-    try_sudo "cd #{latest_release} && yarn run pm2"
+    try_sudo "cd #{latest_release} && NODE_ENV=production pm2 start build/server.js --watch"
   end
 end
 

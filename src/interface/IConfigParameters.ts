@@ -1,5 +1,3 @@
-import {AuthClientTypes} from '@walletconnect/auth-client';
-
 export interface IConfigParameters {
   host: string;
   port: number;
@@ -8,7 +6,6 @@ export interface IConfigParameters {
   jwtSecret: string;
   domain: string;
   homepage: string;
-  walletConnect: AuthClientTypes.Options;
   database: {
     type: string;
     host: string;

@@ -1,5 +1,6 @@
 import {injectable, inject} from 'inversify';
 import * as web3 from 'web3';
+import * as crypto from 'crypto';
 
 import faker from 'faker';
 
@@ -11,7 +12,9 @@ export class Signer {
   protected parameters: IConfigParameters;
 
   public generateNonce(): string {
-    return faker.datatype.uuid();
+    const nonce = `${faker.datatype.uuid()}-${this.parameters.jwtSecret}`;
+
+    return crypto.createHash('md5').update(nonce).digest('hex');
   }
 
   public verify(nonce: string, signature: string, address: string): boolean {

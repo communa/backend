@@ -14,7 +14,6 @@ export class TimeFixture {
     const time = new Time();
 
     time.activity = activity;
-    // time.user = user;
     time.note = faker.datatype.uuid();
     time.mouseKeys = faker.datatype.number(9);
     time.keyboardKeys = faker.datatype.number(9);

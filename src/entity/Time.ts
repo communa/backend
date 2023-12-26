@@ -5,7 +5,7 @@ import {JSONSchema} from 'class-validator-jsonschema';
 
 import {AbstractBaseEntity} from './AbstractBaseEntity';
 import {Activity} from './Activity';
-import {IsDate} from 'class-validator';
+// import {IsDate} from 'class-validator';
 import {ITime} from '../interface/ITime';
 
 @JSONSchema({
@@ -37,13 +37,13 @@ export class Time extends AbstractBaseEntity implements ITime {
   @Column('float', {nullable: false})
   mouseDistance: number;
 
-  @Expose({groups: ['search']})
+  @Expose({groups: ['search', 'create', 'edit']})
   @Column('timestamptz', {nullable: false})
-  @IsDate()
+  // @IsDate()
   fromAt: Date;
 
-  @Expose({groups: ['search']})
+  @Expose({groups: ['search', 'create', 'edit']})
   @Column('timestamptz', {nullable: false})
-  @IsDate()
+  // @IsDate()
   toAt: Date;
 }

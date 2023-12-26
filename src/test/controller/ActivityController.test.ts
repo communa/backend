@@ -7,6 +7,7 @@ import {ActivityManager} from '../../service/ActivityManager';
 import {ActivityRepository} from '../../repository/ActivityRepository';
 import {EActivityState} from '../../interface/EActivityState';
 import {Activity} from '../../entity/Activity';
+import {EActivityType} from '../../interface/EActivityType';
 
 @suite
 export class ActivityControllerTest extends BaseControllerTest {
@@ -87,7 +88,7 @@ export class ActivityControllerTest extends BaseControllerTest {
   }
 
   @test
-  async post() {
+  async create() {
     const business = await this.userFixture.createUser();
     const data = {
       title: faker.datatype.uuid(),
@@ -255,7 +256,7 @@ export class ActivityControllerTest extends BaseControllerTest {
   @test()
   async searchFreelancer() {
     const freelancer = await this.userFixture.createUser();
-    const activity = await this.activityFixture.create(freelancer, EActivityState.PERSONAL);
+    const activity = await this.activityFixture.createPersonal(freelancer);
 
     await this.applicationFixture.create(activity, freelancer);
 
@@ -277,7 +278,8 @@ export class ActivityControllerTest extends BaseControllerTest {
 
     expect(res.data[0].length).to.be.eq(1);
     expect(res.data[0][0].id).to.be.eq(activity.id);
-    expect(res.data[0][0].state).to.be.eq(EActivityState.PERSONAL);
+    expect(res.data[0][0].state).to.be.eq(EActivityState.PUBLISHED);
+    expect(res.data[0][0].type).to.be.eq(EActivityType.PERSONAL);
   }
 
   @test()

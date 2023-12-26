@@ -14,17 +14,25 @@ export class TimeManager {
   @inject('ActivityRepository')
   protected activityRepository: ActivityRepository;
 
-  public async save(time: Time, activity: Activity, freelancer: User): Promise<Time> {
-    const activityExisting = await this.activityRepository.findActivityByFreelancerOrFail(
-      activity,
-      freelancer
-    );
+  public async save(time: Time, activity: Activity, user: User): Promise<Time> {
+    const activities = [
+      await this.activityRepository.findActivityByFreelancer(
+        activity,
+        user
+      ),
+      await this.activityRepository.findActivityPersonal(
+        activity,
+        user
+      )
+    ];
 
-    time.activity = activityExisting;
+    const activityValid = activities.find(a => a !== undefined);
 
-    if (activityExisting.closedAt) {
-      throw new RejectedExecutionException(`Time can not be editited on closed activities`);
+    if (!activityValid) {
+      throw new RejectedExecutionException(`The given activity is unavailable for time tracking`);
     }
+
+    time.activity = activityValid;
 
     return this.timeRepository.validateAndSave(time);
   }

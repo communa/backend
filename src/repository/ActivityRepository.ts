@@ -8,6 +8,7 @@ import {Activity} from '../entity/Activity';
 import {ISearchActivity} from '../interface/search/ISearchActivity';
 import {User} from '../entity/User';
 import {EActivityState} from '../interface/EActivityState';
+import {EActivityType} from '../interface/EActivityType';
 
 @injectable()
 export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
@@ -23,15 +24,28 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
     });
   }
 
-  public findActivityByFreelancerOrFail(activity: Activity, freelancer: User): Promise<Activity> {
+  public findActivityByFreelancer(activity: Activity, freelancer: User): Promise<Activity | undefined> {
     return this.getRepo()
       .createQueryBuilder('activity')
       .innerJoinAndSelect('activity.applicationAccepted', 'application')
       .innerJoinAndSelect('application.user', 'freelancer')
       .andWhere('activity.id = :id', {id: activity.id})
-      .andWhere('freelancer.id = :freelancerId', {freelancerId: freelancer.id})
+      .andWhere(`freelancer.id = :freelancerId`, {freelancerId: freelancer.id})
+      .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
       .select()
-      .getOneOrFail();
+      .getOne();
+  }
+
+  public findActivityPersonal(activity: Activity, user: User): Promise<Activity | undefined> {
+    return this.getRepo()
+      .createQueryBuilder('activity')
+      .innerJoinAndSelect('activity.user', 'user')
+      .andWhere('activity.id = :id', {id: activity.id})
+      .andWhere('user.id = :userId', {userId: user.id})
+      .andWhere(`activity.type = :type`, {type: EActivityType.PERSONAL})
+      .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
+      .select()
+      .getOne();
   }
 
   public async findAndCountFreelancer(
@@ -56,8 +70,8 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
       .where((qb: SelectQueryBuilder<Activity>) => {
         qb.andWhere('activity.user.id = :userId', {userId: user.id});
       })
-      .andWhere('activity.state = :state', {state: EActivityState.PERSONAL})
-      .andWhere('activity.cancelledAt IS NULL')
+      .andWhere(`activity.type IN (:...types)`, {types: [EActivityType.PERSONAL]})
+      .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
       .orderBy(sort)
       .skip(limit * s.page)
       .take(limit);
@@ -84,7 +98,8 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
       .where((qb: SelectQueryBuilder<Activity>) => {
         this.buildSearchQueries(qb, search);
       })
-      .andWhere('activity.state = :state', {state: EActivityState.PUBLISHED})
+      .andWhere(`activity.type IN (:...types)`, {types: [EActivityType.IMPORT, EActivityType.INPUT]})
+      .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
       .andWhere('activity.cancelledAt IS NULL')
       .orderBy(sort)
       .skip(limit * s.page)

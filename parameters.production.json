@@ -1,7 +1,7 @@
 {
   "host": "0.0.0.0",
   "port": 4000,
-  "jwtSecret": "app-jwt-secret",
+  "jwtSecret": "communa-jwt-production",
   "database": {
     "type": "postgres",
     "host": "localhost",

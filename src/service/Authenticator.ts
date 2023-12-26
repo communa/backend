@@ -17,9 +17,9 @@ import {Signer} from './Signer';
 
 @injectable()
 export class Authenticator {
-  protected accessTokenExpiresIn: number = 60 * 60 * 3; // three hours
-  protected refreshTokenExpiresIn: number = 60 * 60 * 24; // 24 hours
-  protected loginSeconds: number = 1000 * 60 * 10; // 10 minutes
+  protected accessTokenExpiresIn: number = 60 * 60 * 24; // 24 hours
+  protected refreshTokenExpiresIn: number = 60 * 60 * 24 * 3; // 3 * 24 hours
+  public static nonceExpiresIn: number = 1000 * 60 * 10; // 10 minutes
 
   @inject('UserRepository')
   protected userRepository: UserRepository;
@@ -34,62 +34,11 @@ export class Authenticator {
   @inject('RedisClient')
   protected redis: RedisClient;
 
-  public async timeTrackerNonceCreate(ip: string): Promise<string> {
-    const nonce = this.signer.generateNonce();
-    const key = `timetracker:nonce:${nonce}`;
-    const data = {
-      nonce,
-      ip,
-    };
-
-    await this.redis.setWithExpiry(key, data, this.loginSeconds);
-
-    return Promise.resolve(nonce);
-  }
-
-  public async timeTrackerNonceGet(nonce: string, _ip: string) {
-    const key = `timetracker:nonce:${nonce}`;
-
-    return this.redis.get(key);
-  }
-
-  public async timeTrackerLogin(nonce: string, ip: string) {
-    const key = `timetracker:login:${nonce}`;
-    const data = {
-      nonce,
-      ip,
-    };
-
-    await this.redis.setWithExpiry(key, data, this.loginSeconds);
-  }
-
-  public async timeTrackerConnect(nonce: string, user: User, ip: string) {
-    const key = `timetracker:jwt:${nonce}`;
-    const data = {
-      nonce,
-      ip,
-      jwt: this.getTokens(user),
-    };
-
-    await this.redis.setWithExpiry(key, data, this.loginSeconds);
-  }
-
-  public async timeTrackerJwt(nonce: string, _ip: string): Promise<IAuthTokens | any> {
-    const key = `timetracker:jwt:${nonce}`;
-    const data = await this.redis.get(key);
-
-    if (!data) {
-      return {};
-    }
-
-    return data;
-  }
-
   public async getNonce(address: string): Promise<string> {
     const nonce = this.signer.generateNonce();
     const key = `nonce:${address}`;
 
-    await this.redis.setWithExpiry(key, nonce, this.loginSeconds);
+    await this.redis.setWithExpiry(key, nonce, Authenticator.nonceExpiresIn);
 
     return nonce;
   }
