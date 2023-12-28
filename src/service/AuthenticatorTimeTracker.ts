@@ -7,6 +7,7 @@ import {RedisClient} from './RedisClient';
 import {Signer} from './Signer';
 import {Authenticator} from './Authenticator';
 import {EAuthTimeTrackerState} from '../interface/EAuthTimeTrackerState';
+import {UserRepository} from '../repository/UserRepository';
 
 @injectable()
 export class AuthenticatorTimeTracker {
@@ -18,6 +19,8 @@ export class AuthenticatorTimeTracker {
   protected redis: RedisClient;
   @inject('Authenticator')
   protected authenticator: Authenticator;
+  @inject('UserRepository')
+  protected userRepository: UserRepository;
 
   public async timeTrackerNonceGenerate(ip: string): Promise<string> {
     const nonce = this.signer.generateNonce();
@@ -72,6 +75,8 @@ export class AuthenticatorTimeTracker {
     };
 
     await this.redis.setWithExpiry(key, data, Authenticator.nonceExpiresIn);
+    
+    this.userRepository.saveSingle(user);
   }
 
   public async timeTrackerNonceGet(nonce: string, ip: string) {

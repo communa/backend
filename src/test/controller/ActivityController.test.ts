@@ -94,6 +94,7 @@ export class ActivityControllerTest extends BaseControllerTest {
       title: faker.datatype.uuid(),
       text: faker.datatype.uuid(),
       state: EActivityState.DRAFT,
+      type: EActivityType.CONTRACT
     };
 
     const res = await this.http.request({
@@ -283,12 +284,12 @@ export class ActivityControllerTest extends BaseControllerTest {
   }
 
   @test()
-  async searchPublishingDraft() {
+  async searchBusinessDraft() {
     const user = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(user, EActivityState.DRAFT);
 
     const config = {
-      url: `${this.url}/api/activity/search/publishing`,
+      url: `${this.url}/api/activity/search/business`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -312,12 +313,12 @@ export class ActivityControllerTest extends BaseControllerTest {
   }
 
   @test()
-  async searchPublishingArchived() {
+  async searchBusinessArchived() {
     const user = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(user, EActivityState.ARCHIVED);
 
     const config = {
-      url: `${this.url}/api/activity/search/publishing`,
+      url: `${this.url}/api/activity/search/business`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -59,11 +59,11 @@ export class Activity extends AbstractBaseEntity {
   hash: string;
 
   @IsNotEmpty()
-  @Expose({groups: ['search', 'create']})
+  @Expose({groups: ['search', 'create', 'edit']})
   @Column('text', {nullable: true})
   type: EActivityType;
   @IsNotEmpty()
-  @Expose({groups: ['search', 'create', 'create', 'edit']})
+  @Expose({groups: ['search', 'create', 'edit']})
   @Column('text', {nullable: true})
   state: EActivityState;
 

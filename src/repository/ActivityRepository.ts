@@ -98,7 +98,7 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
       .where((qb: SelectQueryBuilder<Activity>) => {
         this.buildSearchQueries(qb, search);
       })
-      .andWhere(`activity.type IN (:...types)`, {types: [EActivityType.IMPORT, EActivityType.INPUT]})
+      .andWhere(`activity.type IN (:...types)`, {types: [EActivityType.IMPORT, EActivityType.CONTRACT]})
       .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
       .andWhere('activity.cancelledAt IS NULL')
       .orderBy(sort)
@@ -108,14 +108,14 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
     return query.getManyAndCount();
   }
 
-  public async findAndCountPublishing(
+  public async findAndCountBusiness(
     search: ISearchActivity,
     user: User
   ): Promise<[Activity[], number]> {
     const s = _.assign(
       {
         filter: {
-          state: 'published',
+          // state: 'published',
         },
         sort: {
           createdAt: 'ASC',
@@ -136,6 +136,9 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
         if ('state' in s.filter) {
           qb.andWhere('activity.state = :state', {state: s.filter.state});
         }
+        if ('type' in s.filter) {
+          qb.andWhere('activity.type = :type', {type: s.filter.type});
+        }        
       })
       .orderBy(sort)
       .skip(limit * s.page)

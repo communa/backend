@@ -1,5 +1,5 @@
 export enum EActivityType {
   IMPORT = 'Import',
-  INPUT = 'Input',
+  CONTRACT = 'Contract',
   PERSONAL = 'Personal',
 }

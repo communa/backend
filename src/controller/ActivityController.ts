@@ -59,12 +59,15 @@ export class ActivityController extends AbstractController {
     return this.activityRepository.findAndCountFreelancer(search, currentUser);
   }
 
-  @Post('/search/publishing')
+  @Post('/search/business')
   @Authorized([EUserRole.ROLE_USER])
   @ExtendedResponseSchema(Activity, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
-  public searchPublishing(@CurrentUser() currentUser: User, @Body() search: ActivitySearchDto) {
-    return this.activityRepository.findAndCountPublishing(search, currentUser);
+  public searchBusiness(@CurrentUser() currentUser: User, @Body() search: ActivitySearchDto) {
+    return this.activityRepository.findAndCountBusiness(
+      search,
+      currentUser
+    );
   }
 
   @Post('/:id/accept/:applicationId')
@@ -137,7 +140,12 @@ export class ActivityController extends AbstractController {
     @Res() res: any
   ) {
     data.user = currentUser;
-    data.type = EActivityType.INPUT;
+
+    const isValidType = [EActivityType.CONTRACT, EActivityType.PERSONAL].includes(data.type);
+
+    if (!isValidType) {
+      throw new Error(`The wrong type ${data.type} provided`);
+    }
 
     const activity = await this.activityManager.save(data);
 

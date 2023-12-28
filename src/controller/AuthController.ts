@@ -9,13 +9,11 @@ import {
   Req,
   ResponseClassTransformOptions,
   Authorized,
-  Param,
 } from 'routing-controllers';
 
 import express from 'express';
 import {OpenAPI, ResponseSchema} from 'routing-controllers-openapi';
 
-import {CurrentUser} from '../decorator/CurrentUser';
 import {User} from '../entity/User';
 import {App} from '../app/App';
 import {Authenticator} from '../service/Authenticator';
@@ -23,12 +21,10 @@ import {UserManager} from '../service/UserManager';
 import {UserRepository} from '../repository/UserRepository';
 import {IConfigParameters} from '../interface/IConfigParameters';
 import {EUserRole} from '../interface/EUserRole';
-import {AuthenticatorTimeTracker} from '../service/AuthenticatorTimeTracker';
 
 @JsonController('/auth')
 export class AuthController {
   protected authenticator: Authenticator;
-  protected authenticatorTimeTracker: AuthenticatorTimeTracker;
   protected userManager: UserManager;
   protected userRepository: UserRepository;
   protected parameters: IConfigParameters;
@@ -37,7 +33,6 @@ export class AuthController {
     this.userManager = App.container.get('UserManager');
     this.userRepository = App.container.get('UserRepository');
     this.authenticator = App.container.get('Authenticator');
-    this.authenticatorTimeTracker = App.container.get('AuthenticatorTimeTracker');
     this.parameters = App.container.get('parameters');
   }
 
@@ -158,51 +153,5 @@ export class AuthController {
     const user = await this.authenticator.getUserFromJwtToken(token);
 
     return user;
-  }
-
-  @OpenAPI({
-    summary: 'Initial nonce used in timetracker authentication',
-  })
-  @HttpCode(200)
-  @Post('/timeTracker/nonce')
-  public async timeTrackerNonceGenerate(@Req() req: express.Request) {
-    return await this.authenticatorTimeTracker.timeTrackerNonceGenerate(req.ip);
-  }
-
-  @OpenAPI({
-    summary: 'Login operation by the timetracker to be pickedup by the frontend',
-  })
-  @HttpCode(200)
-  @Post('/timeTracker/:nonce/login')
-  public async timeTrackerLogin(@Param('nonce') nonce: string, @Req() req: express.Request) {
-    await this.authenticatorTimeTracker.timeTrackerLogin(nonce, req.ip);
-
-    return {};
-  }
-
-  @OpenAPI({
-    summary: 'Used by the frontend to share JWT token with communa timetracker application',
-  })
-  @Authorized([EUserRole.ROLE_USER])
-  @HttpCode(200)
-  @Post('/timeTracker/:nonce/connect')
-  public async timeTrackerConnect(
-    @CurrentUser() currentUser: User,
-    @Param('nonce') nonce: string,
-    @Req() req: express.Request
-  ) {
-    await this.authenticatorTimeTracker.timeTrackerConnect(nonce, currentUser, req.ip);
-
-    return {};
-  }
-
-  @OpenAPI({
-    summary: 'Used both by the frontend and the timetracker to read the authentication state',
-  })
-  @Authorized([EUserRole.ROLE_USER])
-  @HttpCode(200)
-  @Get('/timeTracker/:nonce')
-  public async timeTrackerNonceGet(@Param('nonce') nonce: string, @Req() req: express.Request) {
-    return this.authenticatorTimeTracker.timeTrackerNonceGet(nonce, req.ip);
   }
 }

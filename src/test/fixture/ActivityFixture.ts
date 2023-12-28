@@ -19,7 +19,7 @@ export class ActivityFixture {
     activity.text = faker.datatype.uuid();
     activity.user = user;
     activity.state = state;
-    activity.type = EActivityType.INPUT;
+    activity.type = EActivityType.CONTRACT;
     activity.keywords = keywords;
     activity.jobUrl = faker.internet.url();
 
