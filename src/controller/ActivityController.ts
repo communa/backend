@@ -25,6 +25,7 @@ import {ActivityManager} from '../service/ActivityManager';
 import {EActivityType} from '../interface/EActivityType';
 import {Application} from '../entity/Application';
 import RejectedExecutionException from '../exception/RejectedExecutionException';
+import {OpenAPI} from 'routing-controllers-openapi';
 
 @JsonController('/activity')
 export class ActivityController extends AbstractController {
@@ -38,12 +39,18 @@ export class ActivityController extends AbstractController {
     this.activityRepository = App.container.get('ActivityRepository');
   }
 
+  @OpenAPI({
+    summary: 'Personal project or Hourly Contract get',
+  })
   @Get('/:id')
   @ResponseClassTransformOptions({groups: ['search']})
   public get(@EntityFromParam('id') activity: Activity) {
     return activity;
   }
 
+  @OpenAPI({
+    summary: 'Job search to display open jobs for hire',
+  })
   @Post('/search')
   @ExtendedResponseSchema(Activity, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
@@ -51,6 +58,9 @@ export class ActivityController extends AbstractController {
     return this.activityRepository.findAndCount(search);
   }
 
+  @OpenAPI({
+    summary: 'Personal project or Hourly Contract search used by freelancers',
+  })
   @Post('/search/freelancer')
   @Authorized([EUserRole.ROLE_USER])
   @ExtendedResponseSchema(Activity, {isPagination: true})
@@ -59,6 +69,9 @@ export class ActivityController extends AbstractController {
     return this.activityRepository.findAndCountFreelancer(search, currentUser);
   }
 
+  @OpenAPI({
+    summary: 'Personal project or Hourly Contract search used by clients'
+  })
   @Post('/search/business')
   @Authorized([EUserRole.ROLE_USER])
   @ExtendedResponseSchema(Activity, {isPagination: true})
@@ -70,6 +83,9 @@ export class ActivityController extends AbstractController {
     );
   }
 
+  @OpenAPI({
+    summary: 'Assign given application submitted by a freelancer'
+  })
   @Post('/:id/accept/:applicationId')
   @Authorized([EUserRole.ROLE_USER])
   @ResponseClassTransformOptions({groups: ['search']})
@@ -87,6 +103,9 @@ export class ActivityController extends AbstractController {
     return {};
   }
 
+  @OpenAPI({
+    summary: 'Close hourly contract'
+  })
   @Post('/:id/close')
   @Authorized([EUserRole.ROLE_USER])
   @ResponseClassTransformOptions({groups: ['search']})
@@ -100,6 +119,9 @@ export class ActivityController extends AbstractController {
     return {};
   }
 
+  @OpenAPI({
+    summary: 'Hourly contract edit'
+  })
   @Put('/:id')
   @HttpCode(200)
   @Authorized([EUserRole.ROLE_USER])
@@ -117,6 +139,9 @@ export class ActivityController extends AbstractController {
     return {};
   }
 
+  @OpenAPI({
+    summary: 'Personal project or Hourly contract remove'
+  })
   @Delete('/:id')
   @HttpCode(200)
   public async delete(
@@ -131,6 +156,9 @@ export class ActivityController extends AbstractController {
     return {};
   }
 
+  @OpenAPI({
+    summary: 'Personal project or Hourly contract create'
+  })
   @Post()
   @HttpCode(201)
   @Authorized([EUserRole.ROLE_USER])

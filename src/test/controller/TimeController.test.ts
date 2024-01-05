@@ -22,7 +22,7 @@ export class TimeControllerTest extends BaseControllerTest {
   }
 
   @test
-  async getBusiness() {
+  async getTimePublishedBusiness() {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
@@ -50,7 +50,7 @@ export class TimeControllerTest extends BaseControllerTest {
   }
 
   @test
-  async getFreelancer() {
+  async getTimePublishedFreelancer() {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
@@ -78,7 +78,7 @@ export class TimeControllerTest extends BaseControllerTest {
   }
 
   @test
-  async createBusiness() {
+  async createTimePersonalProject() {
     const user = await this.userFixture.createUser();
     const activity = await this.activityFixture.createPersonal(user);
     const data: ITime = {

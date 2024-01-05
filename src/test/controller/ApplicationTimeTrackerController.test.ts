@@ -132,5 +132,4 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
     expect(res.data.ip).to.be.eq(ip);
     expect(res.data).to.have.property('jwt');
   }
-
 }

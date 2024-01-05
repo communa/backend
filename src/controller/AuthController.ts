@@ -73,10 +73,8 @@ export class AuthController {
     return {};
   }
 
-  @HttpCode(200)
-  @Post('/nonce')
   @OpenAPI({
-    summary: 'Nonce for user login',
+    summary: 'Returns nonce for web3 wallet as first step in authentication process',
     requestBody: {
       content: {
         'application/json': {
@@ -103,6 +101,8 @@ export class AuthController {
       },
     },
   })
+  @HttpCode(200)
+  @Post('/nonce')
   public nonce(@Body() payload: {address: string}): Promise<string> {
     return this.authenticator.getNonce(payload.address);
   }
@@ -110,6 +110,7 @@ export class AuthController {
   @Authorized([EUserRole.ROLE_USER])
   @Post('/refresh')
   @OpenAPI({
+    summary: 'JWT token rotation',
     responses: {
       200: {
         description: 'Returns succesfully updated access and refresh tokens in headers',

@@ -32,18 +32,31 @@ export class UserController extends AbstractController {
     this.userManager = App.container.get('UserManager');
     this.userRepository = App.container.get('UserRepository');
   }
+ 
   @OpenAPI({
+    summary: 'User search',
     requestBody: {
       content: {
         'application/json': {
           example: {
-            filter: {
-              storeName: 'H&M',
-            },
+            filter: {},
+            sort: {createdAt: 'ASC'},
+            page: 0,
           },
+          schema: {
+            properties: {},
+          },          
         },
       },
       required: false,
+    },
+    responses: {
+      200: {
+        description: 'Empty results',
+        content: {
+          'application/json': [[],.0],
+        },
+      },
     },
   })
   @Post('/search')
@@ -52,12 +65,34 @@ export class UserController extends AbstractController {
     return this.userRepository.findAndCount(search);
   }
 
+  @OpenAPI({
+    summary: 'Single user retrieval from an ethereum address provided',
+    responses: {
+      200: {
+        description: 'User profile',
+        content: {
+          'application/json': {},
+        },
+      },
+    },    
+  })
   @Get('/:address/address')
   @ResponseClassTransformOptions({groups: ['search']})
   public get(@Param('address') address: string): Promise<User> {
     return this.userRepository.findByAddressPublicOrFail(address);
   }
 
+  @OpenAPI({
+    summary: 'User profile edit',
+    responses: {
+      204: {
+        description: 'User profile',
+        content: {
+          'application/json': {},
+        },
+      },
+    },    
+  })
   @Put()
   @HttpCode(204)
   @OpenAPI({

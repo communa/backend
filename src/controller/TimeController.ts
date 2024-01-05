@@ -23,6 +23,7 @@ import {TimeSearchDto} from '../validator/dto/TimeSearchDto';
 import {Time} from '../entity/Time';
 import {EntityFromParam} from '../decorator/EntityFromParam';
 import {Activity} from '../entity/Activity';
+import {OpenAPI} from 'routing-controllers-openapi';
 
 @Authorized([EUserRole.ROLE_USER])
 @JsonController('/time')
@@ -37,6 +38,9 @@ export class TimeController extends AbstractController {
     this.timeRepository = App.container.get('TimeRepository');
   }
 
+  @OpenAPI({
+    summary: 'Worklog time search',
+  })
   @Post('/search')
   @ExtendedResponseSchema(Time, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
@@ -50,6 +54,17 @@ export class TimeController extends AbstractController {
     );
   }
 
+  @OpenAPI({
+    summary: 'Worklog time get',
+    responses: {
+      200: {
+        description: 'Empty object',
+        content: {
+          'application/json': {},
+        },
+      },
+    },    
+  })
   @Get('/:id')
   @ResponseClassTransformOptions({groups: ['search']})
   public get(
@@ -59,6 +74,17 @@ export class TimeController extends AbstractController {
     return this.timeRepository.findOneConfirmUser(time, currentUser);
   }
 
+  @OpenAPI({
+    summary: 'Worklog time create',
+    responses: {
+      201: {
+        description: 'Empty object',
+        content: {
+          'application/json': {},
+        },
+      },
+    },    
+  })
   @Post('/activity/:activityId')
   @HttpCode(201)
   public async create(
@@ -75,8 +101,19 @@ export class TimeController extends AbstractController {
     return {};
   }
 
+  @OpenAPI({
+    summary: 'Worklog time edit',
+    responses: {
+      204: {
+        description: 'Empty object',
+        content: {
+          'application/json': {},
+        },
+      },
+    },    
+  })
   @Put('/:id')
-  @HttpCode(200)
+  @HttpCode(204)
   public async edit(
     @CurrentUser() currentUser: User,
     @EntityFromParam('id') time: Time,
@@ -87,6 +124,17 @@ export class TimeController extends AbstractController {
     return {};
   }
 
+  @OpenAPI({
+    summary: 'Worklog time remove',
+    responses: {
+      200: {
+        description: 'Empty object',
+        content: {
+          'application/json': {},
+        },
+      },
+    },    
+  })
   @Delete('/:id')
   @HttpCode(200)
   public async delete(@CurrentUser() currentUser: User, @EntityFromParam('id') time: Time) {

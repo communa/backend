@@ -42,6 +42,7 @@ export class InvoiceController extends AbstractController {
   }
 
   @Get('/:id')
+  @ExtendedResponseSchema(Invoice)  
   @ResponseClassTransformOptions({groups: ['search']})
   public get(
     @CurrentUser() currentUser: User,

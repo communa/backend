@@ -26,7 +26,7 @@ export class AuthTimeTrackerController {
   }
 
   @OpenAPI({
-    summary: 'Initial nonce used in timetracker authentication',
+    summary: 'Generates nonce and initialises authentication process',
   })
   @HttpCode(200)
   @Post('/nonce')
@@ -46,7 +46,7 @@ export class AuthTimeTrackerController {
   }
 
   @OpenAPI({
-    summary: 'Used by the frontend to share JWT token with communa timetracker application',
+    summary: 'Authenicates and connects timetracker application by nonce',
   })
   @Authorized([EUserRole.ROLE_USER])
   @HttpCode(200)
@@ -62,7 +62,7 @@ export class AuthTimeTrackerController {
   }
 
   @OpenAPI({
-    summary: 'Used both by the frontend and the timetracker to read the authentication state',
+    summary: 'Returns authentication state by nonce',
   })
   @Authorized([EUserRole.ROLE_USER])
   @HttpCode(200)
