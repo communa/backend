@@ -98,8 +98,6 @@ export class Authenticator {
     try {
       const tokenData: any = this.decodeJwtToken(token);
 
-      // console.log(tokenData);
-
       if (tokenData.emailOrPhone) {
         const user = await this.userRepository.findByEmailPhone(tokenData.emailOrPhone);
 

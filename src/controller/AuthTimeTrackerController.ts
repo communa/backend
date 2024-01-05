@@ -64,7 +64,7 @@ export class AuthTimeTrackerController {
   @OpenAPI({
     summary: 'Returns authentication state by nonce',
   })
-  @Authorized([EUserRole.ROLE_USER])
+  // @Authorized([EUserRole.ROLE_USER])
   @HttpCode(200)
   @Get('/:nonce')
   public async timeTrackerNonceGet(@Param('nonce') nonce: string, @Req() req: express.Request) {
