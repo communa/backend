@@ -138,7 +138,6 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     user.email = faker.internet.email();
 
     const token = this.authenticator.generateJwtToken(user);
-    console.log(token);
     const email = this.authenticator.getEmailOrPhoneOrThrowError(token);
 
     expect(user.email).to.be.equal(email);

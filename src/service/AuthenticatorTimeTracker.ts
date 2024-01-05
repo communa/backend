@@ -2,7 +2,7 @@ import {inject, injectable} from 'inversify';
 
 import {User} from '../entity/User';
 import {IConfigParameters} from '../interface/IConfigParameters';
-import AuthenticationException from '../exception/AuthenticationException';
+import TimeTrackerException from '../exception/TimeTrackerException';
 import {RedisClient} from './RedisClient';
 import {Signer} from './Signer';
 import {Authenticator} from './Authenticator';
@@ -28,7 +28,7 @@ export class AuthenticatorTimeTracker {
     const dataExisting = await this.redis.get(key);
 
     if (dataExisting) {
-      throw new AuthenticationException('the given nonce already persisted');
+      throw new TimeTrackerException('The given nonce already persisted');
     }
 
     const data = {
@@ -47,7 +47,7 @@ export class AuthenticatorTimeTracker {
     const key = `timetracker:nonce:${nonce}`;
 
     if (nonceData.ip !== ip) {
-      throw new AuthenticationException('ip address mismatch');
+      throw new TimeTrackerException('IP address mismatch');
     }
 
     const data = {
@@ -63,7 +63,7 @@ export class AuthenticatorTimeTracker {
     const loginData = await this.redis.get(`timetracker:nonce:${nonce}`);
 
     if (loginData.ip !== ip) {
-      throw new AuthenticationException('ip address mismatch');
+      throw new TimeTrackerException('IP address mismatch');
     }
 
     const key = `timetracker:nonce:${nonce}`;
@@ -75,8 +75,8 @@ export class AuthenticatorTimeTracker {
     };
 
     await this.redis.setWithExpiry(key, data, Authenticator.nonceExpiresIn);
-    
-    this.userRepository.saveSingle(user);
+
+    await this.userRepository.saveSingle(user);
   }
 
   public async timeTrackerNonceGet(nonce: string, ip: string) {
@@ -84,10 +84,10 @@ export class AuthenticatorTimeTracker {
     const data = await this.redis.get(key);
 
     if (!data) {
-      throw new AuthenticationException('the given nonce is not available for log in');
+      throw new TimeTrackerException('The given nonce is not available for log in');
     }
     if (data.ip !== ip) {
-      throw new AuthenticationException('ip address mismatch');
+      throw new TimeTrackerException('IP address mismatch');
     }
 
     return data;
