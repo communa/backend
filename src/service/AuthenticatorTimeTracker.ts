@@ -1,4 +1,5 @@
 import {inject, injectable} from 'inversify';
+import moment from 'moment';
 
 import {User} from '../entity/User';
 import {IConfigParameters} from '../interface/IConfigParameters';
@@ -22,7 +23,10 @@ export class AuthenticatorTimeTracker {
   @inject('UserRepository')
   protected userRepository: UserRepository;
 
-  public async timeTrackerNonceGenerate(ip: string): Promise<string> {
+  public async timeTrackerNonceGenerate(ip: string): Promise<{
+    nonce: string,
+    startAt: number,
+  }> {
     const nonce = this.signer.generateNonce();
     const key = `timetracker:nonce:${nonce}`;
     const dataExisting = await this.redis.get(key);
@@ -34,12 +38,13 @@ export class AuthenticatorTimeTracker {
     const data = {
       nonce,
       ip,
+      startAt: moment().unix(),
       state: EAuthTimeTrackerState.INIT
     };
 
     await this.redis.setWithExpiry(key, data, Authenticator.nonceExpiresIn);
 
-    return Promise.resolve(nonce);
+    return Promise.resolve(data);
   }
 
   public async timeTrackerLogin(nonce: string, ip: string) {

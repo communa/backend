@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import {suite, test} from '@testdeck/mocha';
 
+import {UserRepository} from '../../repository/UserRepository';
 import {BaseControllerTest} from './BaseController.test';
 import {RedisClient} from '../../service/RedisClient';
 import {AuthenticatorTimeTracker} from '../../service/AuthenticatorTimeTracker';
@@ -8,6 +9,7 @@ import {EAuthTimeTrackerState} from '../../interface/EAuthTimeTrackerState';
 
 @suite()
 export class AuthTimeTrackerControllerTest extends BaseControllerTest {
+  protected userRepository: UserRepository;
   protected redisClient: RedisClient;
   protected authenticatorTimeTracker: AuthenticatorTimeTracker;
 
@@ -17,6 +19,7 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
     this.redisClient = this.container.get('RedisClient');
     this.authenticatorTimeTracker = this.container.get('AuthenticatorTimeTracker');
   }
+
   @test()
   async timeTrackerNonceGenerate() {
     const ip = '127.0.0.1';
@@ -28,7 +31,7 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
       },
     });
 
-    const nonce = res.data as string;
+    const nonce = res.data.nonce as string;
     const key = `timetracker:nonce:${nonce}`;
     const data = await this.redisClient.get(key);
 
@@ -37,6 +40,7 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
     expect(data).to.be.deep.eq({
       nonce,
       ip,
+      startAt: data.startAt,
       state: EAuthTimeTrackerState.INIT,
     });
   }
@@ -49,7 +53,7 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
     const token = this.authenticator.generateJwtToken(user);
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/timeTracker/${nonce}`,
+      url: `${this.url}/api/auth/timeTracker/${nonce.nonce}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -57,12 +61,11 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
       },
     });
 
+    const key = `timetracker:nonce:${nonce.nonce}`;
+    const data = await this.redisClient.get(key);
+
     expect(res.status).to.be.equal(200);
-    expect(res.data).to.be.deep.equal({
-      nonce,
-      state: EAuthTimeTrackerState.INIT,
-      ip,
-    });
+    expect(res.data).to.be.deep.equal(data);
   }
 
   @test()
@@ -71,7 +74,7 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
     const nonce = await this.authenticatorTimeTracker.timeTrackerNonceGenerate(ip);
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/timeTracker/${nonce}/login`,
+      url: `${this.url}/api/auth/timeTracker/${nonce.nonce}/login`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -92,10 +95,10 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
     const token = this.authenticator.generateJwtToken(user);
 
     const nonce = await this.authenticatorTimeTracker.timeTrackerNonceGenerate(ip);
-    await this.authenticatorTimeTracker.timeTrackerLogin(nonce, ip);
+    await this.authenticatorTimeTracker.timeTrackerLogin(nonce.nonce, ip);
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/timeTracker/${nonce}/connect`,
+      url: `${this.url}/api/auth/timeTracker/${nonce.nonce}/connect`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -114,11 +117,11 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
     const nonce = await this.authenticatorTimeTracker.timeTrackerNonceGenerate(ip);
     const token = this.authenticator.generateJwtToken(user);
 
-    await this.authenticatorTimeTracker.timeTrackerLogin(nonce, ip);
-    await this.authenticatorTimeTracker.timeTrackerConnect(nonce, user, ip);
+    await this.authenticatorTimeTracker.timeTrackerLogin(nonce.nonce, ip);
+    await this.authenticatorTimeTracker.timeTrackerConnect(nonce.nonce, user, ip);
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/timeTracker/${nonce}`,
+      url: `${this.url}/api/auth/timeTracker/${nonce.nonce}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -127,7 +130,7 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
     });
 
     expect(res.status).to.be.equal(200);
-    expect(res.data.nonce).to.be.eq(nonce);
+    expect(res.data.nonce).to.be.eq(nonce.nonce);
     expect(res.data.state).to.be.eq(EAuthTimeTrackerState.CONNECTED);
     expect(res.data.ip).to.be.eq(ip);
     expect(res.data).to.have.property('jwt');
