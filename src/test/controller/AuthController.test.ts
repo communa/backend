@@ -65,19 +65,19 @@ export class AuthControllerTest extends BaseControllerTest {
   @test()
   async refresh() {
     const user = await this.userFixture.createUser();
-    const token = this.authenticator.generateJwtToken(user);
 
     const config = {
       url: `${this.url}/api/auth/refresh`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token,
       },
       data: {
-        refreshToken: this.authenticator.generateJwtToken(user)
+        refreshToken: this.authenticator.generateRefreshToken(user)
       }
     };
+
+    console.log(this.authenticator.generateRefreshToken(user));
 
     const res = await this.http.request(config);
 

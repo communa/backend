@@ -12,7 +12,7 @@ export class ErrorHandler implements ExpressErrorMiddlewareInterface {
     response: express.Response,
     _next: (err: any) => any
   ): void {
-    // console.log(error);
+    console.log(error);
     const httpCode: number = error.httpCode || error.response?.status || 500;
 
     const responseError: {

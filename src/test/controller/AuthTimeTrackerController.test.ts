@@ -115,7 +115,6 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
     const ip = '127.0.0.1';
     const user = await this.userFixture.createUser();
     const nonce = await this.authenticatorTimeTracker.timeTrackerNonceGenerate(ip);
-    const token = this.authenticator.generateJwtToken(user);
 
     await this.authenticatorTimeTracker.timeTrackerLogin(nonce.nonce, ip);
     await this.authenticatorTimeTracker.timeTrackerConnect(nonce.nonce, user, ip);
@@ -125,7 +124,6 @@ export class AuthTimeTrackerControllerTest extends BaseControllerTest {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token,
       },
     });
 

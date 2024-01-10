@@ -7,8 +7,7 @@ import {
   Get,
   Body,
   Req,
-  ResponseClassTransformOptions,
-  Authorized,
+  ResponseClassTransformOptions
 } from 'routing-controllers';
 
 import express from 'express';
@@ -20,7 +19,6 @@ import {Authenticator} from '../service/Authenticator';
 import {UserManager} from '../service/UserManager';
 import {UserRepository} from '../repository/UserRepository';
 import {IConfigParameters} from '../interface/IConfigParameters';
-import {EUserRole} from '../interface/EUserRole';
 
 @JsonController('/auth')
 export class AuthController {
@@ -107,7 +105,6 @@ export class AuthController {
     return this.authenticator.getNonce(payload.address);
   }
 
-  @Authorized([EUserRole.ROLE_USER])
   @Post('/refresh')
   @OpenAPI({
     summary: 'JWT token rotation',
