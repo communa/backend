@@ -24,8 +24,8 @@ export class AuthenticatorTimeTracker {
   protected userRepository: UserRepository;
 
   public async timeTrackerNonceGenerate(ip: string): Promise<{
-    nonce: string,
-    startAt: number,
+    nonce: string;
+    startAt: number;
   }> {
     const nonce = this.signer.generateNonce();
     const key = `timetracker:nonce:${nonce}`;
@@ -39,7 +39,7 @@ export class AuthenticatorTimeTracker {
       nonce,
       ip,
       startAt: moment().unix(),
-      state: EAuthTimeTrackerState.INIT
+      state: EAuthTimeTrackerState.INIT,
     };
 
     await this.redis.setWithExpiry(key, data, Authenticator.nonceExpiresIn);
@@ -58,7 +58,7 @@ export class AuthenticatorTimeTracker {
     const data = {
       nonce,
       ip,
-      state: EAuthTimeTrackerState.LOGIN
+      state: EAuthTimeTrackerState.LOGIN,
     };
 
     await this.redis.setWithExpiry(key, data, Authenticator.nonceExpiresIn);

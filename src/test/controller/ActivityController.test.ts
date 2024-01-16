@@ -94,7 +94,7 @@ export class ActivityControllerTest extends BaseControllerTest {
       title: faker.datatype.uuid(),
       text: faker.datatype.uuid(),
       state: EActivityState.DRAFT,
-      type: EActivityType.CONTRACT
+      type: EActivityType.CONTRACT,
     };
 
     const res = await this.http.request({

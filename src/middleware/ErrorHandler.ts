@@ -2,7 +2,7 @@ import {ExpressErrorMiddlewareInterface, Middleware} from 'routing-controllers';
 import express from 'express';
 
 import * as Sentry from '@sentry/node';
-import {ValidationError} from 'class-validator';
+import {ErrorFormatter} from '../service/ErrorFormatter';
 
 @Middleware({type: 'after'})
 export class ErrorHandler implements ExpressErrorMiddlewareInterface {
@@ -12,37 +12,14 @@ export class ErrorHandler implements ExpressErrorMiddlewareInterface {
     response: express.Response,
     _next: (err: any) => any
   ): void {
-    console.log(error);
     const httpCode: number = error.httpCode || error.response?.status || 500;
 
-    const responseError: {
-      message: string;
-      name: string;
-      errors?: any[];
-    } = {
-      message: error.message || error.name,
-      name: error.name || 'Error',
-    };
-
-    if (error.errors && error.errors.length > 0) {
-      responseError.errors = error.errors;
-    }
-
-    if (error.violations && error.violations.length > 0) {
-      responseError.errors = error.violations.map((e: ValidationError) => {
-        return {
-          value: e.value,
-          property: e.property,
-          constraints: e.constraints,
-          children: e.children,
-        };
-      });
-    }
+    const errorFormatted = ErrorFormatter.format(error);
 
     this.captureSentry(httpCode, error);
 
     response.status(httpCode);
-    response.send(responseError);
+    response.send(errorFormatted);
   }
 
   private captureSentry(httpCode: number, error: any) {

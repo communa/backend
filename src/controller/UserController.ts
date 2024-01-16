@@ -32,7 +32,7 @@ export class UserController extends AbstractController {
     this.userManager = App.container.get('UserManager');
     this.userRepository = App.container.get('UserRepository');
   }
- 
+
   @OpenAPI({
     summary: 'User search',
     requestBody: {
@@ -45,7 +45,7 @@ export class UserController extends AbstractController {
           },
           schema: {
             properties: {},
-          },          
+          },
         },
       },
       required: false,
@@ -54,7 +54,7 @@ export class UserController extends AbstractController {
       200: {
         description: 'Empty results',
         content: {
-          'application/json': [[],.0],
+          'application/json': [[], 0.0],
         },
       },
     },
@@ -74,7 +74,7 @@ export class UserController extends AbstractController {
           'application/json': {},
         },
       },
-    },    
+    },
   })
   @Get('/:address/address')
   @ResponseClassTransformOptions({groups: ['search']})
@@ -91,7 +91,7 @@ export class UserController extends AbstractController {
           'application/json': {},
         },
       },
-    },    
+    },
   })
   @Put()
   @HttpCode(204)

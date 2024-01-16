@@ -7,7 +7,7 @@ import {
   Get,
   Body,
   Req,
-  ResponseClassTransformOptions
+  ResponseClassTransformOptions,
 } from 'routing-controllers';
 
 import express from 'express';

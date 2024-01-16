@@ -24,6 +24,7 @@ import {Time} from '../entity/Time';
 import {EntityFromParam} from '../decorator/EntityFromParam';
 import {Activity} from '../entity/Activity';
 import {OpenAPI} from 'routing-controllers-openapi';
+import {ITimeInsertionError} from '../interface/ITimeInsertionError';
 
 @Authorized([EUserRole.ROLE_USER])
 @JsonController('/time')
@@ -39,23 +40,17 @@ export class TimeController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Worklog time search',
+    summary: 'Time search',
   })
   @Post('/search')
   @ExtendedResponseSchema(Time, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
-  public searchFreelancer(
-    @Body() search: TimeSearchDto,
-    @CurrentUser() currentUser: User,
-  ) {
-    return this.timeRepository.findAndCountPersonal(
-      search,
-      currentUser
-    );
+  public searchFreelancer(@Body() search: TimeSearchDto, @CurrentUser() currentUser: User) {
+    return this.timeRepository.findAndCountPersonal(search, currentUser);
   }
 
   @OpenAPI({
-    summary: 'Worklog time get',
+    summary: 'Single time read',
     responses: {
       200: {
         description: 'Empty object',
@@ -63,7 +58,7 @@ export class TimeController extends AbstractController {
           'application/json': {},
         },
       },
-    },    
+    },
   })
   @Get('/:id')
   @ResponseClassTransformOptions({groups: ['search']})
@@ -75,7 +70,7 @@ export class TimeController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Worklog time create',
+    summary: 'Create single time record',
     responses: {
       201: {
         description: 'Empty object',
@@ -83,7 +78,7 @@ export class TimeController extends AbstractController {
           'application/json': {},
         },
       },
-    },    
+    },
   })
   @Post('/activity/:activityId')
   @HttpCode(201)
@@ -102,7 +97,34 @@ export class TimeController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Worklog time edit',
+    summary: 'Create multiple time records from array',
+    responses: {
+      201: {
+        description: 'Empty object',
+        content: {
+          'application/json': {},
+        },
+      },
+    },
+  })
+  @Post('/activity')
+  @HttpCode(200)
+  public createMany(
+    @CurrentUser() currentUser: User,
+    // todo: implement dtop to validate input valus as array
+    @Body({
+      validate: {
+        groups: ['create'],
+      },
+      transform: {groups: ['create']},
+    })
+    data: Time[]
+  ): Promise<ITimeInsertionError[]> {
+    return this.timeManager.saveMany(data, currentUser);
+  }
+
+  @OpenAPI({
+    summary: 'Edit sumbitted time interval',
     responses: {
       204: {
         description: 'Empty object',
@@ -110,7 +132,7 @@ export class TimeController extends AbstractController {
           'application/json': {},
         },
       },
-    },    
+    },
   })
   @Put('/:id')
   @HttpCode(204)
@@ -125,7 +147,7 @@ export class TimeController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Worklog time remove',
+    summary: 'Remove time',
     responses: {
       200: {
         description: 'Empty object',
@@ -133,7 +155,7 @@ export class TimeController extends AbstractController {
           'application/json': {},
         },
       },
-    },    
+    },
   })
   @Delete('/:id')
   @HttpCode(200)

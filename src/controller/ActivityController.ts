@@ -70,21 +70,18 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Personal project or Hourly Contract search used by clients'
+    summary: 'Personal project or Hourly Contract search used by clients',
   })
   @Post('/search/business')
   @Authorized([EUserRole.ROLE_USER])
   @ExtendedResponseSchema(Activity, {isPagination: true})
   @ResponseClassTransformOptions({groups: ['search']})
   public searchBusiness(@CurrentUser() currentUser: User, @Body() search: ActivitySearchDto) {
-    return this.activityRepository.findAndCountBusiness(
-      search,
-      currentUser
-    );
+    return this.activityRepository.findAndCountBusiness(search, currentUser);
   }
 
   @OpenAPI({
-    summary: 'Assign given application submitted by a freelancer'
+    summary: 'Assign given application submitted by a freelancer',
   })
   @Post('/:id/accept/:applicationId')
   @Authorized([EUserRole.ROLE_USER])
@@ -104,7 +101,7 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Close hourly contract'
+    summary: 'Close hourly contract',
   })
   @Post('/:id/close')
   @Authorized([EUserRole.ROLE_USER])
@@ -120,7 +117,7 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Hourly contract edit'
+    summary: 'Hourly contract edit',
   })
   @Put('/:id')
   @HttpCode(200)
@@ -140,14 +137,11 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Personal project or Hourly contract remove'
+    summary: 'Personal project or Hourly contract remove',
   })
   @Delete('/:id')
   @HttpCode(200)
-  public async delete(
-    @CurrentUser() currentUser: User,
-    @EntityFromParam('id') activity: Activity
-  ) {
+  public async delete(@CurrentUser() currentUser: User, @EntityFromParam('id') activity: Activity) {
     await this.activityRepository.delete({
       id: activity.id,
       user: currentUser,
@@ -157,7 +151,7 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Personal project or Hourly contract create'
+    summary: 'Personal project or Hourly contract create',
   })
   @Post()
   @HttpCode(201)

@@ -1,12 +1,4 @@
-import {
-  Post,
-  JsonController,
-  HttpCode,
-  Get,
-  Req,
-  Authorized,
-  Param,
-} from 'routing-controllers';
+import {Post, JsonController, HttpCode, Get, Req, Authorized, Param} from 'routing-controllers';
 
 import express from 'express';
 import {OpenAPI} from 'routing-controllers-openapi';

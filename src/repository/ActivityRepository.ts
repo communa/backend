@@ -24,7 +24,10 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
     });
   }
 
-  public findActivityByFreelancer(activity: Activity, freelancer: User): Promise<Activity | undefined> {
+  public findActivityByFreelancer(
+    activity: Activity,
+    freelancer: User
+  ): Promise<Activity | undefined> {
     return this.getRepo()
       .createQueryBuilder('activity')
       .innerJoinAndSelect('activity.applicationAccepted', 'application')
@@ -98,7 +101,9 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
       .where((qb: SelectQueryBuilder<Activity>) => {
         this.buildSearchQueries(qb, search);
       })
-      .andWhere(`activity.type IN (:...types)`, {types: [EActivityType.IMPORT, EActivityType.CONTRACT]})
+      .andWhere(`activity.type IN (:...types)`, {
+        types: [EActivityType.IMPORT, EActivityType.CONTRACT],
+      })
       .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
       .andWhere('activity.cancelledAt IS NULL')
       .orderBy(sort)
@@ -138,7 +143,7 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
         }
         if ('type' in s.filter) {
           qb.andWhere('activity.type = :type', {type: s.filter.type});
-        }        
+        }
       })
       .orderBy(sort)
       .skip(limit * s.page)

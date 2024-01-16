@@ -73,11 +73,9 @@ export class AuthControllerTest extends BaseControllerTest {
         'Content-Type': 'application/json',
       },
       data: {
-        refreshToken: this.authenticator.generateRefreshToken(user)
-      }
+        refreshToken: this.authenticator.generateRefreshToken(user),
+      },
     };
-
-    console.log(this.authenticator.generateRefreshToken(user));
 
     const res = await this.http.request(config);
 

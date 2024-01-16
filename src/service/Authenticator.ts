@@ -17,10 +17,7 @@ import {Signer} from './Signer';
 
 @injectable()
 export class Authenticator {
-  // protected accessTokenExpiresIn: number = 60 * 60 * 24; // 24 hours
-  // protected refreshTokenExpiresIn: number = 60 * 60 * 24; // 24 hours
-
-  protected accessTokenExpiresIn: string = '5m';
+  protected accessTokenExpiresIn: string = '20d';
   protected refreshTokenExpiresIn: string = '180d';
 
   public static nonceExpiresIn: number = 1000 * 60 * 10; // 10 minutes

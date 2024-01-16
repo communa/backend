@@ -5,8 +5,8 @@ import {JSONSchema} from 'class-validator-jsonschema';
 
 import {AbstractBaseEntity} from './AbstractBaseEntity';
 import {Activity} from './Activity';
-// import {IsDate} from 'class-validator';
 import {ITime} from '../interface/ITime';
+import {IsDateString} from 'class-validator';
 
 @JSONSchema({
   example: {
@@ -39,11 +39,11 @@ export class Time extends AbstractBaseEntity implements ITime {
 
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('timestamptz', {nullable: false})
-  // @IsDate()
+  @IsDateString()
   fromAt: Date;
 
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('timestamptz', {nullable: false})
-  // @IsDate()
+  @IsDateString()
   toAt: Date;
 }

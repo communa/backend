@@ -56,7 +56,9 @@ export class AppContainer {
     // Services
     container.bind<Signer>('Signer').to(Signer);
     container.bind<Authenticator>('Authenticator').to(Authenticator);
-    container.bind<AuthenticatorTimeTracker>('AuthenticatorTimeTracker').to(AuthenticatorTimeTracker);
+    container
+      .bind<AuthenticatorTimeTracker>('AuthenticatorTimeTracker')
+      .to(AuthenticatorTimeTracker);
     container.bind<RedisClient>('RedisClient').to(RedisClient);
     container.bind<Filter>('Filter').to(Filter);
     container.bind<UserManager>('UserManager').to(UserManager);
