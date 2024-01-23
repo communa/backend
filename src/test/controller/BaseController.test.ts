@@ -12,8 +12,8 @@ import {Faker} from '../../service/Faker';
 
 import {UserFixture} from '../fixture/UserFixture';
 import {ActivityFixture} from '../fixture/ActivityFixture';
-import {ApplicationRepository} from '../../repository/ApplicationRepository';
-import {ApplicationFixture} from '../fixture/ApplicationFixture';
+import {ProposalRepository} from '../../repository/ProposalRepository';
+import {ProposalFixture} from '../fixture/ProposalFixture';
 import {InvoiceFixture} from '../fixture/InvoiceFixture ';
 import {TimeFixture} from '../fixture/TimeFixture';
 import {Authenticator} from '../../service/Authenticator';
@@ -30,8 +30,8 @@ export class BaseControllerTest {
   protected activityFixture: ActivityFixture;
   protected invoiceFixture: InvoiceFixture;
   protected timeFixture: TimeFixture;
-  protected applicationFixture: ApplicationFixture;
-  protected applicationRepository: ApplicationRepository;
+  protected proposalFixture: ProposalFixture;
+  protected proposalRepository: ProposalRepository;
   protected userFixture: UserFixture;
 
   constructor() {
@@ -48,7 +48,7 @@ export class BaseControllerTest {
     this.userFixture = this.container.get('UserFixture');
     this.activityFixture = this.container.get('ActivityFixture');
     this.timeFixture = this.container.get('TimeFixture');
-    this.applicationFixture = this.container.get('ApplicationFixture');
+    this.proposalFixture = this.container.get('ProposalFixture');
     this.invoiceFixture = this.container.get('InvoiceFixture');
 
     this.url = `http://${this.parameters.host}:${this.parameters.port}`;

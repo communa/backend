@@ -12,7 +12,7 @@ import {EmailConstraint} from '../validator/constraint/EmailConstraint';
 import {EUserRole} from '../interface/EUserRole';
 import {IUser} from '../interface/IUser';
 import {Activity} from './Activity';
-import {Application} from './Application';
+import {Proposal} from './Proposal';
 
 @JSONSchema({
   example: {
@@ -107,8 +107,8 @@ export class User extends AbstractBaseEntity implements IUser {
 
   @OneToMany(() => Activity, activity => activity.user)
   activities: Activity[];
-  @OneToMany(() => Application, application => application.user)
-  applications: Application[];
+  @OneToMany(() => Proposal, proposal => proposal.user)
+  proposals: Proposal[];
 
   @Expose({groups: ['search']})
   @Column('integer', {nullable: true})

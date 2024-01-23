@@ -30,8 +30,8 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
   ): Promise<Activity | undefined> {
     return this.getRepo()
       .createQueryBuilder('activity')
-      .innerJoinAndSelect('activity.applicationAccepted', 'application')
-      .innerJoinAndSelect('application.user', 'freelancer')
+      .innerJoinAndSelect('activity.proposalAccepted', 'proposal')
+      .innerJoinAndSelect('proposal.user', 'freelancer')
       .andWhere('activity.id = :id', {id: activity.id})
       .andWhere(`freelancer.id = :freelancerId`, {freelancerId: freelancer.id})
       .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})

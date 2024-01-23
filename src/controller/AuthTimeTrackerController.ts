@@ -38,7 +38,7 @@ export class AuthTimeTrackerController {
   }
 
   @OpenAPI({
-    summary: 'Authenicates and connects timetracker application by nonce',
+    summary: 'Authenicates and connects timetracker proposal by nonce',
   })
   @Authorized([EUserRole.ROLE_USER])
   @HttpCode(200)
@@ -56,7 +56,6 @@ export class AuthTimeTrackerController {
   @OpenAPI({
     summary: 'Returns authentication state by nonce',
   })
-  // @Authorized([EUserRole.ROLE_USER])
   @HttpCode(200)
   @Get('/:nonce')
   public async timeTrackerNonceGet(@Param('nonce') nonce: string, @Req() req: express.Request) {

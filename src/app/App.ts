@@ -21,7 +21,7 @@ import {AuthController} from '../controller/AuthController';
 import {ValidateRoles} from '../middleware/ValidateRoles';
 import {UserController} from '../controller/UserController';
 import {ActivityController} from '../controller/ActivityController';
-import {ApplicationController} from '../controller/ApplicationController';
+import {ProposalController} from '../controller/ProposalController';
 import {TimeController} from '../controller/TimeController';
 import {InvoiceController} from '../controller/InvoiceController';
 import {AuthTimeTrackerController} from '../controller/AuthTimeTrackerController';
@@ -123,7 +123,7 @@ export class App {
         AuthController,
         AuthTimeTrackerController,
         UserController,
-        ApplicationController,
+        ProposalController,
         TimeController,
         InvoiceController,
       ],

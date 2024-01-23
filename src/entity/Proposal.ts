@@ -15,7 +15,7 @@ import {Activity} from './Activity';
 })
 @Entity()
 @Exclude()
-export class Application extends AbstractBaseEntity {
+export class Proposal extends AbstractBaseEntity {
   @IsNotEmpty()
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('text', {nullable: false})

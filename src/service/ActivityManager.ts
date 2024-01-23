@@ -2,7 +2,7 @@ import {inject, injectable} from 'inversify';
 
 import {Activity} from '../entity/Activity';
 import {ActivityRepository} from '../repository/ActivityRepository';
-import {Application} from '../entity/Application';
+import {Proposal} from '../entity/Proposal';
 import RejectedExecutionException from '../exception/RejectedExecutionException';
 import {EActivityState} from '../interface/EActivityState';
 
@@ -18,12 +18,12 @@ export class ActivityManager {
     await this.save(activity);
   }
 
-  public async acceptApplication(activity: Activity, application: Application): Promise<void> {
-    if (activity.applicationAccepted) {
-      throw new RejectedExecutionException('Application was already assigned');
+  public async acceptProposal(activity: Activity, proposal: Proposal): Promise<void> {
+    if (activity.proposalAccepted) {
+      throw new RejectedExecutionException('Proposal was already assigned');
     }
 
-    activity.applicationAccepted = application;
+    activity.proposalAccepted = proposal;
     activity.startedAt = new Date();
     activity.state = EActivityState.ACTIVE;
 

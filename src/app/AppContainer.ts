@@ -16,13 +16,13 @@ import {Authenticator} from '../service/Authenticator';
 import {ActivityRepository} from '../repository/ActivityRepository';
 import {ActivityFixture} from '../test/fixture/ActivityFixture';
 import {ActivityManager} from '../service/ActivityManager';
-import {ApplicationFixture} from '../test/fixture/ApplicationFixture';
+import {ProposalFixture} from '../test/fixture/ProposalFixture';
 import {TimeFixture} from '../test/fixture/TimeFixture';
 import {InvoiceFixture} from '../test/fixture/InvoiceFixture ';
-import {ApplicationRepository} from '../repository/ApplicationRepository';
+import {ProposalRepository} from '../repository/ProposalRepository';
 import {TimeRepository} from '../repository/TimeRepository';
 import {InvoiceRepository} from '../repository/InvoiceRepository';
-import {ApplicationManager} from '../service/ApplicationManager';
+import {ProposalManager} from '../service/ProposalManager';
 import {TimeManager} from '../service/TimeManager';
 import {InvoiceManager} from '../service/InvoiceManager';
 import {AuthenticatorTimeTracker} from '../service/AuthenticatorTimeTracker';
@@ -49,7 +49,7 @@ export class AppContainer {
     // Repositories
     container.bind<UserRepository>('UserRepository').to(UserRepository);
     container.bind<ActivityRepository>('ActivityRepository').to(ActivityRepository);
-    container.bind<ApplicationRepository>('ApplicationRepository').to(ApplicationRepository);
+    container.bind<ProposalRepository>('ProposalRepository').to(ProposalRepository);
     container.bind<TimeRepository>('TimeRepository').to(TimeRepository);
     container.bind<InvoiceRepository>('InvoiceRepository').to(InvoiceRepository);
 
@@ -62,7 +62,7 @@ export class AppContainer {
     container.bind<RedisClient>('RedisClient').to(RedisClient);
     container.bind<Filter>('Filter').to(Filter);
     container.bind<UserManager>('UserManager').to(UserManager);
-    container.bind<ApplicationManager>('ApplicationManager').to(ApplicationManager);
+    container.bind<ProposalManager>('ProposalManager').to(ProposalManager);
     container.bind<TimeManager>('TimeManager').to(TimeManager);
     container.bind<InvoiceManager>('InvoiceManager').to(InvoiceManager);
     container.bind<Mailer>('Mailer').to(Mailer);
@@ -72,7 +72,7 @@ export class AppContainer {
     // Fixture
     container.bind<UserFixture>('UserFixture').to(UserFixture);
     container.bind<ActivityFixture>('ActivityFixture').to(ActivityFixture);
-    container.bind<ApplicationFixture>('ApplicationFixture').to(ApplicationFixture);
+    container.bind<ProposalFixture>('ProposalFixture').to(ProposalFixture);
     container.bind<InvoiceFixture>('InvoiceFixture').to(InvoiceFixture);
     container.bind<TimeFixture>('TimeFixture').to(TimeFixture);
 

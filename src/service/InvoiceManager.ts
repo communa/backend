@@ -47,7 +47,7 @@ export class InvoiceManager {
     invoice.fromAt = moment.utc(data.fromUnix).toDate();
     invoice.toAt = moment.utc(data.toUnix).toDate();
     invoice.activity = activity;
-    invoice.amount = activity.applicationAccepted.rate * times.length; // Rate calculation
+    invoice.amount = activity.proposalAccepted.rate * times.length; // Rate calculation
 
     return this.invoiceRepository.validateAndSave(invoice);
   }

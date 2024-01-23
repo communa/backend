@@ -44,10 +44,10 @@ export class ActivityControllerTest extends BaseControllerTest {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-    const application = await this.applicationFixture.create(activity, freelancer);
+    const proposal = await this.proposalFixture.create(activity, freelancer);
 
     const res = await this.http.request({
-      url: `${this.url}/api/activity/${activity.id}/accept/${application.id}`,
+      url: `${this.url}/api/activity/${activity.id}/accept/${proposal.id}`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export class ActivityControllerTest extends BaseControllerTest {
     });
 
     const updated = (await this.activityRepository.findOneByQueryBuilder({id: activity.id}, null, {
-      applicationAccepted: true,
+      proposalAccepted: true,
     })) as Activity;
 
     expect(res.status).to.be.equal(200);
@@ -259,7 +259,7 @@ export class ActivityControllerTest extends BaseControllerTest {
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.createPersonal(freelancer);
 
-    await this.applicationFixture.create(activity, freelancer);
+    await this.proposalFixture.create(activity, freelancer);
 
     const config = {
       url: `${this.url}/api/activity/search/freelancer`,

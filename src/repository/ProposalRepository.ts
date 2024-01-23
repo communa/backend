@@ -3,24 +3,24 @@ import {inject, injectable} from 'inversify';
 
 import {Filter} from '../service/Filter';
 import {AbstractRepositoryTemplate} from './AbstractRepositoryTemplate';
-import {Application} from '../entity/Application';
+import {Proposal} from '../entity/Proposal';
 import {ActivityRepository} from './ActivityRepository';
-import {ISearchApplication} from '../interface/search/ISearchApplication';
+import {ISearchProposal} from '../interface/search/ISearchProposal';
 import {User} from '../entity/User';
 import {SelectQueryBuilder} from 'typeorm';
 
 @injectable()
-export class ApplicationRepository extends AbstractRepositoryTemplate<Application> {
+export class ProposalRepository extends AbstractRepositoryTemplate<Proposal> {
   @inject('Filter')
   protected filter: Filter;
-  protected target = Application;
+  protected target = Proposal;
   @inject('ActivityRepository')
   protected activityRepository: ActivityRepository;
 
   public async findAndCountBusiness(
-    search: ISearchApplication,
+    search: ISearchProposal,
     business: User
-  ): Promise<[Application[], number]> {
+  ): Promise<[Proposal[], number]> {
     const s = _.assign(
       {
         filter: {},
@@ -31,15 +31,15 @@ export class ApplicationRepository extends AbstractRepositoryTemplate<Applicatio
       },
       search
     );
-    const sort = this.filter.buildOrderByCondition('application', s);
+    const sort = this.filter.buildOrderByCondition('proposal', s);
     const limit = this.filter.buildLimit(search);
 
     return this.getRepo()
-      .createQueryBuilder('application')
-      .innerJoin('application.activity', 'activity')
+      .createQueryBuilder('proposal')
+      .innerJoin('proposal.activity', 'activity')
       .innerJoin('activity.user', 'activityUser')
       .andWhere('activityUser.id = :businessId', {businessId: business.id})
-      .where((qb: SelectQueryBuilder<Application>) => {
+      .where((qb: SelectQueryBuilder<Proposal>) => {
         this.buildSearchQueries(qb, search);
       })
       .select()
@@ -50,9 +50,9 @@ export class ApplicationRepository extends AbstractRepositoryTemplate<Applicatio
   }
 
   public async findAndCountFreelancer(
-    search: ISearchApplication,
+    search: ISearchProposal,
     freelancer: User
-  ): Promise<[Application[], number]> {
+  ): Promise<[Proposal[], number]> {
     const s = _.assign(
       {
         filter: {},
@@ -63,15 +63,15 @@ export class ApplicationRepository extends AbstractRepositoryTemplate<Applicatio
       },
       search
     );
-    const sort = this.filter.buildOrderByCondition('application', s);
+    const sort = this.filter.buildOrderByCondition('proposal', s);
     const limit = this.filter.buildLimit(search);
 
     return this.getRepo()
-      .createQueryBuilder('application')
-      .innerJoin('application.activity', 'activity')
-      .innerJoin('application.user', 'applicationUser')
-      .andWhere('applicationUser.id = :freelancerId', {freelancerId: freelancer.id})
-      .where((qb: SelectQueryBuilder<Application>) => {
+      .createQueryBuilder('proposal')
+      .innerJoin('proposal.activity', 'activity')
+      .innerJoin('proposal.user', 'proposalUser')
+      .andWhere('proposalUser.id = :freelancerId', {freelancerId: freelancer.id})
+      .where((qb: SelectQueryBuilder<Proposal>) => {
         this.buildSearchQueries(qb, search);
       })
       .select()
@@ -82,9 +82,9 @@ export class ApplicationRepository extends AbstractRepositoryTemplate<Applicatio
   }
 
   private buildSearchQueries(
-    qb: SelectQueryBuilder<Application>,
-    search: ISearchApplication
-  ): SelectQueryBuilder<Application> {
+    qb: SelectQueryBuilder<Proposal>,
+    search: ISearchProposal
+  ): SelectQueryBuilder<Proposal> {
     if ('activityId' in search.filter) {
       qb.andWhere('activity.id = :activityId', {activityId: search.filter.activityId});
     }

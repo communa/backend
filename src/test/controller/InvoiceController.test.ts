@@ -5,18 +5,18 @@ import {BaseControllerTest} from './BaseController.test';
 import {ActivityManager} from '../../service/ActivityManager';
 import {EActivityState} from '../../interface/EActivityState';
 import {EInvoiceState} from '../../interface/EInvoiceState';
-import {ApplicationRepository} from '../../repository/ApplicationRepository';
+import {ProposalRepository} from '../../repository/ProposalRepository';
 
 @suite
 @skip
 export class InvoiceControllerTest extends BaseControllerTest {
   protected activityManager: ActivityManager;
-  protected applicationRepository: ApplicationRepository;
+  protected proposalRepository: ProposalRepository;
 
   constructor() {
     super();
 
-    this.applicationRepository = this.container.get('ApplicationRepository');
+    this.proposalRepository = this.container.get('ProposalRepository');
     this.activityManager = this.container.get('ActivityManager');
   }
 
@@ -25,9 +25,9 @@ export class InvoiceControllerTest extends BaseControllerTest {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-    const application = await this.applicationFixture.create(activity, freelancer);
+    const proposal = await this.proposalFixture.create(activity, freelancer);
 
-    await this.activityManager.acceptApplication(activity, application);
+    await this.activityManager.acceptProposal(activity, proposal);
 
     const invoice = await this.invoiceFixture.create(activity, 50, EInvoiceState.PAID);
 
@@ -50,9 +50,9 @@ export class InvoiceControllerTest extends BaseControllerTest {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-    const application = await this.applicationFixture.create(activity, freelancer);
+    const proposal = await this.proposalFixture.create(activity, freelancer);
 
-    await this.activityManager.acceptApplication(activity, application);
+    await this.activityManager.acceptProposal(activity, proposal);
 
     const invoice = await this.invoiceFixture.create(activity, 50, EInvoiceState.PAID);
 

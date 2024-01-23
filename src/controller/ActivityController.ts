@@ -23,7 +23,7 @@ import {ActivityRepository} from '../repository/ActivityRepository';
 import {ActivitySearchDto} from '../validator/dto/ActivitySearchDto';
 import {ActivityManager} from '../service/ActivityManager';
 import {EActivityType} from '../interface/EActivityType';
-import {Application} from '../entity/Application';
+import {Proposal} from '../entity/Proposal';
 import RejectedExecutionException from '../exception/RejectedExecutionException';
 import {OpenAPI} from 'routing-controllers-openapi';
 
@@ -81,21 +81,21 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Assign given application submitted by a freelancer',
+    summary: 'Assign given proposal submitted by a freelancer',
   })
-  @Post('/:id/accept/:applicationId')
+  @Post('/:id/accept/:proposalId')
   @Authorized([EUserRole.ROLE_USER])
   @ResponseClassTransformOptions({groups: ['search']})
-  public async acceptApplication(
+  public async acceptProposal(
     @CurrentUser() currentUser: User,
     @EntityFromParam('id') activity: Activity,
-    @EntityFromParam('applicationId') application: Application
+    @EntityFromParam('proposalId') proposal: Proposal
   ) {
     if (currentUser.id !== activity.user.id) {
       throw new RejectedExecutionException('Wrong user');
     }
 
-    await this.activityManager.acceptApplication(activity, application);
+    await this.activityManager.acceptProposal(activity, proposal);
 
     return {};
   }

@@ -5,9 +5,10 @@ import {User} from '../entity/User';
 import {TimeRepository} from '../repository/TimeRepository';
 import {ActivityRepository} from '../repository/ActivityRepository';
 import RejectedExecutionException from '../exception/RejectedExecutionException';
-import {Activity} from '../entity/Activity';
 import {ITimeInsertionError} from '../interface/ITimeInsertionError';
 import {ErrorFormatter} from './ErrorFormatter';
+import {TimeCreateManyDto} from '../validator/dto/TimeCreateManyDto';
+import moment from 'moment';
 
 @injectable()
 export class TimeManager {
@@ -16,15 +17,24 @@ export class TimeManager {
   @inject('ActivityRepository')
   protected activityRepository: ActivityRepository;
 
-  public async saveMany(times: Time[], user: User): Promise<ITimeInsertionError[]> {
+  public async saveMany(times: TimeCreateManyDto[], user: User): Promise<ITimeInsertionError[]> {
     const errors: ITimeInsertionError[] = [];
 
     for (let a = 0; a < times.length; a++) {
       const data = times[a];
 
       try {
-        const activity = await this.activityRepository.findOneByIdOrFail(data.activity.id);
-        await this.save(data, activity, user);
+        const time = new Time();
+
+        time.fromAt = moment(data.fromAt).utc().toDate();
+        time.toAt = moment(data.toAt).utc().toDate();
+        time.note = data.note;
+        time.keyboardKeys = data.keyboardKeys;
+        time.mouseKeys = data.mouseKeys;
+        time.mouseDistance = data.mouseDistance;
+        time.activity = await this.activityRepository.findOneByIdOrFail(data.activityId);
+
+        await this.save(time, user);
       } catch (error: any) {
         const errorFormatted = ErrorFormatter.format(error);
 
@@ -32,6 +42,7 @@ export class TimeManager {
           index: a,
           name: errorFormatted.name,
           message: errorFormatted.message,
+          errors: errorFormatted.errors,
         });
       }
     }
@@ -39,10 +50,10 @@ export class TimeManager {
     return errors;
   }
 
-  public async save(time: Time, activity: Activity, user: User): Promise<Time> {
+  public async save(time: Time, user: User): Promise<Time> {
     const activities = [
-      await this.activityRepository.findActivityByFreelancer(activity, user),
-      await this.activityRepository.findActivityPersonal(activity, user),
+      await this.activityRepository.findActivityByFreelancer(time.activity, user),
+      await this.activityRepository.findActivityPersonal(time.activity, user),
     ];
 
     const activityValid = activities.find(a => a !== undefined);

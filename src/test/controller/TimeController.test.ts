@@ -24,8 +24,8 @@ export class TimeControllerTest extends BaseControllerTest {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-    const application = await this.applicationFixture.create(activity, freelancer);
-    await this.activityManager.acceptApplication(activity, application);
+    const proposal = await this.proposalFixture.create(activity, freelancer);
+    await this.activityManager.acceptProposal(activity, proposal);
 
     const time = await this.timeFixture.create(
       activity,
@@ -52,8 +52,8 @@ export class TimeControllerTest extends BaseControllerTest {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-    const application = await this.applicationFixture.create(activity, freelancer);
-    await this.activityManager.acceptApplication(activity, application);
+    const proposal = await this.proposalFixture.create(activity, freelancer);
+    await this.activityManager.acceptProposal(activity, proposal);
 
     const time = await this.timeFixture.create(
       activity,

@@ -4,18 +4,18 @@ import {suite, test} from '@testdeck/mocha';
 
 import {BaseControllerTest} from './BaseController.test';
 import {ActivityManager} from '../../service/ActivityManager';
-import {ApplicationRepository} from '../../repository/ApplicationRepository';
+import {ProposalRepository} from '../../repository/ProposalRepository';
 import {EActivityState} from '../../interface/EActivityState';
 
 @suite
-export class ApplicationControllerTest extends BaseControllerTest {
+export class ProposalControllerTest extends BaseControllerTest {
   protected activityManager: ActivityManager;
-  protected applicationRepository: ApplicationRepository;
+  protected proposalRepository: ProposalRepository;
 
   constructor() {
     super();
 
-    this.applicationRepository = this.container.get('ApplicationRepository');
+    this.proposalRepository = this.container.get('ProposalRepository');
     this.activityManager = this.container.get('ActivityManager');
   }
 
@@ -24,10 +24,10 @@ export class ApplicationControllerTest extends BaseControllerTest {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-    const application = await this.applicationFixture.create(activity, freelancer);
+    const proposal = await this.proposalFixture.create(activity, freelancer);
 
     const res = await this.http.request({
-      url: `${this.url}/api/application/${application.id}`,
+      url: `${this.url}/api/proposal/${proposal.id}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ export class ApplicationControllerTest extends BaseControllerTest {
     });
 
     expect(res.status).to.be.equal(200);
-    expect(res.data.id).to.be.equal(application.id);
+    expect(res.data.id).to.be.equal(proposal.id);
   }
 
   @test
@@ -44,7 +44,7 @@ export class ApplicationControllerTest extends BaseControllerTest {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-    const application = await this.applicationFixture.create(activity, freelancer);
+    const proposal = await this.proposalFixture.create(activity, freelancer);
 
     const data = {
       text: faker.datatype.uuid(),
@@ -52,7 +52,7 @@ export class ApplicationControllerTest extends BaseControllerTest {
     };
 
     const res = await this.http.request({
-      url: `${this.url}/api/application/${application.id}`,
+      url: `${this.url}/api/proposal/${proposal.id}`,
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -61,13 +61,13 @@ export class ApplicationControllerTest extends BaseControllerTest {
       data,
     });
 
-    const applicationUpdated = await this.applicationRepository.findOneByIdOrFail(application.id);
+    const proposalUpdated = await this.proposalRepository.findOneByIdOrFail(proposal.id);
 
     expect(res.status).to.be.equal(200);
     expect(res.data).to.be.deep.equal({});
 
-    expect(applicationUpdated.text).to.be.eq(data.text);
-    expect(applicationUpdated.rate).to.be.eq(data.rate);
+    expect(proposalUpdated.text).to.be.eq(data.text);
+    expect(proposalUpdated.rate).to.be.eq(data.rate);
   }
 
   @test
@@ -85,7 +85,7 @@ export class ApplicationControllerTest extends BaseControllerTest {
     };
 
     const res = await this.http.request({
-      url: `${this.url}/api/application`,
+      url: `${this.url}/api/proposal`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -95,13 +95,13 @@ export class ApplicationControllerTest extends BaseControllerTest {
     });
 
     const id = res.headers.location.split('/')[3];
-    const application = await this.applicationRepository.findOneByIdOrFail(id);
+    const proposal = await this.proposalRepository.findOneByIdOrFail(id);
 
     expect(res.status).to.be.equal(201);
     expect(res.data).to.be.deep.equal({});
 
-    expect(application.text).to.be.eq(data.text);
-    expect(application.rate).to.be.eq(data.rate);
+    expect(proposal.text).to.be.eq(data.text);
+    expect(proposal.rate).to.be.eq(data.rate);
   }
 
   @test
@@ -109,10 +109,10 @@ export class ApplicationControllerTest extends BaseControllerTest {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-    const application = await this.applicationFixture.create(activity, freelancer);
+    const proposal = await this.proposalFixture.create(activity, freelancer);
 
     const res = await this.http.request({
-      url: `${this.url}/api/application/${application.id}`,
+      url: `${this.url}/api/proposal/${proposal.id}`,
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -129,10 +129,10 @@ export class ApplicationControllerTest extends BaseControllerTest {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-    const application = await this.applicationFixture.create(activity, freelancer);
+    const proposal = await this.proposalFixture.create(activity, freelancer);
 
     const config = {
-      url: `${this.url}/api/application/search/business`,
+      url: `${this.url}/api/proposal/search/business`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ export class ApplicationControllerTest extends BaseControllerTest {
     const res = await this.http.request(config);
 
     expect(res.data[0].length).to.be.eq(1);
-    expect(res.data[0][0].id).to.be.eq(application.id);
+    expect(res.data[0][0].id).to.be.eq(proposal.id);
   }
 
   @test()
@@ -158,10 +158,10 @@ export class ApplicationControllerTest extends BaseControllerTest {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-    const application = await this.applicationFixture.create(activity, freelancer);
+    const proposal = await this.proposalFixture.create(activity, freelancer);
 
     const config = {
-      url: `${this.url}/api/application/search/freelancer`,
+      url: `${this.url}/api/proposal/search/freelancer`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -179,6 +179,6 @@ export class ApplicationControllerTest extends BaseControllerTest {
     const res = await this.http.request(config);
 
     expect(res.data[0].length).to.be.eq(1);
-    expect(res.data[0][0].id).to.be.eq(application.id);
+    expect(res.data[0][0].id).to.be.eq(proposal.id);
   }
 }

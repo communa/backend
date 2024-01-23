@@ -7,7 +7,6 @@ import {
   JsonController,
   Post,
   Put,
-  Res,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
 
@@ -22,9 +21,9 @@ import {TimeRepository} from '../repository/TimeRepository';
 import {TimeSearchDto} from '../validator/dto/TimeSearchDto';
 import {Time} from '../entity/Time';
 import {EntityFromParam} from '../decorator/EntityFromParam';
-import {Activity} from '../entity/Activity';
 import {OpenAPI} from 'routing-controllers-openapi';
 import {ITimeInsertionError} from '../interface/ITimeInsertionError';
+import {TimeCreateManyDto} from '../validator/dto/TimeCreateManyDto';
 
 @Authorized([EUserRole.ROLE_USER])
 @JsonController('/time')
@@ -70,33 +69,6 @@ export class TimeController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Create single time record',
-    responses: {
-      201: {
-        description: 'Empty object',
-        content: {
-          'application/json': {},
-        },
-      },
-    },
-  })
-  @Post('/activity/:activityId')
-  @HttpCode(201)
-  public async create(
-    @CurrentUser() currentUser: User,
-    @EntityFromParam('activityId') activity: Activity,
-    @Body({validate: {groups: ['create']}, transform: {groups: ['create']}}) data: Time,
-    @Res() res: any
-  ) {
-    const time = await this.timeManager.save(data, activity, currentUser);
-
-    res.status(201);
-    res.location(`/api/time/${time.id}`);
-
-    return {};
-  }
-
-  @OpenAPI({
     summary: 'Create multiple time records from array',
     responses: {
       201: {
@@ -118,7 +90,7 @@ export class TimeController extends AbstractController {
       },
       transform: {groups: ['create']},
     })
-    data: Time[]
+    data: TimeCreateManyDto[]
   ): Promise<ITimeInsertionError[]> {
     return this.timeManager.saveMany(data, currentUser);
   }

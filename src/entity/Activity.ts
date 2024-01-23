@@ -8,7 +8,7 @@ import {AbstractBaseEntity} from './AbstractBaseEntity';
 import {EActivityType} from '../interface/EActivityType';
 import {IsNotEmpty} from 'class-validator';
 import {EActivityState} from '../interface/EActivityState';
-import {Application} from './Application';
+import {Proposal} from './Proposal';
 import {Invoice} from './Invoice';
 import {Time} from './Time';
 
@@ -86,9 +86,9 @@ export class Activity extends AbstractBaseEntity {
   user: User;
 
   @Expose({groups: ['search']})
-  @Type(() => Application)
-  @OneToMany(() => Application, application => application.activity)
-  applications: Application[];
+  @Type(() => Proposal)
+  @OneToMany(() => Proposal, proposal => proposal.activity)
+  proposals: Proposal[];
 
   @Expose({groups: ['search']})
   @Type(() => Invoice)
@@ -100,7 +100,7 @@ export class Activity extends AbstractBaseEntity {
   time: Time[];
 
   @Expose({groups: ['search']})
-  @Type(() => Application)
-  @OneToOne(() => Application, application => application.activity)
-  applicationAccepted: Application;
+  @Type(() => Proposal)
+  @OneToOne(() => Proposal, proposal => proposal.activity)
+  proposalAccepted: Proposal;
 }

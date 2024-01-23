@@ -4,6 +4,7 @@ export class ErrorFormatter {
   public static format(error: any): {
     name: string;
     message: string;
+    errors?: any;
   } {
     const errorFormatted: {
       message: string;

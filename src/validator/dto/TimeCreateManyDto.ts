@@ -1,11 +1,23 @@
-import {Type} from 'class-transformer';
-
-import {IsArray, ValidateNested} from 'class-validator';
-import {Time} from '../../entity/Time';
+import {IsNumber, IsString} from 'class-validator';
 
 export class TimeCreateManyDto {
-  @IsArray()
-  @ValidateNested({each: true})
-  @Type(() => Time)
-  time: Time[];
+  @IsNumber()
+  fromAt: number;
+  @IsNumber()
+  toAt: number;
+
+  @IsString()
+  activityId: string;
+
+  @IsString()
+  note: string | null;
+
+  @IsNumber()
+  keyboardKeys: number;
+
+  @IsNumber()
+  mouseKeys: number;
+
+  @IsNumber()
+  mouseDistance: number;
 }

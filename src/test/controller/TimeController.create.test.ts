@@ -5,8 +5,8 @@ import moment from 'moment';
 
 import {BaseControllerTest} from './BaseController.test';
 import {ActivityManager} from '../../service/ActivityManager';
-import {ITime} from '../../interface/ITime';
 import {TimeRepository} from '../../repository/TimeRepository';
+import {TimeCreateManyDto} from '../../validator/dto/TimeCreateManyDto';
 
 @suite
 export class TimeControllerTest extends BaseControllerTest {
@@ -21,64 +21,28 @@ export class TimeControllerTest extends BaseControllerTest {
   }
 
   @test
-  async createPersonal() {
-    const user = await this.userFixture.createUser();
-    const activity = await this.activityFixture.createPersonal(user);
-    const data: ITime = {
-      note: faker.datatype.uuid(),
-      keyboardKeys: faker.datatype.number(9),
-      mouseKeys: faker.datatype.number(9),
-      mouseDistance: faker.datatype.number(9),
-      fromAt: moment.utc().subtract(10, 'minutes').toDate(),
-      toAt: moment.utc().toDate(),
-    };
-
-    const res = await this.http.request({
-      url: `${this.url}/api/time/activity/${activity.id}`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(user).accessToken,
-      },
-      data,
-    });
-
-    const id = res.headers.location.split('/')[3];
-    const time = await this.timeRepository.findOneByIdOrFail(id);
-
-    expect(res.status).to.be.equal(201);
-    expect(time.note).to.be.eq(data.note);
-    expect(time.activity.id).to.be.eq(activity.id);
-    expect(time.activity.user.id).to.be.eq(user.id);
-  }
-
-  @test
   async createPersonalMany() {
     const user = await this.userFixture.createUser();
     const activityA = await this.activityFixture.createPersonal(user);
     const activityB = await this.activityFixture.createPersonal(user);
-    const data: ITime[] = [
+    const data: TimeCreateManyDto[] = [
       {
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
-        fromAt: moment.utc().subtract(10, 'minutes').toDate(),
-        toAt: moment.utc().toDate(),
-        activity: {
-          id: activityA.id,
-        },
+        fromAt: moment.utc().subtract(10, 'minutes').unix(),
+        toAt: moment.utc().unix(),
+        activityId: activityA.id,
       },
       {
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
-        fromAt: moment.utc().subtract(10, 'minutes').toDate(),
-        toAt: moment.utc().toDate(),
-        activity: {
-          id: activityB.id,
-        },
+        fromAt: moment.utc().subtract(10, 'minutes').unix(),
+        toAt: moment.utc().unix(),
+        activityId: activityB.id,
       },
     ];
 
@@ -100,25 +64,24 @@ export class TimeControllerTest extends BaseControllerTest {
   async createPersonalManyWithErrors() {
     const user = await this.userFixture.createUser();
     const activityA = await this.activityFixture.createPersonal(user);
-    const data: ITime[] = [
+    const data: TimeCreateManyDto[] = [
       {
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
-        fromAt: moment.utc().subtract(10, 'minutes').toDate(),
-        toAt: moment.utc().toDate(),
-        activity: {
-          id: activityA.id,
-        },
+        fromAt: moment.utc().subtract(10, 'minutes').unix(),
+        toAt: moment.utc().unix(),
+        activityId: activityA.id,
       },
       {
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
-        fromAt: moment.utc().subtract(10, 'minutes').toDate(),
-        toAt: moment.utc().toDate(),
+        fromAt: moment.utc().subtract(10, 'minutes').unix(),
+        toAt: moment.utc().unix(),
+        activityId: '',
       },
     ];
 
@@ -136,8 +99,8 @@ export class TimeControllerTest extends BaseControllerTest {
     expect(res.data).to.be.deep.equal([
       {
         index: 1,
-        name: 'TypeError',
-        message: "Cannot read properties of undefined (reading 'id')",
+        name: 'QueryFailedError',
+        message: 'invalid input syntax for type uuid: ""',
       },
     ]);
   }
@@ -169,9 +132,8 @@ export class TimeControllerTest extends BaseControllerTest {
     expect(res.data).to.be.deep.equal([
       {
         index: 0,
-        message:
-          'null value in column "keyboardKeys" of relation "time" violates not-null constraint',
-        name: 'QueryFailedError',
+        name: 'RejectedExecutionException',
+        message: 'The given activity is unavailable for time tracking',
       },
     ]);
   }

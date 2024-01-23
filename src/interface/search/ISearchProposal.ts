@@ -1,6 +1,6 @@
 import {ISearch} from './ISearch';
 
-export interface ISearchApplication extends ISearch {
+export interface ISearchProposal extends ISearch {
   filter: {
     activityId?: string;
   };
