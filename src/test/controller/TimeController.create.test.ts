@@ -6,7 +6,7 @@ import moment from 'moment';
 import {BaseControllerTest} from './BaseController.test';
 import {ActivityManager} from '../../service/ActivityManager';
 import {TimeRepository} from '../../repository/TimeRepository';
-import {TimeCreateManyDto} from '../../validator/dto/TimeCreateManyDto';
+import {TimeCreateDto} from '../../validator/dto/TimeCreateDto';
 
 @suite
 export class TimeControllerTest extends BaseControllerTest {
@@ -25,7 +25,7 @@ export class TimeControllerTest extends BaseControllerTest {
     const user = await this.userFixture.createUser();
     const activityA = await this.activityFixture.createPersonal(user);
     const activityB = await this.activityFixture.createPersonal(user);
-    const data: TimeCreateManyDto[] = [
+    const data: TimeCreateDto[] = [
       {
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
@@ -61,10 +61,10 @@ export class TimeControllerTest extends BaseControllerTest {
   }
 
   @test
-  async createPersonalManyWithErrors() {
+  async createPersonalInputValidationErrorA() {
     const user = await this.userFixture.createUser();
     const activityA = await this.activityFixture.createPersonal(user);
-    const data: TimeCreateManyDto[] = [
+    const data: TimeCreateDto[] = [
       {
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
@@ -106,7 +106,7 @@ export class TimeControllerTest extends BaseControllerTest {
   }
 
   @test
-  async createPersonalInputValidationError() {
+  async createPersonalInputValidationErrorB() {
     const user = await this.userFixture.createUser();
     const activityA = await this.activityFixture.createPersonal(user);
     const data = [
@@ -134,6 +134,42 @@ export class TimeControllerTest extends BaseControllerTest {
         index: 0,
         name: 'RejectedExecutionException',
         message: 'The given activity is unavailable for time tracking',
+      },
+    ]);
+  }
+
+  @test
+  async createPersonalDuplicationError() {
+    const user = await this.userFixture.createUser();
+    const activityA = await this.activityFixture.createPersonal(user);
+    const time = {
+      note: faker.datatype.uuid(),
+      keyboardKeys: faker.datatype.number(9),
+      mouseKeys: faker.datatype.number(9),
+      mouseDistance: faker.datatype.number(9),
+      fromAt: moment.utc().subtract(10, 'minutes').unix(),
+      toAt: moment.utc().unix(),
+      activityId: activityA.id,
+    };
+
+    const data: TimeCreateDto[] = [time, time];
+
+    const res = await this.http.request({
+      url: `${this.url}/api/time/activity`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(user).accessToken,
+      },
+      data,
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data).to.be.deep.equal([
+      {
+        index: 1,
+        name: 'QueryFailedError',
+        message: 'duplicate key value violates unique constraint "UQ_ACTIVITYFROM"',
       },
     ]);
   }

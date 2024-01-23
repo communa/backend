@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne} from 'typeorm';
+import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import faker from 'faker';
 import {Exclude, Expose, Type} from 'class-transformer';
 import {JSONSchema} from 'class-validator-jsonschema';
@@ -15,6 +15,7 @@ import {IsDate} from 'class-validator';
 })
 @Entity()
 @Exclude()
+@Unique('UQ_ACTIVITYFROM', ['activity', 'fromAt'])
 export class Time extends AbstractBaseEntity implements ITime {
   @Expose({groups: ['search']})
   @Type(() => Activity)

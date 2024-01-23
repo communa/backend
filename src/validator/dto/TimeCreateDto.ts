@@ -1,6 +1,6 @@
 import {IsNumber, IsString} from 'class-validator';
 
-export class TimeCreateManyDto {
+export class TimeCreateDto {
   @IsNumber()
   fromAt: number;
   @IsNumber()

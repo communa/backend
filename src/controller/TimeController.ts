@@ -23,7 +23,7 @@ import {Time} from '../entity/Time';
 import {EntityFromParam} from '../decorator/EntityFromParam';
 import {OpenAPI} from 'routing-controllers-openapi';
 import {ITimeInsertionError} from '../interface/ITimeInsertionError';
-import {TimeCreateManyDto} from '../validator/dto/TimeCreateManyDto';
+import {TimeCreateDto} from '../validator/dto/TimeCreateDto';
 
 @Authorized([EUserRole.ROLE_USER])
 @JsonController('/time')
@@ -90,7 +90,7 @@ export class TimeController extends AbstractController {
       },
       transform: {groups: ['create']},
     })
-    data: TimeCreateManyDto[]
+    data: TimeCreateDto[]
   ): Promise<ITimeInsertionError[]> {
     return this.timeManager.saveMany(data, currentUser);
   }

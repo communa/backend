@@ -1,4 +1,5 @@
 import {inject, injectable} from 'inversify';
+import moment from 'moment';
 
 import {Time} from '../entity/Time';
 import {User} from '../entity/User';
@@ -7,8 +8,7 @@ import {ActivityRepository} from '../repository/ActivityRepository';
 import RejectedExecutionException from '../exception/RejectedExecutionException';
 import {ITimeInsertionError} from '../interface/ITimeInsertionError';
 import {ErrorFormatter} from './ErrorFormatter';
-import {TimeCreateManyDto} from '../validator/dto/TimeCreateManyDto';
-import moment from 'moment';
+import {TimeCreateDto} from '../validator/dto/TimeCreateDto';
 
 @injectable()
 export class TimeManager {
@@ -17,7 +17,7 @@ export class TimeManager {
   @inject('ActivityRepository')
   protected activityRepository: ActivityRepository;
 
-  public async saveMany(times: TimeCreateManyDto[], user: User): Promise<ITimeInsertionError[]> {
+  public async saveMany(times: TimeCreateDto[], user: User): Promise<ITimeInsertionError[]> {
     const errors: ITimeInsertionError[] = [];
 
     for (let a = 0; a < times.length; a++) {
