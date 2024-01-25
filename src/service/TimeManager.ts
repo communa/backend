@@ -26,8 +26,8 @@ export class TimeManager {
       try {
         const time = new Time();
 
-        time.fromAt = moment(data.fromAt).utc().toDate();
-        time.toAt = moment(data.toAt).utc().toDate();
+        time.fromAt = moment.unix(data.fromAt).toDate();
+        time.toAt = moment.unix(data.toAt).toDate();
         time.note = data.note;
         time.keyboardKeys = data.keyboardKeys;
         time.mouseKeys = data.mouseKeys;
@@ -40,6 +40,9 @@ export class TimeManager {
 
         errors.push({
           index: a,
+          activityId: data.activityId,
+          fromAt: data.fromAt,
+          toAt: data.toAt,
           name: errorFormatted.name,
           message: errorFormatted.message,
           errors: errorFormatted.errors,
