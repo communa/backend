@@ -10,6 +10,8 @@ import RejectedExecutionException from '../exception/RejectedExecutionException'
 import {Activity} from '../entity/Activity';
 import {EActivityType} from '../interface/EActivityType';
 import {EActivityState} from '../interface/EActivityState';
+import {SelectQueryBuilder} from 'typeorm';
+import {ISearchTime} from '../interface/search/ISearchTime';
 
 @injectable()
 export class TimeRepository extends AbstractRepositoryTemplate<Time> {
@@ -46,7 +48,7 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
     return t;
   }
 
-  public async findAndCountPersonal(search: ISearch, user: User): Promise<[Time[], number]> {
+  public async findAndCountPersonal(search: ISearchTime, user: User): Promise<[Time[], number]> {
     const s = _.assign(
       {
         filter: {},
@@ -68,6 +70,13 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       .andWhere(`activity.type = :type`, {type: EActivityType.PERSONAL})
       .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
       .select()
+      .where((qb: SelectQueryBuilder<Time>) => {
+        qb.andWhere('activity.user.id = :userId', {userId: user.id});
+
+        if ('activityId' in s.filter) {
+          qb.andWhere('activity.id = :activityId', {state: s.filter.activityId});
+        }
+      })
       .orderBy(sort)
       .skip(limit * s.page)
       .take(limit)

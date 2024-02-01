@@ -119,9 +119,7 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
   ): Promise<[Activity[], number]> {
     const s = _.assign(
       {
-        filter: {
-          // state: 'published',
-        },
+        filter: {},
         sort: {
           createdAt: 'ASC',
         },
@@ -140,6 +138,9 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
 
         if ('state' in s.filter) {
           qb.andWhere('activity.state = :state', {state: s.filter.state});
+        }
+        if ('activityId' in s.filter) {
+          qb.andWhere('activity.id = :activityId', {state: s.filter.activityId});
         }
         if ('type' in s.filter) {
           qb.andWhere('activity.type = :type', {type: s.filter.type});
