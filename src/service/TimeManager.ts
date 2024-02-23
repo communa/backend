@@ -29,6 +29,7 @@ export class TimeManager {
         time.fromAt = moment.unix(data.fromAt).toDate();
         time.toAt = moment.unix(data.toAt).toDate();
         time.note = data.note;
+        time.minutesActive = data.minutesActive;
         time.keyboardKeys = data.keyboardKeys;
         time.mouseKeys = data.mouseKeys;
         time.mouseDistance = data.mouseDistance;

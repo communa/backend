@@ -7,7 +7,7 @@ import {AppConfig} from '../../app/AppConfig';
 export class AppConfigTest {
   @test()
   parameters() {
-    const params = AppConfig.readLocal();
+    const params = AppConfig.readConfig();
 
     expect(params).to.be.an.instanceOf(Object);
     expect(params).to.contain.keys(['host', 'port']);

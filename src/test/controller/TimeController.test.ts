@@ -104,4 +104,106 @@ export class TimeControllerTest extends BaseControllerTest {
     expect(res.data[0][0].id).to.be.eq(time.id);
     expect(res.data[0][0].note).to.be.deep.eq(time.note);
   }
+
+  @test
+  async searchPersonalById() {
+    const user = await this.userFixture.createUser();
+    const activityA = await this.activityFixture.createPersonal(user);
+    const activityB = await this.activityFixture.createPersonal(user);
+    const timeA = await this.timeFixture.create(
+      activityA,
+      moment.utc().subtract(60, 'minutes').toDate(),
+      moment.utc().toDate()
+    );
+    await this.timeFixture.create(
+      activityB,
+      moment.utc().subtract(60, 'minutes').toDate(),
+      moment.utc().toDate()
+    );
+
+    const res = await this.http.request({
+      url: `${this.url}/api/time/search`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(user).accessToken,
+      },
+      data: {
+        filter: {
+          activityId: activityA.id,
+        },
+        sort: {createdAt: 'DESC'},
+        page: 0,
+      },
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data[0].length).to.be.eq(1);
+    expect(res.data[0][0].id).to.be.eq(timeA.id);
+    expect(res.data[0][0].note).to.be.deep.eq(timeA.note);
+  }
+
+  @test
+  async getTotals() {
+    const user = await this.userFixture.createUser();
+    const activityA = await this.activityFixture.createPersonal(user);
+    const activityB = await this.activityFixture.createPersonal(user);
+    await this.timeFixture.create(
+      activityA,
+      moment.utc().subtract(60, 'minutes').toDate(),
+      moment.utc().toDate()
+    );
+    await this.timeFixture.create(
+      activityB,
+      moment.utc().subtract(60, 'minutes').toDate(),
+      moment.utc().toDate()
+    );
+
+    const res = await this.http.request({
+      url: `${this.url}/api/time/totals`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(user).accessToken,
+      },
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data.length).to.be.eq(2);
+  }
+
+  @test
+  async getTotalsActivity() {
+    const user = await this.userFixture.createUser();
+    const activityA = await this.activityFixture.createPersonal(user);
+    const activityB = await this.activityFixture.createPersonal(user);
+    const timeA = await this.timeFixture.create(
+      activityA,
+      moment.utc().subtract(60, 'minutes').toDate(),
+      moment.utc().toDate()
+    );
+    await this.timeFixture.create(
+      activityB,
+      moment.utc().subtract(60, 'minutes').toDate(),
+      moment.utc().toDate()
+    );
+
+    const res = await this.http.request({
+      url: `${this.url}/api/time/totals?activityId=${activityA.id}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(user).accessToken,
+      },
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data[0].activityId).to.be.eq(activityA.id);
+    expect(res.data[0].rateHour).to.be.eq(activityA.rateHour);
+    expect(res.data[0].minutes).to.be.eq(1);
+    expect(res.data[0].minutesActive).to.be.eq(timeA.minutesActive);
+    expect(res.data[0].mouseKeys).to.be.eq(timeA.mouseKeys);
+    expect(res.data[0].keyboardKeys).to.be.eq(timeA.keyboardKeys);
+    expect(res.data[0].mouseDistance).to.be.eq(timeA.mouseDistance);
+  }
 }

@@ -44,9 +44,11 @@ export class Activity extends AbstractBaseEntity {
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('text', {nullable: true})
   salary: string;
+
   @Expose({groups: ['search', 'create', 'edit']})
-  @Column('text', {nullable: true})
-  rate: string;
+  @Column('decimal', {precision: 6, scale: 2, default: 0, nullable: true})
+  rateHour: number;
+
   @Expose({groups: ['search']})
   @Column('text', {nullable: true})
   sourceUrl: string;

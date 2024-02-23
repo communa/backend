@@ -7,6 +7,7 @@ import {
   JsonController,
   Post,
   Put,
+  QueryParam,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
 
@@ -46,6 +47,18 @@ export class TimeController extends AbstractController {
   @ResponseClassTransformOptions({groups: ['search']})
   public searchFreelancer(@Body() search: TimeSearchDto, @CurrentUser() currentUser: User) {
     return this.timeRepository.findAndCountPersonal(search, currentUser);
+  }
+
+  @OpenAPI({
+    summary: 'Time totals',
+  })
+  @Get('/totals')
+  @ResponseClassTransformOptions({groups: ['search']})
+  public getTotals(
+    @CurrentUser() currentUser: User,
+    @QueryParam('activityId') activityId?: string
+  ) {
+    return this.timeRepository.getTotals(currentUser, activityId);
   }
 
   @OpenAPI({

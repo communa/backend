@@ -1,7 +1,7 @@
 import {AppConfig} from './app/AppConfig';
 
 export default (() => {
-  const params = AppConfig.readLocal();
+  const params = AppConfig.readConfig();
 
   const connectionConfig = {
     type: params.database.type,

@@ -5,7 +5,6 @@ export class TimeCreateDto {
   fromAt: number;
   @IsNumber()
   toAt: number;
-
   @IsString()
   activityId: string;
 
@@ -13,11 +12,11 @@ export class TimeCreateDto {
   note: string | null;
 
   @IsNumber()
+  minutesActive: number;
+  @IsNumber()
   keyboardKeys: number;
-
   @IsNumber()
   mouseKeys: number;
-
   @IsNumber()
   mouseDistance: number;
 }

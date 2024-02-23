@@ -15,7 +15,7 @@ import {IsDate} from 'class-validator';
 })
 @Entity()
 @Exclude()
-@Unique('UQ_TIMEFROM', ['activity', 'fromAt'])
+@Unique('UQ_ACTIVITYFROM', ['activity', 'fromAt'])
 export class Time extends AbstractBaseEntity implements ITime {
   @Expose({groups: ['search']})
   @Type(() => Activity)
@@ -29,6 +29,10 @@ export class Time extends AbstractBaseEntity implements ITime {
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('int', {nullable: false})
   keyboardKeys: number;
+
+  @Expose({groups: ['search', 'create', 'edit']})
+  @Column('int', {nullable: true})
+  minutesActive: number;
 
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('int', {nullable: false})

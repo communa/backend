@@ -1,6 +1,12 @@
 {
   "host": "0.0.0.0",
   "port": 4000,
+  "timezone": "America/Los_Angeles",
+  "sentry": "",
+  "redis": "",
+  "domain": "communa.network",
+  "homepage": "https://communa.network",
+  "jwtSecret": "communa-development",
   "database": {
     "type": "postgres",
     "host": "localhost",

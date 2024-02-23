@@ -29,6 +29,7 @@ export class TimeControllerTest extends BaseControllerTest {
       {
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
+        minutesActive: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
         fromAt: moment.utc().subtract(10, 'minutes').unix(),
@@ -38,6 +39,7 @@ export class TimeControllerTest extends BaseControllerTest {
       {
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
+        minutesActive: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
         fromAt: moment.utc().subtract(10, 'minutes').unix(),
@@ -77,6 +79,7 @@ export class TimeControllerTest extends BaseControllerTest {
       {
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
+        minutesActive: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
         fromAt: moment.utc().subtract(10, 'minutes').unix(),
@@ -86,6 +89,7 @@ export class TimeControllerTest extends BaseControllerTest {
       {
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
+        minutesActive: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
         fromAt: moment.utc().subtract(10, 'minutes').unix(),
@@ -163,6 +167,7 @@ export class TimeControllerTest extends BaseControllerTest {
     const timeData = {
       note: faker.datatype.uuid(),
       keyboardKeys: faker.datatype.number(9),
+      minutesActive: faker.datatype.number(9),
       mouseKeys: faker.datatype.number(9),
       mouseDistance: faker.datatype.number(9),
       fromAt,

@@ -12,6 +12,7 @@ import {EActivityType} from '../interface/EActivityType';
 import {EActivityState} from '../interface/EActivityState';
 import {SelectQueryBuilder} from 'typeorm';
 import {ISearchTime} from '../interface/search/ISearchTime';
+import {ITimeTotals} from '../interface/ITimeTotals';
 
 @injectable()
 export class TimeRepository extends AbstractRepositoryTemplate<Time> {
@@ -48,7 +49,45 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
     return t;
   }
 
-  public async findAndCountPersonal(search: ISearchTime, user: User): Promise<[Time[], number]> {
+  public async getTotals(user: User, activityId: string | undefined): Promise<ITimeTotals[]> {
+    const result = await this.getRepo()
+      .createQueryBuilder('time')
+      .innerJoinAndSelect('time.activity', 'activity')
+      .innerJoinAndSelect('activity.user', 'user')
+      .andWhere('user.id = :userId', {userId: user.id})
+      .select([
+        'activity.id as activityId',
+        'activity.rateHour as rateHour',
+        'COUNT(time.id) as minutes',
+        'SUM(time.minutesActive) as minutesActive',
+        'SUM(time.keyboardKeys) as keyboardKeys',
+        'SUM(time.mouseKeys) as mouseKeys',
+        'SUM(time.mouseDistance) as mouseDistance',
+      ])
+      .where((qb: SelectQueryBuilder<Time>) => {
+        qb.andWhere('activity.user.id = :userId', {userId: user.id});
+
+        if (activityId) {
+          qb.andWhere('activity.id = :activityId', {activityId});
+        }
+      })
+      .groupBy('activity.id')
+      .getRawMany();
+
+    return result.map(r => {
+      return {
+        activityId: r.activityid,
+        rateHour: r.ratehour,
+        minutes: Number(r.minutes),
+        minutesActive: Number(r.minutesactive),
+        keyboardKeys: Number(r.keyboardkeys),
+        mouseKeys: Number(r.mousekeys),
+        mouseDistance: Number(r.mousedistance),
+      };
+    });
+  }
+
+  public findAndCountPersonal(search: ISearchTime, user: User): Promise<[Time[], number]> {
     const s = _.assign(
       {
         filter: {},
@@ -59,6 +98,7 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       },
       search
     );
+
     const sort = this.filter.buildOrderByCondition('time', s);
     const limit = this.filter.buildLimit(search);
 
@@ -74,7 +114,7 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
         qb.andWhere('activity.user.id = :userId', {userId: user.id});
 
         if ('activityId' in s.filter) {
-          qb.andWhere('activity.id = :activityId', {state: s.filter.activityId});
+          qb.andWhere('activity.id = :activityId', {activityId: s.filter.activityId});
         }
       })
       .orderBy(sort)
@@ -83,7 +123,7 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       .getManyAndCount();
   }
 
-  public async findAndCount(search: ISearch): Promise<[Time[], number]> {
+  public findAndCount(search: ISearch): Promise<[Time[], number]> {
     const s = _.assign(
       {
         filter: {},

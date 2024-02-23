@@ -19,7 +19,7 @@ export class AbstractDatabaseIntegration {
   protected faker: Faker;
 
   constructor() {
-    const parameters = AppConfig.readLocal();
+    const parameters = AppConfig.readConfig();
 
     this.env = AppConfig.getEnv();
     this.container = AppContainer.build(parameters, this.env);

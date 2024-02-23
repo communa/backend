@@ -1,8 +1,0 @@
-{
-  "timezone": "America/Los_Angeles",
-  "sentry": "",
-  "redis": "",
-  "domain": "communa.network",
-  "homepage": "https://communa.network",
-  "jwtSecret": "communa-jwt-secret"
-}

@@ -15,7 +15,7 @@ export class Http {
       return await Axios.request(config);
     } catch (e: any) {
       // console.log(e);
-      // console.log(e.response.data);
+      console.log(e.response.data);
       // console.log(e.response.data.errors);
 
       throw e;

@@ -32,6 +32,7 @@ export class ActivityFixture {
     activity.title = faker.datatype.uuid();
     activity.text = faker.datatype.uuid();
     activity.user = user;
+    activity.rateHour = 0;
     activity.state = EActivityState.PUBLISHED;
     activity.type = EActivityType.PERSONAL;
 

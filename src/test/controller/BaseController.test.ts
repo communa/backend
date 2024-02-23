@@ -36,7 +36,7 @@ export class BaseControllerTest {
 
   constructor() {
     const env = AppConfig.getEnv();
-    const parameters = AppConfig.readLocal();
+    const parameters = AppConfig.readConfig();
 
     this.container = AppContainer.build(parameters, env);
     this.parameters = this.container.get('parameters');

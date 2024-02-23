@@ -1,13 +1,18 @@
 {
   "host": "0.0.0.0",
   "port": 4000,
-  "jwtSecret": "communa-jwt-production",
+  "timezone": "America/Los_Angeles",
+  "sentry": "",
+  "redis": "",
+  "domain": "communa.network",
+  "homepage": "https://communa.network",
+  "jwtSecret": "communa-production",
   "database": {
     "type": "postgres",
     "host": "localhost",
     "port": 5432,
     "username": "postgres",
-    "password": "postgres",
+    "password": "communa!!prod",
     "database": "communa_production"
   }
 }

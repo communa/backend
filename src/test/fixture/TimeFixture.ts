@@ -17,6 +17,7 @@ export class TimeFixture {
     time.note = faker.datatype.uuid();
     time.mouseKeys = faker.datatype.number(9);
     time.keyboardKeys = faker.datatype.number(9);
+    time.minutesActive = faker.datatype.number(9);
     time.mouseDistance = faker.datatype.number(9);
     time.fromAt = from;
     time.toAt = to;
