@@ -27,29 +27,33 @@ export class TimeControllerTest extends BaseControllerTest {
     const activityB = await this.activityFixture.createPersonal(user);
     const data: TimeCreateDto[] = [
       {
+        fromIndex: 1000,
+        toIndex: 1001,
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
         minutesActive: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
-        fromAt: moment.utc().subtract(10, 'minutes').unix(),
-        toAt: moment.utc().unix(),
+        fromAt: moment.utc().subtract(10, 'minutes').toISOString(),
+        toAt: moment.utc().toISOString(),
         activityId: activityA.id,
       },
       {
+        fromIndex: 2000,
+        toIndex: 2001,
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
         minutesActive: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
-        fromAt: moment.utc().subtract(10, 'minutes').unix(),
-        toAt: moment.utc().unix(),
+        fromAt: moment.utc().subtract(10, 'minutes').toISOString(),
+        toAt: moment.utc().toISOString(),
         activityId: activityB.id,
       },
     ];
 
     const res = await this.http.request({
-      url: `${this.url}/api/time/activity`,
+      url: `${this.url}/api/time`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,42 +68,47 @@ export class TimeControllerTest extends BaseControllerTest {
       },
     });
 
-    const fromAtA = moment(timeA.fromAt).unix();
+    const fromAtA = moment(timeA.fromAt).toISOString();
 
     expect(fromAtA).to.be.equal(data[0].fromAt);
     expect(res.status).to.be.equal(200);
-    expect(res.data).to.be.deep.equal([]);
+    expect(res.data).to.be.deep.equal(data);
   }
 
   @test
   async createPersonalInputValidationErrorA() {
     const user = await this.userFixture.createUser();
     const activityA = await this.activityFixture.createPersonal(user);
+    const unix = moment().utc();
     const data: TimeCreateDto[] = [
       {
+        fromIndex: 1000,
+        toIndex: 1001,
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
         minutesActive: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
-        fromAt: moment.utc().subtract(10, 'minutes').unix(),
-        toAt: moment.utc().unix(),
+        fromAt: moment(unix).subtract(10, 'minutes').toISOString(),
+        toAt: moment(unix).toISOString(),
         activityId: activityA.id,
       },
       {
+        fromIndex: 2000,
+        toIndex: 2001,
         note: faker.datatype.uuid(),
         keyboardKeys: faker.datatype.number(9),
         minutesActive: faker.datatype.number(9),
         mouseKeys: faker.datatype.number(9),
         mouseDistance: faker.datatype.number(9),
-        fromAt: moment.utc().subtract(10, 'minutes').unix(),
-        toAt: moment.utc().unix(),
+        fromAt: moment(unix).subtract(10, 'minutes').toISOString(),
+        toAt: moment(unix).toISOString(),
         activityId: '',
       },
     ];
 
     const res = await this.http.request({
-      url: `${this.url}/api/time/activity`,
+      url: `${this.url}/api/time`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -110,13 +119,13 @@ export class TimeControllerTest extends BaseControllerTest {
 
     expect(res.status).to.be.equal(200);
     expect(res.data).to.be.deep.equal([
+      data[0],
       {
-        index: 1,
-        activityId: '',
-        fromAt: data[0].fromAt,
-        toAt: data[0].toAt,
-        name: 'QueryFailedError',
-        message: 'invalid input syntax for type uuid: ""',
+        ...data[1],
+        error: {
+          name: 'QueryFailedError',
+          message: 'invalid input syntax for type uuid: ""',
+        },
       },
     ]);
   }
@@ -127,15 +136,17 @@ export class TimeControllerTest extends BaseControllerTest {
     const activityA = await this.activityFixture.createPersonal(user);
     const data = [
       {
-        fromAt: moment.utc().subtract(10, 'minutes').unix(),
-        toAt: moment.utc().unix(),
+        fromIndex: 1000,
+        toIndex: 1001,
+        fromAt: moment.utc().subtract(10, 'minutes').toISOString(),
+        toAt: moment.utc().toISOString(),
         note: faker.datatype.uuid(),
         activityId: activityA.id,
       },
     ];
 
     const res = await this.http.request({
-      url: `${this.url}/api/time/activity`,
+      url: `${this.url}/api/time`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,13 +158,12 @@ export class TimeControllerTest extends BaseControllerTest {
     expect(res.status).to.be.equal(200);
     expect(res.data).to.be.deep.equal([
       {
-        index: 0,
-        activityId: activityA.id,
-        fromAt: data[0].fromAt,
-        toAt: data[0].toAt,
-        name: 'QueryFailedError',
-        message:
-          'null value in column "keyboardKeys" of relation "time" violates not-null constraint',
+        ...data[0],
+        error: {
+          name: 'QueryFailedError',
+          message:
+            'null value in column "keyboardKeys" of relation "time" violates not-null constraint',
+        },
       },
     ]);
   }
@@ -162,9 +172,12 @@ export class TimeControllerTest extends BaseControllerTest {
   async createPersonalDuplicationError() {
     const user = await this.userFixture.createUser();
     const activityA = await this.activityFixture.createPersonal(user);
-    const fromAt = 1705829280;
-    const toAt = moment.unix(fromAt).add(10, 'minutes').unix();
+    const unix = 1705829280;
+    const fromAt = moment.unix(unix).toISOString();
+    const toAt = moment.unix(unix).add(10, 'minutes').toDate().toISOString();
     const timeData = {
+      fromIndex: 1000,
+      toIndex: 1001,
       note: faker.datatype.uuid(),
       keyboardKeys: faker.datatype.number(9),
       minutesActive: faker.datatype.number(9),
@@ -177,7 +190,7 @@ export class TimeControllerTest extends BaseControllerTest {
     const data: TimeCreateDto[] = [timeData, timeData];
 
     const res = await this.http.request({
-      url: `${this.url}/api/time/activity`,
+      url: `${this.url}/api/time`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -191,20 +204,21 @@ export class TimeControllerTest extends BaseControllerTest {
         activity: activityA,
       },
     });
-    const timeFromAt = moment(time.fromAt).unix();
-    const timeToAt = moment(time.toAt).unix();
+    const timeFromAt = moment(time.fromAt).toISOString();
+    const timeToAt = moment(time.toAt).toISOString();
 
     expect(res.status).to.be.equal(200);
-    expect(timeFromAt).to.be.equal(1705829280);
-    expect(timeToAt).to.be.equal(1705829880);
+    expect(timeFromAt).to.be.equal(fromAt);
+    expect(timeToAt).to.be.equal(toAt);
+
     expect(res.data).to.be.deep.equal([
+      data[0],
       {
-        index: 1,
-        activityId: activityA.id,
-        fromAt: timeData.fromAt,
-        toAt: timeData.toAt,
-        name: 'QueryFailedError',
-        message: 'duplicate key value violates unique constraint "UQ_ACTIVITYFROM"',
+        ...data[1],
+        error: {
+          message: 'duplicate key value violates unique constraint "UQ_ACTIVITYFROM"',
+          name: 'QueryFailedError',
+        },
       },
     ]);
   }

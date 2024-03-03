@@ -6,17 +6,20 @@ import {BaseControllerTest} from './BaseController.test';
 import {ActivityManager} from '../../service/ActivityManager';
 import {EActivityState} from '../../interface/EActivityState';
 import {TimeRepository} from '../../repository/TimeRepository';
+import {RedisClient} from '../../service/RedisClient';
 
 @suite
 export class TimeControllerTest extends BaseControllerTest {
   protected timeRepository: TimeRepository;
   protected activityManager: ActivityManager;
+  protected redisClient: RedisClient;
 
   constructor() {
     super();
 
     this.timeRepository = this.container.get('TimeRepository');
     this.activityManager = this.container.get('ActivityManager');
+    this.redisClient = this.container.get('RedisClient');
   }
 
   @test
@@ -205,5 +208,67 @@ export class TimeControllerTest extends BaseControllerTest {
     expect(res.data[0].mouseKeys).to.be.eq(timeA.mouseKeys);
     expect(res.data[0].keyboardKeys).to.be.eq(timeA.keyboardKeys);
     expect(res.data[0].mouseDistance).to.be.eq(timeA.mouseDistance);
+  }
+
+  @test
+  async getReport() {
+    const user = await this.userFixture.createUser();
+    const activity = await this.activityFixture.createPersonal(user);
+    const timeA = await this.timeFixture.create(
+      activity,
+      moment.utc().subtract(60, 'minutes').toDate(),
+      moment.utc().toDate()
+    );
+    const timeB = await this.timeFixture.create(
+      activity,
+      moment.utc().subtract(60, 'minutes').toDate(),
+      moment.utc().toDate()
+    );
+
+    const cacheEmpty = await this.redisClient.get(activity.id);
+
+    const res = await this.http.request({
+      url: `${this.url}/api/time/report/${activity.id}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(user).accessToken,
+      },
+    });
+
+    const cacheFull = await this.redisClient.get(activity.id);
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data.totals[0].activityId).to.be.eq(activity.id);
+    expect(res.data.time).to.be.length(2);
+    expect(res.data.time[0].id).to.be.eq(timeB.id);
+    expect(res.data.time[1].id).to.be.eq(timeA.id);
+    expect(cacheEmpty).to.be.length(0);
+    expect(cacheFull.totals[0].activityId).to.be.eq(activity.id);
+    expect(cacheFull.time).to.be.length(2);
+  }
+
+  @test
+  async getReportEmpty() {
+    const user = await this.userFixture.createUser();
+    const activity = await this.activityFixture.createPersonal(user);
+
+    const cacheEmpty = await this.redisClient.get(activity.id);
+
+    const res = await this.http.request({
+      url: `${this.url}/api/time/report/${activity.id}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(user).accessToken,
+      },
+    });
+
+    const cacheFull = await this.redisClient.get(activity.id);
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data).to.be.deep.eq({totals: [], time: []});
+    expect(cacheEmpty).to.be.length(0);
+    expect(cacheFull).to.be.deep.eq({totals: [], time: []});
   }
 }

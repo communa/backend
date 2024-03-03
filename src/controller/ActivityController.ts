@@ -60,6 +60,21 @@ export class ActivityController extends AbstractController {
 
   @OpenAPI({
     summary: 'Personal project or Hourly Contract search used by freelancers',
+    requestBody: {
+      content: {
+        'application/json': {
+          example: {
+            filter: {},
+            sort: {title: 'ASC'},
+            page: 0,
+          },
+          schema: {
+            properties: {},
+          },
+        },
+      },
+      required: false,
+    },
   })
   @Post('/search/freelancer')
   @Authorized([EUserRole.ROLE_USER])
@@ -71,6 +86,21 @@ export class ActivityController extends AbstractController {
 
   @OpenAPI({
     summary: 'Personal project or Hourly Contract search used by clients',
+    requestBody: {
+      content: {
+        'application/json': {
+          example: {
+            filter: {},
+            sort: {title: 'ASC'},
+            page: 0,
+          },
+          schema: {
+            properties: {},
+          },
+        },
+      },
+      required: false,
+    },
   })
   @Post('/search/business')
   @Authorized([EUserRole.ROLE_USER])

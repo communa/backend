@@ -14,6 +14,8 @@ import AuthenticationException from '../exception/AuthenticationException';
 import {UserManager} from './UserManager';
 import {RedisClient} from './RedisClient';
 import {Signer} from './Signer';
+import {ActivityManager} from './ActivityManager';
+import {TimeRepository} from '../repository/TimeRepository';
 
 @injectable()
 export class Authenticator {
@@ -24,6 +26,10 @@ export class Authenticator {
 
   @inject('UserRepository')
   protected userRepository: UserRepository;
+  @inject('TimeRepository')
+  protected timeRepository: TimeRepository;
+  @inject('ActivityManager')
+  protected activityManager: ActivityManager;
   @inject('UserManager')
   protected userManager: UserManager;
   @inject('Mailer')
@@ -61,10 +67,7 @@ export class Authenticator {
     let user = await this.userRepository.findByAddressPublic(address);
 
     if (!user) {
-      user = new User();
-      user.address = address;
-      user.roles = [EUserRole.ROLE_USER];
-      user = await this.userManager.saveSingle(user);
+      user = await this.createUserWithDemoData(address);
     }
 
     return this.getTokens(user);
@@ -163,5 +166,16 @@ export class Authenticator {
 
   public static hashPassword(plainPassword: string): string {
     return bcrypt.hashSync(plainPassword, 8);
+  }
+
+  private async createUserWithDemoData(address: string): Promise<User> {
+    const user = new User();
+    user.address = address;
+    user.roles = [EUserRole.ROLE_USER];
+
+    await this.userManager.saveSingle(user);
+    await this.activityManager.createDemoData(user);
+
+    return user;
   }
 }

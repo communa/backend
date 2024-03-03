@@ -137,8 +137,6 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
     const sort = this.filter.buildOrderByCondition('time', s);
     const limit = this.filter.buildLimit(search);
 
-    console.log(s.filter.keywords);
-
     return this.getRepo()
       .createQueryBuilder('time')
       .select()
@@ -158,6 +156,18 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       .andWhere('time.id = :timeId', {timeId: time.id})
       .select()
       .getOneOrFail();
+  }
+
+  public findAllTimeForActivity(activity: Activity, user: User): Promise<Time[]> {
+    return this.getRepo()
+      .createQueryBuilder('time')
+      .innerJoinAndSelect('time.activity', 'activity')
+      .innerJoinAndSelect('activity.user', 'user')
+      .andWhere('activity.id = :activityId', {activityId: activity.id})
+      .andWhere('user.id = :userId', {userId: user.id})
+      .select('time')
+      .orderBy('time.fromAt', 'DESC')
+      .getMany();
   }
 
   public findTimeBetweenForActivity(

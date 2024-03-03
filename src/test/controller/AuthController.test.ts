@@ -7,18 +7,25 @@ import {UserRepository} from '../../repository/UserRepository';
 import {BaseControllerTest} from './BaseController.test';
 import {RedisClient} from '../../service/RedisClient';
 import {AuthenticatorTimeTracker} from '../../service/AuthenticatorTimeTracker';
+import {ActivityRepository} from '../../repository/ActivityRepository';
+import {TimeRepository} from '../../repository/TimeRepository';
+import moment from 'moment';
 
 @suite()
 export class AuthControllerTest extends BaseControllerTest {
   protected userRepository: UserRepository;
   protected redisClient: RedisClient;
   protected authenticatorTimeTracker: AuthenticatorTimeTracker;
+  protected activityRepository: ActivityRepository;
+  protected timeRepository: TimeRepository;
 
   constructor() {
     super();
 
     this.redisClient = this.container.get('RedisClient');
     this.userRepository = this.container.get('UserRepository');
+    this.activityRepository = this.container.get('ActivityRepository');
+    this.timeRepository = this.container.get('TimeRepository');
   }
 
   @test()
@@ -39,8 +46,21 @@ export class AuthControllerTest extends BaseControllerTest {
       },
     });
 
+    const user = await this.userRepository.findByAddressPublicOrFail(account.address);
+    const activity = await this.activityRepository.findOneByOrFail({
+      where: {
+        user,
+      },
+    });
+    const times = await this.timeRepository.findAllTimeForActivity(activity, user);
+
+    const fromAt = moment().startOf('day').add(50, 'minutes');
+
     expect(res.status).to.be.equal(200);
     expect(res.data).to.be.deep.equal({});
+    expect(activity.title).to.be.equal('Your first project');
+    expect(times.length).to.be.equal(6);
+    expect(times[0].fromAt.toISOString()).to.be.equal(fromAt.toISOString());
   }
 
   @test()

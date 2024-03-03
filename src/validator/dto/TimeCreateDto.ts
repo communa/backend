@@ -1,10 +1,15 @@
-import {IsNumber, IsString} from 'class-validator';
+import {IsDateString, IsNumber, IsString} from 'class-validator';
 
 export class TimeCreateDto {
   @IsNumber()
-  fromAt: number;
+  fromIndex: number;
   @IsNumber()
-  toAt: number;
+  toIndex: number;
+  @IsDateString()
+  fromAt: string;
+  @IsDateString()
+  toAt: string;
+
   @IsString()
   activityId: string;
 

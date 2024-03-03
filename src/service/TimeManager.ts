@@ -6,9 +6,12 @@ import {User} from '../entity/User';
 import {TimeRepository} from '../repository/TimeRepository';
 import {ActivityRepository} from '../repository/ActivityRepository';
 import RejectedExecutionException from '../exception/RejectedExecutionException';
-import {ITimeInsertionError} from '../interface/ITimeInsertionError';
+import {ITimeInsertionResult} from '../interface/ITimeInsertionResult';
 import {ErrorFormatter} from './ErrorFormatter';
 import {TimeCreateDto} from '../validator/dto/TimeCreateDto';
+import {Activity} from '../entity/Activity';
+import {RedisClient} from './RedisClient';
+import {ITimeTotals} from '../interface/ITimeTotals';
 
 @injectable()
 export class TimeManager {
@@ -16,9 +19,13 @@ export class TimeManager {
   protected timeRepository: TimeRepository;
   @inject('ActivityRepository')
   protected activityRepository: ActivityRepository;
+  @inject('RedisClient')
+  protected redisClient: RedisClient;
 
-  public async saveMany(times: TimeCreateDto[], user: User): Promise<ITimeInsertionError[]> {
-    const errors: ITimeInsertionError[] = [];
+  public static reportExpiresIn: number = 1000 * 60 * 10; // 10 minutes
+
+  public async saveMany(data: TimeCreateDto[], user: User): Promise<ITimeInsertionResult[]> {
+    const times: ITimeInsertionResult[] = data;
 
     for (let a = 0; a < times.length; a++) {
       const data = times[a];
@@ -26,8 +33,8 @@ export class TimeManager {
       try {
         const time = new Time();
 
-        time.fromAt = moment.unix(data.fromAt).toDate();
-        time.toAt = moment.unix(data.toAt).toDate();
+        time.fromAt = moment(data.fromAt).toDate();
+        time.toAt = moment(data.toAt).toDate();
         time.note = data.note;
         time.minutesActive = data.minutesActive;
         time.keyboardKeys = data.keyboardKeys;
@@ -37,21 +44,11 @@ export class TimeManager {
 
         await this.save(time, user);
       } catch (error: any) {
-        const errorFormatted = ErrorFormatter.format(error);
-
-        errors.push({
-          index: a,
-          activityId: data.activityId,
-          fromAt: data.fromAt,
-          toAt: data.toAt,
-          name: errorFormatted.name,
-          message: errorFormatted.message,
-          errors: errorFormatted.errors,
-        });
+        times[a].error = ErrorFormatter.format(error);
       }
     }
 
-    return errors;
+    return times;
   }
 
   public async save(time: Time, user: User): Promise<Time> {
@@ -91,5 +88,28 @@ export class TimeManager {
     }
 
     await this.timeRepository.remove(timeExisting);
+  }
+
+  public async buildAndCacheReport(
+    activity: Activity,
+    user: User
+  ): Promise<{
+    totals: ITimeTotals[];
+    time: Time[];
+  }> {
+    const data = {
+      totals: await this.timeRepository.getTotals(user, activity.id),
+      time: await this.timeRepository.findAllTimeForActivity(activity, user),
+    };
+
+    const cache = await this.redisClient.get(activity.id);
+
+    if (cache) {
+      return cache;
+    }
+
+    this.redisClient.setWithExpiry(activity.id, data, TimeManager.reportExpiresIn);
+
+    return data;
   }
 }

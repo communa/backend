@@ -255,11 +255,17 @@ export class ActivityControllerTest extends BaseControllerTest {
   }
 
   @test()
-  async searchFreelancer() {
+  async searchFreelancerPersonalSorted() {
     const freelancer = await this.userFixture.createUser();
-    const activity = await this.activityFixture.createPersonal(freelancer);
+    const activityA = await this.activityFixture.createPersonal(freelancer);
+    const activityB = await this.activityFixture.createPersonal(freelancer);
+    const activityC = await this.activityFixture.createPersonal(freelancer);
 
-    await this.proposalFixture.create(activity, freelancer);
+    activityA.title = 'AAA';
+    activityB.title = 'BBB';
+    activityC.title = 'CCC';
+
+    await this.activityRepository.saveMany([activityA, activityB, activityC]);
 
     const config = {
       url: `${this.url}/api/activity/search/freelancer`,
@@ -270,15 +276,17 @@ export class ActivityControllerTest extends BaseControllerTest {
       },
       data: {
         filter: {},
-        sort: {createdAt: 'ASC'},
+        sort: {title: 'ASC'},
         page: 0,
       },
     };
 
     const res = await this.http.request(config);
 
-    expect(res.data[0].length).to.be.eq(1);
-    expect(res.data[0][0].id).to.be.eq(activity.id);
+    expect(res.data[0].length).to.be.eq(3);
+    expect(res.data[0][0].title).to.be.eq(activityA.title);
+    expect(res.data[0][1].title).to.be.eq(activityB.title);
+    expect(res.data[0][2].title).to.be.eq(activityC.title);
     expect(res.data[0][0].state).to.be.eq(EActivityState.PUBLISHED);
     expect(res.data[0][0].type).to.be.eq(EActivityType.PERSONAL);
   }
