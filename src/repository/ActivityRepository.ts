@@ -102,10 +102,11 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
         this.buildSearchQueries(qb, search);
       })
       .andWhere(`activity.type IN (:...types)`, {
-        types: [EActivityType.IMPORT, EActivityType.CONTRACT],
+        types: [EActivityType.IMPORT, EActivityType.HOURLY, EActivityType.FIXED],
       })
       .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
       .andWhere('activity.cancelledAt IS NULL')
+      .andWhere('activity.deletedAt IS NULL')
       .orderBy(sort)
       .skip(limit * s.page)
       .take(limit);

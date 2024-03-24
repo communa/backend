@@ -20,6 +20,7 @@ import {AbstractController} from './AbstractController';
 import {CurrentUser} from '../decorator/CurrentUser';
 import {UserRepository} from '../repository/UserRepository';
 import {ISearchUser} from '../interface/search/ISearchUser';
+import {ExtendedResponseSchema} from '../decorator/ExtendedResponseSchema';
 
 @JsonController('/user')
 export class UserController extends AbstractController {
@@ -77,33 +78,21 @@ export class UserController extends AbstractController {
     },
   })
   @Get('/:address/address')
+  @ExtendedResponseSchema(User)
   @ResponseClassTransformOptions({groups: ['search']})
   public get(@Param('address') address: string): Promise<User> {
     return this.userRepository.findByAddressPublicOrFail(address);
   }
 
-  @OpenAPI({
-    summary: 'User profile edit',
-    responses: {
-      204: {
-        description: 'User profile',
-        content: {
-          'application/json': {},
-        },
-      },
-    },
-  })
   @Put()
   @HttpCode(204)
   @OpenAPI({
+    summary: 'User profile edit',
     requestBody: {
       content: {
         'application/json': {
           example: {
             bio: faker.datatype.number(),
-            passwordPlain: faker.datatype.uuid(),
-            passwordOld: faker.datatype.uuid(),
-            roles: [EUserRole.ROLE_USER, EUserRole.ROLE_BUSINESS],
             tz: 'America/Los_Angeles',
             phone: faker.phone.phoneNumber(),
           },
@@ -111,16 +100,6 @@ export class UserController extends AbstractController {
             properties: {
               bio: {
                 type: 'number',
-              },
-              passwordPlain: {
-                type: 'string',
-              },
-              passwordOld: {
-                type: 'string',
-                description: 'should be equal to the current password',
-              },
-              tz: {
-                type: 'string',
               },
               phone: {
                 type: 'number',
@@ -130,6 +109,14 @@ export class UserController extends AbstractController {
         },
       },
       required: false,
+    },
+    responses: {
+      204: {
+        description: 'User profile',
+        content: {
+          'application/json': {},
+        },
+      },
     },
   })
   @Authorized([EUserRole.ROLE_USER])

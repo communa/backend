@@ -9,9 +9,10 @@ import {
   Req,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
+import faker from 'faker';
 
 import express from 'express';
-import {OpenAPI, ResponseSchema} from 'routing-controllers-openapi';
+import {OpenAPI} from 'routing-controllers-openapi';
 
 import {User} from '../entity/User';
 import {App} from '../app/App';
@@ -19,6 +20,7 @@ import {Authenticator} from '../service/Authenticator';
 import {UserManager} from '../service/UserManager';
 import {UserRepository} from '../repository/UserRepository';
 import {IConfigParameters} from '../interface/IConfigParameters';
+import {ExtendedResponseSchema} from '../decorator/ExtendedResponseSchema';
 
 @JsonController('/auth')
 export class AuthController {
@@ -50,6 +52,22 @@ export class AuthController {
         content: {
           'application/json': {},
         },
+        headers: {
+          Authorization: {
+            required: true,
+            schema: {
+              type: 'string',
+            },
+            description: 'contains JWT Access Token',
+          },
+          'Refresh-Token': {
+            required: true,
+            schema: {
+              type: 'string',
+            },
+            description: 'contains JWT Refresh Token',
+          },
+        },
       },
     },
   })
@@ -62,7 +80,7 @@ export class AuthController {
       address: string;
     },
     @Res() res: any
-  ) {
+  ): Promise<Record<string, never>> {
     const tokens = await this.authenticator.loginWeb3(payload.signature, payload.address);
 
     res.setHeader('Authorization', tokens.accessToken);
@@ -86,6 +104,9 @@ export class AuthController {
         description: 'Replies with nonce for user login',
         content: {
           'application/json': {
+            example: {
+              nonce: faker.datatype.uuid(),
+            },
             schema: {
               type: 'object',
               properties: {
@@ -108,9 +129,43 @@ export class AuthController {
   @Post('/refresh')
   @OpenAPI({
     summary: 'JWT token rotation',
+    parameters: [
+      {
+        in: 'header',
+        name: 'Authorization',
+        schema: {
+          type: 'string',
+        },
+        required: true,
+        description: 'Expired Access Token.',
+      },
+    ],
+    requestBody: {
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              refreshToken: {
+                type: 'string',
+                description: 'Refresh token issued to a user at login.',
+              },
+            },
+          },
+        },
+      },
+      required: true,
+    },
     responses: {
       200: {
         description: 'Returns succesfully updated access and refresh tokens in headers',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
         headers: {
           Authorization: {
             required: true,
@@ -130,7 +185,10 @@ export class AuthController {
       },
     },
   })
-  public async refresh(@BodyParam('refreshToken') refreshToken: string, @Res() res: any) {
+  public async refresh(
+    @BodyParam('refreshToken') refreshToken: string,
+    @Res() res: any
+  ): Promise<Record<string, never>> {
     const user = await this.authenticator.getUserFromRefreshToken(refreshToken);
     const tokens = this.authenticator.getTokens(user);
 
@@ -144,9 +202,9 @@ export class AuthController {
     summary: 'User authentication status',
   })
   @Get('/status')
-  @ResponseSchema(User)
+  @ExtendedResponseSchema(User)
   @ResponseClassTransformOptions({groups: ['search', 'me']})
-  public async status(@Req() req: express.Request) {
+  public async status(@Req() req: express.Request): Promise<User | null> {
     const token = req.headers.authorization as string;
     const user = await this.authenticator.getUserFromJwtToken(token);
 

@@ -61,7 +61,7 @@ export class ActivityManager {
     const fromAt = moment().startOf('day');
     const toAt = moment().startOf('day').add(10, 'minutes');
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 1; i <= 6; i++) {
       const time = new Time();
       time.activity = activity;
       time.note = `Timesheet demo ${i}`;

@@ -6,7 +6,7 @@ import {JSONSchema} from 'class-validator-jsonschema';
 import {User} from './User';
 import {AbstractBaseEntity} from './AbstractBaseEntity';
 import {EActivityType} from '../interface/EActivityType';
-import {IsNotEmpty} from 'class-validator';
+import {IsNotEmpty, IsOptional, IsString} from 'class-validator';
 import {EActivityState} from '../interface/EActivityState';
 import {Proposal} from './Proposal';
 import {Invoice} from './Invoice';
@@ -23,50 +23,75 @@ export class Activity extends AbstractBaseEntity {
   @IsNotEmpty()
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('text', {nullable: true})
+  @IsString()
   title: string;
+
   @IsNotEmpty()
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('text', {nullable: true})
+  @IsString()
   text: any;
+
   @Expose({groups: ['search', 'create']})
   @Column('text', {nullable: true})
+  @IsString()
+  @IsOptional()
   location: string;
+
   @Expose({groups: ['search', 'create']})
   @Column('text', {nullable: true})
+  @IsString()
+  @IsOptional()
   position: string;
+
   @Expose({groups: ['search', 'create']})
   @Column('jsonb', {nullable: true})
   employment: string[];
+
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('jsonb', {nullable: true})
   keywords: string[];
 
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('text', {nullable: true})
+  @IsString()
+  @IsOptional()
   salary: string;
 
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('decimal', {precision: 6, scale: 2, default: 0, nullable: true})
+  @IsString()
+  @IsOptional()
   rateHour: number;
 
   @Expose({groups: ['search']})
   @Column('text', {nullable: true})
+  @IsString()
+  @IsOptional()
   sourceUrl: string;
 
   @Expose({groups: ['search']})
   @Column('text', {nullable: true})
+  @IsString()
+  @IsOptional()
   jobUrl: string;
+
   @Expose({groups: ['search']})
   @Column('text', {nullable: true})
+  @IsString()
+  @IsOptional()
   hash: string;
 
   @IsNotEmpty()
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('text', {nullable: true})
+  @IsString()
   type: EActivityType;
+
   @IsNotEmpty()
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('text', {nullable: true})
+  @IsString()
   state: EActivityState;
 
   @Expose({groups: ['search']})

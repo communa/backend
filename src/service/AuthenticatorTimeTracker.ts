@@ -26,6 +26,8 @@ export class AuthenticatorTimeTracker {
   public async timeTrackerNonceGenerate(ip: string): Promise<{
     nonce: string;
     startAt: number;
+    state: EAuthTimeTrackerState;
+    ip: string;
   }> {
     const nonce = this.signer.generateNonce();
     const key = `timetracker:nonce:${nonce}`;

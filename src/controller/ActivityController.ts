@@ -40,16 +40,17 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Personal project or Hourly Contract get',
+    summary: 'Personal project or Hourly Hourly get',
   })
   @Get('/:id')
+  @ExtendedResponseSchema(Activity)
   @ResponseClassTransformOptions({groups: ['search']})
   public get(@EntityFromParam('id') activity: Activity) {
     return activity;
   }
 
   @OpenAPI({
-    summary: 'Job search to display open jobs for hire',
+    summary: 'Public job search endpoint',
   })
   @Post('/search')
   @ExtendedResponseSchema(Activity, {isPagination: true})
@@ -59,7 +60,7 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Personal project or Hourly Contract search used by freelancers',
+    summary: 'Personal project or Hourly Hourly search used by freelancers',
     requestBody: {
       content: {
         'application/json': {
@@ -85,7 +86,7 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Personal project or Hourly Contract search used by clients',
+    summary: 'Personal project or Hourly Hourly search used by clients',
     requestBody: {
       content: {
         'application/json': {
@@ -172,7 +173,7 @@ export class ActivityController extends AbstractController {
   @Delete('/:id')
   @HttpCode(200)
   public async delete(@CurrentUser() currentUser: User, @EntityFromParam('id') activity: Activity) {
-    await this.activityRepository.delete({
+    await this.activityRepository.softDelete({
       id: activity.id,
       user: currentUser,
     });
@@ -193,7 +194,11 @@ export class ActivityController extends AbstractController {
   ) {
     data.user = currentUser;
 
-    const isValidType = [EActivityType.CONTRACT, EActivityType.PERSONAL].includes(data.type);
+    const isValidType = [
+      EActivityType.HOURLY,
+      EActivityType.FIXED,
+      EActivityType.PERSONAL,
+    ].includes(data.type);
 
     if (!isValidType) {
       throw new Error(`The wrong type ${data.type} provided`);

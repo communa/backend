@@ -86,6 +86,7 @@ export class TimeController extends AbstractController {
     },
   })
   @Get('/:id')
+  @ExtendedResponseSchema(Time)
   @ResponseClassTransformOptions({groups: ['search']})
   public get(
     @CurrentUser() currentUser: User,
@@ -99,18 +100,32 @@ export class TimeController extends AbstractController {
     requestBody: {
       content: {
         'application/json': {
-          example: {
-            fromIndex: 1000,
-            toIndex: 1001,
-            note: '9b0f61cb-9ca5-41ac-bf0c-91f94b797d02',
-            keyboardKeys: 3,
-            minutesActive: 4,
-            mouseKeys: 3,
-            mouseDistance: 5,
-            fromAt: '2024-01-21T09:28:00.000Z',
-            toAt: '2024-01-21T09:38:00.000Z',
-            activityId: 'dd8a088d-00c1-499f-a75b-7ca45821a7e3',
-          },
+          example: [
+            {
+              fromIndex: 1000,
+              toIndex: 2000,
+              note: 'your note',
+              keyboardKeys: 3,
+              minutesActive: 4,
+              mouseKeys: 3,
+              mouseDistance: 5,
+              fromAt: '2024-01-21T09:00:00.000Z',
+              toAt: '2024-01-21T09:10:00.000Z',
+              activityId: 'dd8a088d-00c1-499f-a75b-7ca45821a7e3',
+            },
+            {
+              fromIndex: 2000,
+              toIndex: 3000,
+              note: 'your note',
+              keyboardKeys: 6,
+              minutesActive: 1,
+              mouseKeys: 1,
+              mouseDistance: 5,
+              fromAt: '2024-01-21T09:10:00.000Z',
+              toAt: '2024-01-21T09:20:00.000Z',
+              activityId: 'dd8a088d-00c1-499f-a75b-7ca45821a7e3',
+            },
+          ],
           schema: {
             properties: {},
           },

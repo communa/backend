@@ -1,4 +1,4 @@
-import {PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index} from 'typeorm';
+import {PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index, DeleteDateColumn} from 'typeorm';
 import {Expose} from 'class-transformer';
 import {IsOptional, IsDate, IsNotEmpty, IsUUID} from 'class-validator';
 
@@ -25,4 +25,7 @@ export abstract class AbstractBaseEntity {
   @IsDate()
   @IsOptional()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

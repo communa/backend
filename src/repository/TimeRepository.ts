@@ -35,6 +35,7 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       .innerJoinAndSelect('time.activity', 'activity')
       .innerJoin('activity.proposalAccepted', 'proposal')
       .innerJoin('proposal.user', 'freelancer')
+      .andWhere('activity.deletedAt IS NULL')
       .andWhere('time.id = :timeId', {timeId: time.id})
       .andWhere('freelancer.id = :freelancerId', {freelancerId: user.id})
       .select()
@@ -54,6 +55,7 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       .createQueryBuilder('time')
       .innerJoinAndSelect('time.activity', 'activity')
       .innerJoinAndSelect('activity.user', 'user')
+      .andWhere('activity.deletedAt IS NULL')
       .andWhere('user.id = :userId', {userId: user.id})
       .select([
         'activity.id as activityId',
@@ -109,6 +111,7 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       .andWhere('user.id = :userId', {userId: user.id})
       .andWhere(`activity.type = :type`, {type: EActivityType.PERSONAL})
       .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
+      .andWhere('activity.deletedAt IS NULL')
       .select()
       .where((qb: SelectQueryBuilder<Time>) => {
         qb.andWhere('activity.user.id = :userId', {userId: user.id});
@@ -185,6 +188,7 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       .andWhere('time.toAt =< :to', {to})
       .andWhere('freelancer.id = :freelancerId', {freelancerId: freelancer.id})
       .andWhere('activity.id = :activityId', {activityId: activity.id})
+      .andWhere('activity.deletedAt IS NULL')
       .select()
       .getMany();
   }

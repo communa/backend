@@ -79,6 +79,10 @@ export abstract class AbstractRepositoryTemplate<T extends ObjectLiteral> {
     return await this.getRepo().delete(conditions);
   }
 
+  public async softDelete(conditions: FindConditions<T>) {
+    return await this.getRepo().softDelete(conditions);
+  }
+
   public getRepo(): Repository<T> {
     return getRepository(this.target);
   }

@@ -160,9 +160,38 @@ export class TimeControllerTest extends BaseControllerTest {
       {
         ...data[0],
         error: {
-          name: 'QueryFailedError',
-          message:
-            'null value in column "keyboardKeys" of relation "time" violates not-null constraint',
+          name: 'ConstraintsValidationException',
+          message: 'Constraint validation error has occurred.',
+          errors: [
+            {
+              property: 'keyboardKeys',
+              constraints: {
+                isNumber: 'keyboardKeys must be a number conforming to the specified constraints',
+              },
+              children: [],
+            },
+            {
+              property: 'minutesActive',
+              constraints: {
+                isNumber: 'minutesActive must be a number conforming to the specified constraints',
+              },
+              children: [],
+            },
+            {
+              property: 'mouseKeys',
+              constraints: {
+                isNumber: 'mouseKeys must be a number conforming to the specified constraints',
+              },
+              children: [],
+            },
+            {
+              property: 'mouseDistance',
+              constraints: {
+                isNumber: 'mouseDistance must be a number conforming to the specified constraints',
+              },
+              children: [],
+            },
+          ],
         },
       },
     ]);

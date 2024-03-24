@@ -94,7 +94,7 @@ export class ActivityControllerTest extends BaseControllerTest {
       title: faker.datatype.uuid(),
       text: faker.datatype.uuid(),
       state: EActivityState.DRAFT,
-      type: EActivityType.CONTRACT,
+      type: EActivityType.HOURLY,
     };
 
     const res = await this.http.request({
@@ -161,8 +161,15 @@ export class ActivityControllerTest extends BaseControllerTest {
       },
     });
 
+    const updated = await this.activityRepository.findOneBy({
+      where: {
+        id: activity.id,
+      }
+    });
+
     expect(res.status).to.be.equal(200);
     expect(res.data).to.be.deep.equal({});
+    expect(updated).to.be.undefined;
   }
 
   @test()
