@@ -67,15 +67,7 @@ export class UserController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Single user retrieval from an ethereum address provided',
-    responses: {
-      200: {
-        description: 'User profile',
-        content: {
-          'application/json': {},
-        },
-      },
-    },
+    summary: 'User profile by address',
   })
   @Get('/:address/address')
   @ExtendedResponseSchema(User)

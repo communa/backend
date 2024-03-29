@@ -149,8 +149,8 @@ export class TimeControllerTest extends BaseControllerTest {
   @test
   async getTotals() {
     const user = await this.userFixture.createUser();
-    const activityA = await this.activityFixture.createPersonal(user);
-    const activityB = await this.activityFixture.createPersonal(user);
+    const activityA = await this.activityFixture.createPersonal(user, 30);
+    const activityB = await this.activityFixture.createPersonal(user, 60);
     await this.timeFixture.create(
       activityA,
       moment.utc().subtract(60, 'minutes').toDate(),
@@ -172,13 +172,13 @@ export class TimeControllerTest extends BaseControllerTest {
     });
 
     expect(res.status).to.be.equal(200);
-    expect(res.data.length).to.be.eq(2);
+    expect(res.data.length).to.be.eq(2);  
   }
 
   @test
   async getTotalsActivity() {
     const user = await this.userFixture.createUser();
-    const activityA = await this.activityFixture.createPersonal(user);
+    const activityA = await this.activityFixture.createPersonal(user, 60);
     const activityB = await this.activityFixture.createPersonal(user);
     const timeA = await this.timeFixture.create(
       activityA,
@@ -203,7 +203,8 @@ export class TimeControllerTest extends BaseControllerTest {
     expect(res.status).to.be.equal(200);
     expect(res.data[0].activityId).to.be.eq(activityA.id);
     expect(res.data[0].rateHour).to.be.eq(activityA.rateHour);
-    expect(res.data[0].minutes).to.be.eq(1);
+    expect(res.data[0].rateTotal).to.be.eq(10);
+    expect(res.data[0].minutes).to.be.eq(10);
     expect(res.data[0].minutesActive).to.be.eq(timeA.minutesActive);
     expect(res.data[0].mouseKeys).to.be.eq(timeA.mouseKeys);
     expect(res.data[0].keyboardKeys).to.be.eq(timeA.keyboardKeys);

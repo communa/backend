@@ -13,6 +13,7 @@ import {EActivityState} from '../interface/EActivityState';
 import {SelectQueryBuilder} from 'typeorm';
 import {ISearchTime} from '../interface/search/ISearchTime';
 import {ITimeTotals} from '../interface/ITimeTotals';
+import {Calc} from '../service/Calc';
 
 @injectable()
 export class TimeRepository extends AbstractRepositoryTemplate<Time> {
@@ -74,13 +75,15 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
         }
       })
       .groupBy('activity.id')
+      .orderBy('activity.id', 'ASC')      
       .getRawMany();
 
     return result.map(r => {
       return {
         activityId: r.activityid,
         rateHour: r.ratehour,
-        minutes: Number(r.minutes),
+        rateTotal: Calc.rateTotal(r.minutes * 10, r.ratehour),
+        minutes: Number(r.minutes * 10),
         minutesActive: Number(r.minutesactive),
         keyboardKeys: Number(r.keyboardkeys),
         mouseKeys: Number(r.mousekeys),

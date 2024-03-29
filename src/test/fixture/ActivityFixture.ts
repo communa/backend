@@ -26,13 +26,13 @@ export class ActivityFixture {
     return this.activityRepository.saveSingle(activity);
   }
 
-  public createPersonal(user: User): Promise<Activity> {
+  public createPersonal(user: User, rateHour: number = 0): Promise<Activity> {
     const activity = new Activity();
 
     activity.title = faker.datatype.uuid();
     activity.text = faker.datatype.uuid();
     activity.user = user;
-    activity.rateHour = 0;
+    activity.rateHour = rateHour;
     activity.state = EActivityState.PUBLISHED;
     activity.type = EActivityType.PERSONAL;
 
