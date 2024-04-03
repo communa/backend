@@ -9,7 +9,7 @@ import {TimeRepository} from '../../repository/TimeRepository';
 import {TimeCreateDto} from '../../validator/dto/TimeCreateDto';
 
 @suite
-export class TimeControllerTest extends BaseControllerTest {
+export class TimeControllerCrudTest extends BaseControllerTest {
   protected timeRepository: TimeRepository;
   protected activityManager: ActivityManager;
 

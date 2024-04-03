@@ -11,10 +11,4 @@ export class ProposalManager {
   public save(proposal: Proposal) {
     return this.proposalRepository.validateAndSave(proposal);
   }
-
-  public async editAndSave(proposal: Proposal, data: Proposal) {
-    proposal = Object.assign(proposal, data);
-
-    await this.proposalRepository.validateAndSave(proposal);
-  }
 }

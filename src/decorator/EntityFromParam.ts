@@ -33,7 +33,7 @@ export function EntityFromParam(
   };
 }
 
-export async function entityTransform(
+async function entityTransform(
   value: any,
   target: any,
   selectOptions: null | TSelectOptions = null,

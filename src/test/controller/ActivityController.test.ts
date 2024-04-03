@@ -22,25 +22,7 @@ export class ActivityControllerTest extends BaseControllerTest {
   }
 
   @test
-  async get() {
-    const user = await this.userFixture.createUser();
-    const activity = await this.activityFixture.create(user, EActivityState.PUBLISHED);
-
-    const res = await this.http.request({
-      url: `${this.url}/api/activity/${activity.id}`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(user).accessToken,
-      },
-    });
-
-    expect(res.status).to.be.equal(200);
-    expect(res.data.id).to.be.equal(activity.id);
-  }
-
-  @test
-  async accept() {
+  async acceptProposal() {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
@@ -62,7 +44,7 @@ export class ActivityControllerTest extends BaseControllerTest {
     expect(res.status).to.be.equal(200);
     expect(res.data).to.be.deep.equal({});
     expect(updated.state).to.be.eq(EActivityState.ACTIVE);
-    expect(updated.startedAt).to.be.not.null;
+    expect(updated.proposalAccepted.id).to.be.eq(proposal.id);
   }
 
   @test
@@ -85,91 +67,6 @@ export class ActivityControllerTest extends BaseControllerTest {
     expect(res.data).to.be.deep.equal({});
     expect(updated.state).to.be.eq(EActivityState.CLOSED);
     expect(updated.closedAt).to.be.not.null;
-  }
-
-  @test
-  async create() {
-    const business = await this.userFixture.createUser();
-    const data = {
-      title: faker.datatype.uuid(),
-      text: faker.datatype.uuid(),
-      state: EActivityState.DRAFT,
-      type: EActivityType.HOURLY,
-    };
-
-    const res = await this.http.request({
-      url: `${this.url}/api/activity`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(business).accessToken,
-      },
-      data,
-    });
-
-    const id = res.headers.location.split('/')[3];
-    const activity = await this.activityRepository.findOneByIdOrFail(id);
-
-    expect(res.status).to.be.equal(201);
-
-    expect(activity.title).to.be.eq(data.title);
-    expect(activity.text).to.be.eq(data.text);
-  }
-
-  @test
-  async edit() {
-    const business = await this.userFixture.createUser();
-    const activity = await this.activityFixture.create(business, EActivityState.DRAFT);
-
-    const data = {
-      title: faker.datatype.uuid(),
-      text: faker.datatype.uuid(),
-      state: EActivityState.PUBLISHED,
-    };
-
-    const res = await this.http.request({
-      url: `${this.url}/api/activity/${activity.id}`,
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(business).accessToken,
-      },
-      data,
-    });
-
-    const activityUpdated = await this.activityRepository.findOneByIdOrFail(activity.id);
-
-    expect(res.status).to.be.equal(200);
-    expect(res.data).to.be.deep.equal({});
-
-    expect(activityUpdated.title).to.be.eq(data.title);
-    expect(activityUpdated.state).to.be.eq(data.state);
-    expect(activityUpdated.text).to.be.eq(data.text);
-  }
-
-  @test
-  async delete() {
-    const business = await this.userFixture.createUser();
-    const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-
-    const res = await this.http.request({
-      url: `${this.url}/api/activity/${activity.id}`,
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(business).accessToken,
-      },
-    });
-
-    const updated = await this.activityRepository.findOneBy({
-      where: {
-        id: activity.id,
-      }
-    });
-
-    expect(res.status).to.be.equal(200);
-    expect(res.data).to.be.deep.equal({});
-    expect(updated).to.be.undefined;
   }
 
   @test()

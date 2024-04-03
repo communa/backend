@@ -26,8 +26,14 @@ export class ActivityManager {
   }
 
   public async acceptProposal(activity: Activity, proposal: Proposal): Promise<void> {
+    const isPrivateOrImport = [EActivityType.PERSONAL, EActivityType.IMPORT].includes(activity.type);
+    const isPublished = [EActivityState.PUBLISHED].includes(activity.state);
+
     if (activity.proposalAccepted) {
       throw new RejectedExecutionException('Proposal was already assigned');
+    }
+    if (isPrivateOrImport || !isPublished) {
+      throw new RejectedExecutionException('Activity is not available for proposals');
     }
 
     activity.proposalAccepted = proposal;
@@ -38,6 +44,13 @@ export class ActivityManager {
   }
 
   public async editAndSave(activity: Activity, data: Activity): Promise<void> {
+    const isContract = [EActivityType.HOURLY, EActivityType.FIXED].includes(activity.type);
+    const isActiveOrClosed = [EActivityState.ACTIVE, EActivityState.CLOSED].includes(activity.state);
+
+    if (isContract && isActiveOrClosed) {
+      throw new RejectedExecutionException('Active or closed contracts are not available for editing');
+    }
+
     activity = Object.assign(activity, data);
 
     await this.save(activity);

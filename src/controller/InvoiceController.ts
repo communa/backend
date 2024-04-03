@@ -41,16 +41,6 @@ export class InvoiceController extends AbstractController {
     return this.invoiceRepository.findAndCount(search);
   }
 
-  @Get('/:id')
-  @ExtendedResponseSchema(Invoice)
-  @ResponseClassTransformOptions({groups: ['search']})
-  public get(
-    @CurrentUser() currentUser: User,
-    @EntityFromParam('id', null, {activity: true}) invoice: Invoice
-  ) {
-    return this.invoiceRepository.findOneConfirmUser(invoice, currentUser);
-  }
-
   @Post('/activity/:activityId')
   public create(
     @CurrentUser() currentUser: User,
@@ -60,8 +50,10 @@ export class InvoiceController extends AbstractController {
     return this.invoiceManager.create(data, activity, currentUser);
   }
 
-  @Post('/:id/fullfill')
-  public fullFill(
+  @Get('/:id')
+  @ExtendedResponseSchema(Invoice)
+  @ResponseClassTransformOptions({groups: ['search']})
+  public read(
     @CurrentUser() currentUser: User,
     @EntityFromParam('id', null, {activity: true}) invoice: Invoice
   ) {

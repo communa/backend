@@ -6,7 +6,6 @@ import {AbstractRepositoryTemplate} from './AbstractRepositoryTemplate';
 import {Time} from '../entity/Time';
 import {ISearch} from '../interface/search/ISearch';
 import {User} from '../entity/User';
-import RejectedExecutionException from '../exception/RejectedExecutionException';
 import {Activity} from '../entity/Activity';
 import {EActivityType} from '../interface/EActivityType';
 import {EActivityState} from '../interface/EActivityState';
@@ -14,6 +13,7 @@ import {SelectQueryBuilder} from 'typeorm';
 import {ISearchTime} from '../interface/search/ISearchTime';
 import {ITimeTotals} from '../interface/ITimeTotals';
 import {Calc} from '../service/Calc';
+import AccessException from '../exception/AccessException';
 
 @injectable()
 export class TimeRepository extends AbstractRepositoryTemplate<Time> {
@@ -45,7 +45,7 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
     const t = timeFreelancer || timeBusiness;
 
     if (!t) {
-      throw new RejectedExecutionException('Wrong user');
+      throw new AccessException();
     }
 
     return t;
@@ -75,7 +75,7 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
         }
       })
       .groupBy('activity.id')
-      .orderBy('activity.id', 'ASC')      
+      .orderBy('activity.id', 'ASC')
       .getRawMany();
 
     return result.map(r => {

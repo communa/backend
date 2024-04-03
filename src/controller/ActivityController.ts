@@ -25,7 +25,7 @@ import {ActivitySearchDto} from '../validator/dto/ActivitySearchDto';
 import {ActivityManager} from '../service/ActivityManager';
 import {EActivityType} from '../interface/EActivityType';
 import {Proposal} from '../entity/Proposal';
-import RejectedExecutionException from '../exception/RejectedExecutionException';
+import AccessException from '../exception/AccessException';
 
 @JsonController('/activity')
 export class ActivityController extends AbstractController {
@@ -40,18 +40,7 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Retrieve full project infromation',
-  })
-  @HttpCode(200)
-  @Get('/:id')
-  @ExtendedResponseSchema(Activity)
-  @ResponseClassTransformOptions({groups: ['search']})
-  public get(@EntityFromParam('id') activity: Activity) {
-    return activity;
-  }
-
-  @OpenAPI({
-    summary: 'Public job search endpoint',
+    summary: 'Search projects as public',
   })
   @HttpCode(200)
   @Post('/search')
@@ -62,7 +51,7 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Personal project or Hourly Hourly search used by freelancers',
+    summary: 'Search projects as a freelancer',
     requestBody: {
       content: {
         'application/json': {
@@ -89,7 +78,7 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Personal project or Hourly Hourly search used by clients',
+    summary: 'Search projects as a business',
     requestBody: {
       content: {
         'application/json': {
@@ -116,7 +105,7 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Accept the given proposal',
+    summary: 'Accept proposal',
   })
   @Post('/:id/accept/:proposalId')
   @HttpCode(200)
@@ -128,61 +117,10 @@ export class ActivityController extends AbstractController {
     @EntityFromParam('proposalId') proposal: Proposal
   ) {
     if (currentUser.id !== activity.user.id) {
-      throw new RejectedExecutionException('Wrong user');
+      throw new AccessException();
     }
 
     await this.activityManager.acceptProposal(activity, proposal);
-
-    return {};
-  }
-
-  @OpenAPI({
-    summary: 'Make project invisible',
-  })
-  @Post('/:id/close')
-  @HttpCode(200)
-  @Authorized([EUserRole.ROLE_USER])
-  @ResponseClassTransformOptions({groups: ['search']})
-  public async close(@EntityFromParam('id') activity: Activity, @CurrentUser() currentUser: User) {
-    if (currentUser.id !== activity.user.id) {
-      throw new RejectedExecutionException('Wrong user');
-    }
-
-    await this.activityManager.close(activity);
-
-    return {};
-  }
-
-  @OpenAPI({
-    summary: 'Project edit',
-  })
-  @Put('/:id')
-  @HttpCode(200)
-  @Authorized([EUserRole.ROLE_USER])
-  public async edit(
-    @CurrentUser() currentUser: User,
-    @EntityFromParam('id') activity: Activity,
-    @Body({validate: {groups: ['edit']}, transform: {groups: ['edit']}}) data: Activity
-  ) {
-    if (currentUser.id !== activity.user.id) {
-      throw new RejectedExecutionException('Wrong user');
-    }
-
-    await this.activityManager.editAndSave(activity, data);
-
-    return {};
-  }
-
-  @OpenAPI({
-    summary: 'Project delete',
-  })
-  @Delete('/:id')
-  @HttpCode(200)
-  public async delete(@CurrentUser() currentUser: User, @EntityFromParam('id') activity: Activity) {
-    await this.activityRepository.softDelete({
-      id: activity.id,
-      user: currentUser,
-    });
 
     return {};
   }
@@ -214,6 +152,71 @@ export class ActivityController extends AbstractController {
 
     res.status(201);
     res.location(`/api/activity/${activity.id}`);
+
+    return {};
+  }
+
+  @OpenAPI({
+    summary: 'Retrieve full project data',
+  })
+  @HttpCode(200)
+  @Get('/:id')
+  @ExtendedResponseSchema(Activity)
+  @ResponseClassTransformOptions({groups: ['search']})
+  public read(@EntityFromParam('id', null, {
+    proposalAccepted: true,
+    user: true,
+  }) activity: Activity) {
+    return activity;
+  }
+
+  @OpenAPI({
+    summary: 'Project edit',
+  })
+  @Put('/:id')
+  @HttpCode(200)
+  @Authorized([EUserRole.ROLE_USER])
+  public async edit(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('id') activity: Activity,
+    @Body({validate: {groups: ['edit']}, transform: {groups: ['edit']}}) data: Activity
+  ) {
+    if (currentUser.id !== activity.user.id) {
+      throw new AccessException();
+    }
+
+    await this.activityManager.editAndSave(activity, data);
+
+    return {};
+  }
+
+  @OpenAPI({
+    summary: 'Make project invisible',
+  })
+  @Post('/:id/close')
+  @HttpCode(200)
+  @Authorized([EUserRole.ROLE_USER])
+  @ResponseClassTransformOptions({groups: ['search']})
+  public async close(@EntityFromParam('id') activity: Activity, @CurrentUser() currentUser: User) {
+    if (currentUser.id !== activity.user.id) {
+      throw new AccessException();
+    }
+
+    await this.activityManager.close(activity);
+
+    return {};
+  }
+
+  @OpenAPI({
+    summary: 'Project delete',
+  })
+  @Delete('/:id')
+  @HttpCode(200)
+  public async delete(@CurrentUser() currentUser: User, @EntityFromParam('id') activity: Activity) {
+    await this.activityRepository.softDelete({
+      id: activity.id,
+      user: currentUser,
+    });
 
     return {};
   }

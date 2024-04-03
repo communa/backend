@@ -72,7 +72,7 @@ export class UserController extends AbstractController {
   @Get('/:address/address')
   @ExtendedResponseSchema(User)
   @ResponseClassTransformOptions({groups: ['search']})
-  public get(@Param('address') address: string): Promise<User> {
+  public read(@Param('address') address: string): Promise<User> {
     return this.userRepository.findByAddressPublicOrFail(address);
   }
 

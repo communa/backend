@@ -1,11 +1,9 @@
 import {
   Body,
   Delete,
-  Get,
   HttpCode,
   JsonController,
   Post,
-  Put,
   Res,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
@@ -19,7 +17,6 @@ import {ProposalRepository} from '../repository/ProposalRepository';
 import {Proposal} from '../entity/Proposal';
 import {ProposalSearchDto} from '../validator/dto/ProposalSearchDto';
 import {EntityFromParam} from '../decorator/EntityFromParam';
-import RejectedExecutionException from '../exception/RejectedExecutionException';
 import {ActivityRepository} from '../repository/ActivityRepository';
 
 @JsonController('/proposal')
@@ -34,16 +31,6 @@ export class ProposalController extends AbstractController {
     this.proposalManager = App.container.get('ProposalManager');
     this.proposalRepository = App.container.get('ProposalRepository');
     this.activityRepository = App.container.get('ActivityRepository');
-  }
-
-  @Get('/:id')
-  @ResponseClassTransformOptions({groups: ['search']})
-  public get(@CurrentUser() currentUser: User, @EntityFromParam('id') proposal: Proposal) {
-    if (currentUser.id !== proposal.user.id) {
-      throw new RejectedExecutionException('Wrong user');
-    }
-
-    return proposal;
   }
 
   @Post('/search/business')
@@ -71,22 +58,6 @@ export class ProposalController extends AbstractController {
 
     res.status(201);
     res.location(`/api/proposal/${proposal.id}`);
-
-    return {};
-  }
-
-  @Put('/:id')
-  @HttpCode(200)
-  public async edit(
-    @CurrentUser() currentUser: User,
-    @EntityFromParam('id') proposal: Proposal,
-    @Body({validate: {groups: ['edit']}, transform: {groups: ['edit']}}) data: Proposal
-  ) {
-    if (currentUser.id !== proposal.user.id) {
-      throw new RejectedExecutionException('Wrong user');
-    }
-
-    await this.proposalManager.editAndSave(proposal, data);
 
     return {};
   }

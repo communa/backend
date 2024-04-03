@@ -6,7 +6,7 @@ import {AbstractRepositoryTemplate} from './AbstractRepositoryTemplate';
 import {Invoice} from '../entity/Invoice';
 import {ISearch} from '../interface/search/ISearch';
 import {User} from '../entity/User';
-import RejectedExecutionException from '../exception/RejectedExecutionException';
+import AccessException from '../exception/AccessException';
 
 @injectable()
 export class InvoiceRepository extends AbstractRepositoryTemplate<Invoice> {
@@ -37,7 +37,7 @@ export class InvoiceRepository extends AbstractRepositoryTemplate<Invoice> {
     const p = invoiceFreelancer || invoiceBusiness;
 
     if (!p) {
-      throw new RejectedExecutionException('Wrong user');
+      throw new AccessException();
     }
 
     return p;

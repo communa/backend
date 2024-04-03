@@ -75,27 +75,6 @@ export class TimeController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Single time read',
-    responses: {
-      200: {
-        description: 'Empty object',
-        content: {
-          'application/json': {},
-        },
-      },
-    },
-  })
-  @Get('/:id')
-  @ExtendedResponseSchema(Time)
-  @ResponseClassTransformOptions({groups: ['search']})
-  public get(
-    @CurrentUser() currentUser: User,
-    @EntityFromParam('id', null, {activity: true}) time: Time
-  ) {
-    return this.timeRepository.findOneConfirmUser(time, currentUser);
-  }
-
-  @OpenAPI({
     summary: 'Create multiple time records from array',
     requestBody: {
       content: {
@@ -169,6 +148,27 @@ export class TimeController extends AbstractController {
     data: TimeCreateDto[]
   ): Promise<ITimeInsertionResult[]> {
     return this.timeManager.saveMany(data, currentUser);
+  }
+
+  @OpenAPI({
+    summary: 'Single time read',
+    responses: {
+      200: {
+        description: 'Empty object',
+        content: {
+          'application/json': {},
+        },
+      },
+    },
+  })
+  @Get('/:id')
+  @ExtendedResponseSchema(Time)
+  @ResponseClassTransformOptions({groups: ['search']})
+  public read(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('id', null, {activity: true}) time: Time
+  ) {
+    return this.timeRepository.findOneConfirmUser(time, currentUser);
   }
 
   @OpenAPI({
