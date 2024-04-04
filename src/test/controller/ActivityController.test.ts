@@ -44,7 +44,7 @@ export class ActivityControllerTest extends BaseControllerTest {
     expect(res.status).to.be.equal(200);
     expect(res.data).to.be.deep.equal({});
     expect(updated.state).to.be.eq(EActivityState.ACTIVE);
-    expect(updated.proposalAccepted.id).to.be.eq(proposal.id);
+    expect(updated.proposalAccepted?.id).to.be.eq(proposal.id);
   }
 
   @test

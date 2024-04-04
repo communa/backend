@@ -8,6 +8,8 @@ import {ActivityRepository} from './ActivityRepository';
 import {ISearchProposal} from '../interface/search/ISearchProposal';
 import {User} from '../entity/User';
 import {SelectQueryBuilder} from 'typeorm';
+import {EActivityState} from '../interface/EActivityState';
+// import {EActivityState} from '../interface/EActivityState';
 
 @injectable()
 export class ProposalRepository extends AbstractRepositoryTemplate<Proposal> {
@@ -19,7 +21,7 @@ export class ProposalRepository extends AbstractRepositoryTemplate<Proposal> {
 
   public async findAndCountBusiness(
     search: ISearchProposal,
-    business: User
+    user: User
   ): Promise<[Proposal[], number]> {
     const s = _.assign(
       {
@@ -37,9 +39,9 @@ export class ProposalRepository extends AbstractRepositoryTemplate<Proposal> {
     return this.getRepo()
       .createQueryBuilder('proposal')
       .innerJoin('proposal.activity', 'activity')
-      .innerJoin('activity.user', 'activityUser')
-      .andWhere('activityUser.id = :businessId', {businessId: business.id})
+      .innerJoin('activity.user', 'user')
       .where((qb: SelectQueryBuilder<Proposal>) => {
+        qb.andWhere('user.id = :userId', {userId: user.id});
         this.buildSearchQueries(qb, search);
       })
       .select()
@@ -51,7 +53,7 @@ export class ProposalRepository extends AbstractRepositoryTemplate<Proposal> {
 
   public async findAndCountFreelancer(
     search: ISearchProposal,
-    freelancer: User
+    user: User
   ): Promise<[Proposal[], number]> {
     const s = _.assign(
       {
@@ -68,10 +70,19 @@ export class ProposalRepository extends AbstractRepositoryTemplate<Proposal> {
 
     return this.getRepo()
       .createQueryBuilder('proposal')
+      .innerJoin('proposal.user', 'user')
       .innerJoin('proposal.activity', 'activity')
-      .innerJoin('proposal.user', 'proposalUser')
-      .andWhere('proposalUser.id = :freelancerId', {freelancerId: freelancer.id})
       .where((qb: SelectQueryBuilder<Proposal>) => {
+        qb.andWhere('user.id = :userId', {userId: user.id});
+        qb.andWhere(`activity.state IN (:...state)`, {
+          state: [
+            EActivityState.PUBLISHED,
+            EActivityState.ACTIVE,
+            EActivityState.CLOSED,
+            EActivityState.ARCHIVED,
+          ],
+        });
+
         this.buildSearchQueries(qb, search);
       })
       .select()

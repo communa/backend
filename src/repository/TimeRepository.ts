@@ -25,9 +25,9 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
     const timeBusiness = await this.getRepo()
       .createQueryBuilder('time')
       .innerJoinAndSelect('time.activity', 'activity')
-      .innerJoin('activity.user', 'business')
+      .innerJoin('activity.user', 'userId')
       .andWhere('time.id = :timeId', {timeId: time.id})
-      .andWhere('business.id = :businessId', {businessId: user.id})
+      .andWhere('userId.id = :userId', {userId: user.id})
       .select()
       .getOne();
 
@@ -35,10 +35,10 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       .createQueryBuilder('time')
       .innerJoinAndSelect('time.activity', 'activity')
       .innerJoin('activity.proposalAccepted', 'proposal')
-      .innerJoin('proposal.user', 'freelancer')
+      .innerJoin('proposal.user', 'user')
       .andWhere('activity.deletedAt IS NULL')
       .andWhere('time.id = :timeId', {timeId: time.id})
-      .andWhere('freelancer.id = :freelancerId', {freelancerId: user.id})
+      .andWhere('user.id = :userId', {userId: user.id})
       .select()
       .getOne();
 

@@ -172,7 +172,7 @@ export class TimeControllerTest extends BaseControllerTest {
     });
 
     expect(res.status).to.be.equal(200);
-    expect(res.data.length).to.be.eq(2);  
+    expect(res.data.length).to.be.eq(2);
   }
 
   @test

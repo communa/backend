@@ -10,6 +10,7 @@ import {
   QueryParam,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
+import {OpenAPI} from 'routing-controllers-openapi';
 
 import {App} from '../app/App';
 import {User} from '../entity/User';
@@ -22,7 +23,6 @@ import {TimeRepository} from '../repository/TimeRepository';
 import {TimeSearchDto} from '../validator/dto/TimeSearchDto';
 import {Time} from '../entity/Time';
 import {EntityFromParam} from '../decorator/EntityFromParam';
-import {OpenAPI} from 'routing-controllers-openapi';
 import {ITimeInsertionResult} from '../interface/ITimeInsertionResult';
 import {TimeCreateDto} from '../validator/dto/TimeCreateDto';
 import {Activity} from '../entity/Activity';

@@ -50,25 +50,83 @@ export class ActivityControllerCrudTest extends BaseControllerTest {
   }
 
   @test
-  async read() {
-    const user = await this.userFixture.createUser();
-    const activity = await this.activityFixture.create(user, EActivityState.PUBLISHED);
+  async readAsGuest() {
+    const business = await this.userFixture.createUser();
+    const freelancer = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
+    await this.proposalFixture.create(activity, freelancer);
+
+    const proposal = await this.proposalFixture.create(activity, freelancer);
+
+    await this.activityManager.acceptProposal(activity, proposal);
 
     const res = await this.http.request({
       url: `${this.url}/api/activity/${activity.id}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(user).accessToken,
       },
     });
 
     expect(res.status).to.be.equal(200);
     expect(res.data.id).to.be.equal(activity.id);
+    expect(res.data.state).to.be.equal(EActivityState.ACTIVE);
+    expect(res.data.user.id).to.be.equal(business.id);
+    expect(res.data).not.haveOwnProperty('proposalAccepted');
+    expect(res.data).not.haveOwnProperty('proposals');
   }
 
   @test
-  async readActivityWithProposalAccepted() {
+  async readAsFreelancer() {
+    const business = await this.userFixture.createUser();
+    const freelancer = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
+
+    await this.proposalFixture.create(activity, freelancer);
+
+    const res = await this.http.request({
+      url: `${this.url}/api/activity/${activity.id}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(freelancer).accessToken,
+      },
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data.id).to.be.equal(activity.id);
+    expect(res.data.user.id).to.be.equal(business.id);
+    expect(res.data.state).to.be.equal(EActivityState.PUBLISHED);
+    expect(res.data.proposalAccepted).to.be.null;
+  }
+
+  @test
+  async readAsFreelancerWithProposalAccepted() {
+    const business = await this.userFixture.createUser();
+    const freelancer = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
+    const proposal = await this.proposalFixture.create(activity, freelancer);
+
+    await this.activityManager.acceptProposal(activity, proposal);
+
+    const res = await this.http.request({
+      url: `${this.url}/api/activity/${activity.id}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(freelancer).accessToken,
+      },
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data.id).to.be.equal(activity.id);
+    expect(res.data.user.id).to.be.equal(business.id);
+    expect(res.data.proposalAccepted.user.id).to.be.equal(freelancer.id);
+    expect(res.data.state).to.be.equal(EActivityState.ACTIVE);
+  }
+
+  @test
+  async readAsBusinessWithProposals() {
     const business = await this.userFixture.createUser();
     const freelancer = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
@@ -85,6 +143,35 @@ export class ActivityControllerCrudTest extends BaseControllerTest {
 
     expect(res.status).to.be.equal(200);
     expect(res.data.id).to.be.equal(activity.id);
+    expect(res.data.proposals.length).to.be.equal(1);
+    expect(res.data.proposals[0].id).to.be.equal(proposal.id);
+    expect(res.data.state).to.be.equal(EActivityState.PUBLISHED);
+    expect(res.data.proposalAccepted).to.be.null;
+  }
+
+  @test
+  async readAsBusinessWithProposalAccepted() {
+    const business = await this.userFixture.createUser();
+    const freelancer = await this.userFixture.createUser();
+    const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
+    await this.proposalFixture.create(activity, freelancer);
+
+    const proposal = await this.proposalFixture.create(activity, freelancer);
+
+    await this.activityManager.acceptProposal(activity, proposal);
+
+    const res = await this.http.request({
+      url: `${this.url}/api/activity/${activity.id}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.authenticator.getTokens(business).accessToken,
+      },
+    });
+
+    expect(res.status).to.be.equal(200);
+    expect(res.data.id).to.be.equal(activity.id);
+    expect(res.data.proposals.length).to.be.equal(2);
     expect(res.data.proposalAccepted.id).to.be.equal(proposal.id);
   }
 
@@ -136,7 +223,7 @@ export class ActivityControllerCrudTest extends BaseControllerTest {
     const updated = await this.activityRepository.findOneBy({
       where: {
         id: activity.id,
-      }
+      },
     });
 
     expect(res.status).to.be.equal(200);

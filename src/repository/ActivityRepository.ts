@@ -24,17 +24,62 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
     });
   }
 
-  public findActivityByFreelancer(
-    activity: Activity,
-    freelancer: User
-  ): Promise<Activity | undefined> {
+  public findActivityAsGuest(activity: Activity): Promise<Activity | undefined> {
     return this.getRepo()
       .createQueryBuilder('activity')
-      .innerJoinAndSelect('activity.proposalAccepted', 'proposal')
-      .innerJoinAndSelect('proposal.user', 'freelancer')
+      .innerJoinAndSelect('activity.user', 'user')
       .andWhere('activity.id = :id', {id: activity.id})
-      .andWhere(`freelancer.id = :freelancerId`, {freelancerId: freelancer.id})
-      .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
+      .andWhere(`activity.state IN (:...state)`, {
+        state: [
+          EActivityState.PUBLISHED,
+          EActivityState.ACTIVE,
+          EActivityState.CLOSED,
+          EActivityState.ARCHIVED,
+        ],
+      })
+      .select()
+      .getOne();
+  }
+
+  public findActivityAsBusiness(activity: Activity, user: User): Promise<Activity | undefined> {
+    return this.getRepo()
+      .createQueryBuilder('activity')
+      .innerJoinAndSelect('activity.user', 'user')
+      .innerJoinAndSelect('activity.proposals', 'proposals')
+      .leftJoinAndSelect('activity.proposalAccepted', 'proposalAccepted')
+      .leftJoinAndSelect('proposalAccepted.user', 'freelancer')
+      .andWhere('activity.id = :activityId', {activityId: activity.id})
+      .andWhere(`user.id = :userId`, {userId: user.id})
+      .select()
+      .getOne();
+  }
+
+  public findActivityAsFreelancerOrFail(id: string): Promise<Activity> {
+    return this.getRepo()
+      .createQueryBuilder('activity')
+      .innerJoinAndSelect('activity.user', 'user')
+      .leftJoinAndSelect('activity.proposalAccepted', 'proposalAccepted')
+      .leftJoinAndSelect('proposalAccepted.user', 'freelancer')
+      .andWhere('activity.id = :id', {id})
+      .andWhere(`activity.state IN (:...state)`, {
+        state: [
+          EActivityState.PUBLISHED,
+          EActivityState.ACTIVE,
+          EActivityState.CLOSED,
+          EActivityState.ARCHIVED,
+        ],
+      })
+      .select()
+      .getOneOrFail();
+  }
+
+  public findActivityByFreelancer(activity: Activity, user: User): Promise<Activity | undefined> {
+    return this.getRepo()
+      .createQueryBuilder('activity')
+      .innerJoinAndSelect('activity.proposalAccepted', 'proposalAccepted')
+      .innerJoinAndSelect('proposalAccepted.user', 'user')
+      .andWhere('user.id = :userId', {id: user.id})
+      .andWhere('activity.id = :id', {id: activity.id})
       .select()
       .getOne();
   }
@@ -73,7 +118,9 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
       .where((qb: SelectQueryBuilder<Activity>) => {
         qb.andWhere('activity.user.id = :userId', {userId: user.id});
       })
-      .andWhere(`activity.type IN (:...types)`, {types: [EActivityType.PERSONAL]})
+      .andWhere(`activity.type IN (:...types)`, {
+        types: [EActivityType.HOURLY, EActivityType.PERSONAL, EActivityType.FIXED],
+      })
       .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
       .orderBy(sort)
       .skip(limit * s.page)

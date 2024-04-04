@@ -5,13 +5,14 @@ import {Time} from '../entity/Time';
 import {User} from '../entity/User';
 import {TimeRepository} from '../repository/TimeRepository';
 import {ActivityRepository} from '../repository/ActivityRepository';
-import RejectedExecutionException from '../exception/RejectedExecutionException';
 import {ITimeInsertionResult} from '../interface/ITimeInsertionResult';
 import {ErrorFormatter} from './ErrorFormatter';
 import {TimeCreateDto} from '../validator/dto/TimeCreateDto';
 import {Activity} from '../entity/Activity';
 import {RedisClient} from './RedisClient';
 import {ITimeTotals} from '../interface/ITimeTotals';
+import {EActivityState} from '../interface/EActivityState';
+import AccessException from '../exception/AccessException';
 
 @injectable()
 export class TimeManager {
@@ -31,8 +32,21 @@ export class TimeManager {
       const data = times[a];
 
       try {
-        const time = new Time();
+        const activity = await this.activityRepository.findActivityAsFreelancerOrFail(
+          data.activityId
+        );
 
+        const isProposeeAndActive =
+          activity.proposalAccepted?.user.id === user.id &&
+          activity.state === EActivityState.ACTIVE;
+        const isPersonalPublished =
+          activity.user.id === user.id && activity.state === EActivityState.PUBLISHED;
+
+        if (!isPersonalPublished && !isProposeeAndActive) {
+          throw new AccessException(`The given activity is unavailable for time tracking`);
+        }
+
+        const time = new Time();
         time.fromAt = moment(data.fromAt).toDate();
         time.toAt = moment(data.toAt).toDate();
         time.note = data.note;
@@ -40,9 +54,9 @@ export class TimeManager {
         time.keyboardKeys = data.keyboardKeys;
         time.mouseKeys = data.mouseKeys;
         time.mouseDistance = data.mouseDistance;
-        time.activity = await this.activityRepository.findOneByIdOrFail(data.activityId);
+        time.activity = activity;
 
-        await this.save(time, user);
+        await this.timeRepository.validateAndSave(time);
       } catch (error: any) {
         times[a].error = ErrorFormatter.format(error);
       }
@@ -51,20 +65,7 @@ export class TimeManager {
     return times;
   }
 
-  public async save(time: Time, user: User): Promise<Time> {
-    const activities = [
-      await this.activityRepository.findActivityByFreelancer(time.activity, user),
-      await this.activityRepository.findActivityPersonal(time.activity, user),
-    ];
-
-    const activityValid = activities.find(a => a !== undefined);
-
-    if (!activityValid) {
-      throw new RejectedExecutionException(`The given activity is unavailable for time tracking`);
-    }
-
-    time.activity = activityValid;
-
+  public async save(time: Time): Promise<Time> {
     return this.timeRepository.validateAndSave(time);
   }
 
@@ -72,7 +73,7 @@ export class TimeManager {
     const timeExisting = await this.timeRepository.findTimeByFreelancerOrFail(time, freelancer);
 
     if (!timeExisting) {
-      throw new RejectedExecutionException(`Wrong user: the given time belongs to someone else`);
+      throw new AccessException(`The given time belongs to someone else`);
     }
 
     time = Object.assign(time, data);
@@ -84,7 +85,7 @@ export class TimeManager {
     const timeExisting = await this.timeRepository.findTimeByFreelancerOrFail(time, freelancer);
 
     if (!timeExisting) {
-      throw new RejectedExecutionException(`Wrong user: the given time belongs to someone else`);
+      throw new AccessException(`Wrong user: the given time belongs to someone else`);
     }
 
     await this.timeRepository.remove(timeExisting);
@@ -108,7 +109,7 @@ export class TimeManager {
       return cache;
     }
 
-    this.redisClient.setWithExpiry(activity.id, data, TimeManager.reportExpiresIn);
+    await this.redisClient.setWithExpiry(activity.id, data, TimeManager.reportExpiresIn);
 
     return data;
   }

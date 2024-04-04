@@ -50,16 +50,19 @@ export class ProposalControllerTest extends BaseControllerTest {
   @test()
   async searchAsFreelancer() {
     const business = await this.userFixture.createUser();
-    const freelancer = await this.userFixture.createUser();
+    const freelancerA = await this.userFixture.createUser();
+    const freelancerB = await this.userFixture.createUser();
     const activity = await this.activityFixture.create(business, EActivityState.PUBLISHED);
-    const proposal = await this.proposalFixture.create(activity, freelancer);
+
+    const proposal = await this.proposalFixture.create(activity, freelancerA);
+    await this.proposalFixture.create(activity, freelancerB);
 
     const config = {
       url: `${this.url}/api/proposal/search/freelancer`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authenticator.getTokens(freelancer).accessToken,
+        Authorization: this.authenticator.getTokens(freelancerA).accessToken,
       },
       data: {
         filter: {

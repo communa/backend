@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne, OneToMany, OneToOne} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne} from 'typeorm';
 import faker from 'faker';
 import {Exclude, Expose, Type} from 'class-transformer';
 import {JSONSchema} from 'class-validator-jsonschema';
@@ -129,5 +129,6 @@ export class Activity extends AbstractBaseEntity {
   @Expose({groups: ['search']})
   @Type(() => Proposal)
   @OneToOne(() => Proposal, proposal => proposal.activity)
-  proposalAccepted: Proposal;
+  @JoinColumn()
+  proposalAccepted: Proposal | null;
 }

@@ -7,11 +7,12 @@ import {
   JsonController,
   Post,
   Put,
+  Req,
   Res,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
 import {OpenAPI} from 'routing-controllers-openapi';
-
+import express from 'express';
 import {App} from '../app/App';
 import {User} from '../entity/User';
 import {Activity} from '../entity/Activity';
@@ -26,15 +27,18 @@ import {ActivityManager} from '../service/ActivityManager';
 import {EActivityType} from '../interface/EActivityType';
 import {Proposal} from '../entity/Proposal';
 import AccessException from '../exception/AccessException';
+import {Authenticator} from '../service/Authenticator';
 
 @JsonController('/activity')
 export class ActivityController extends AbstractController {
+  protected authenticator: Authenticator;
   protected activityManager: ActivityManager;
   protected activityRepository: ActivityRepository;
 
   constructor() {
     super();
 
+    this.authenticator = App.container.get('Authenticator');
     this.activityManager = App.container.get('ActivityManager');
     this.activityRepository = App.container.get('ActivityRepository');
   }
@@ -126,7 +130,7 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Project create'
+    summary: 'Project create',
   })
   @Post()
   @HttpCode(201)
@@ -157,17 +161,20 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Retrieve full project data',
+    summary: 'Retrieve full data of a project',
   })
   @HttpCode(200)
   @Get('/:id')
   @ExtendedResponseSchema(Activity)
   @ResponseClassTransformOptions({groups: ['search']})
-  public read(@EntityFromParam('id', null, {
-    proposalAccepted: true,
-    user: true,
-  }) activity: Activity) {
-    return activity;
+  public async read(
+    @EntityFromParam('id') activity: Activity,
+    @Req() req: express.Request
+  ): Promise<Activity | undefined> {
+    const token = req.headers['authorization'] as string;
+    const user = await this.authenticator.getUserFromJwtToken(token);
+
+    return await this.activityManager.findActivity(activity, user);
   }
 
   @OpenAPI({
@@ -191,7 +198,7 @@ export class ActivityController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Make project invisible',
+    summary: 'Close project without removing it',
   })
   @Post('/:id/close')
   @HttpCode(200)

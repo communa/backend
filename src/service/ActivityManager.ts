@@ -18,6 +18,26 @@ export class ActivityManager {
   @inject('TimeRepository')
   protected timeRepository: TimeRepository;
 
+  public async findActivity(activity: Activity, user?: User): Promise<Activity | undefined> {
+    if (!user) {
+      return this.activityRepository.findActivityAsGuest(activity);
+    } else if (user.id === activity.user.id) {
+      return this.activityRepository.findActivityAsBusiness(activity, user);
+    }
+
+    const findActivityAsFreelancer = await this.activityRepository.findActivityAsFreelancerOrFail(
+      activity.id
+    );
+
+    const isProposee = findActivityAsFreelancer.proposalAccepted?.user.id === user.id;
+
+    if (!isProposee) {
+      findActivityAsFreelancer.proposalAccepted = null;
+    }
+
+    return findActivityAsFreelancer;
+  }
+
   public async close(activity: Activity): Promise<void> {
     activity.closedAt = new Date();
     activity.state = EActivityState.CLOSED;
@@ -26,7 +46,9 @@ export class ActivityManager {
   }
 
   public async acceptProposal(activity: Activity, proposal: Proposal): Promise<void> {
-    const isPrivateOrImport = [EActivityType.PERSONAL, EActivityType.IMPORT].includes(activity.type);
+    const isPrivateOrImport = [EActivityType.PERSONAL, EActivityType.IMPORT].includes(
+      activity.type
+    );
     const isPublished = [EActivityState.PUBLISHED].includes(activity.state);
 
     if (activity.proposalAccepted) {
@@ -45,10 +67,14 @@ export class ActivityManager {
 
   public async editAndSave(activity: Activity, data: Activity): Promise<void> {
     const isContract = [EActivityType.HOURLY, EActivityType.FIXED].includes(activity.type);
-    const isActiveOrClosed = [EActivityState.ACTIVE, EActivityState.CLOSED].includes(activity.state);
+    const isActiveOrClosed = [EActivityState.ACTIVE, EActivityState.CLOSED].includes(
+      activity.state
+    );
 
     if (isContract && isActiveOrClosed) {
-      throw new RejectedExecutionException('Active or closed contracts are not available for editing');
+      throw new RejectedExecutionException(
+        'Active or closed contracts are not available for editing'
+      );
     }
 
     activity = Object.assign(activity, data);

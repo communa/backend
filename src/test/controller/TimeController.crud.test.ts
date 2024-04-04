@@ -25,6 +25,7 @@ export class TimeControllerCrudTest extends BaseControllerTest {
     const user = await this.userFixture.createUser();
     const activityA = await this.activityFixture.createPersonal(user);
     const activityB = await this.activityFixture.createPersonal(user);
+
     const data: TimeCreateDto[] = [
       {
         fromIndex: 1000,
