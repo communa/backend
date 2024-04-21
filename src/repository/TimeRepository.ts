@@ -176,6 +176,21 @@ export class TimeRepository extends AbstractRepositoryTemplate<Time> {
       .getMany();
   }
 
+  public findTimeSingleForActivity(
+    activity: Activity,
+    from: Date,
+    to: Date
+  ): Promise<Time | undefined> {
+    return this.getRepo()
+      .createQueryBuilder('time')
+      .innerJoinAndSelect('time.activity', 'activity')
+      .andWhere('activity.id = :activityId', {activityId: activity.id})
+      .select('time')
+      .andWhere('time.fromAt = :from', {from})
+      .andWhere('time.toAt = :to', {to})
+      .getOne();
+  }
+
   public findTimeBetweenForActivity(
     from: number,
     to: number,

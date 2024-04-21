@@ -6,7 +6,6 @@ import {
   HttpCode,
   JsonController,
   Post,
-  Put,
   QueryParam,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
@@ -75,7 +74,7 @@ export class TimeController extends AbstractController {
   }
 
   @OpenAPI({
-    summary: 'Create multiple time records from array',
+    summary: 'Create or update multiple time records from array',
     requestBody: {
       content: {
         'application/json': {
@@ -137,7 +136,7 @@ export class TimeController extends AbstractController {
   })
   @Post()
   @HttpCode(200)
-  public createMany(
+  public createOrUpdateMany(
     @CurrentUser() currentUser: User,
     @Body({
       validate: {
@@ -147,7 +146,7 @@ export class TimeController extends AbstractController {
     })
     data: TimeCreateDto[]
   ): Promise<ITimeInsertionResult[]> {
-    return this.timeManager.saveMany(data, currentUser);
+    return this.timeManager.createOrUpdateMany(data, currentUser);
   }
 
   @OpenAPI({
@@ -169,29 +168,6 @@ export class TimeController extends AbstractController {
     @EntityFromParam('id', null, {activity: true}) time: Time
   ) {
     return this.timeRepository.findOneConfirmUser(time, currentUser);
-  }
-
-  @OpenAPI({
-    summary: 'Edit sumbitted time interval',
-    responses: {
-      204: {
-        description: 'Empty object',
-        content: {
-          'application/json': {},
-        },
-      },
-    },
-  })
-  @Put('/:id')
-  @HttpCode(204)
-  public async edit(
-    @CurrentUser() currentUser: User,
-    @EntityFromParam('id') time: Time,
-    @Body({validate: {groups: ['edit']}, transform: {groups: ['edit']}}) data: Time
-  ) {
-    await this.timeManager.editAndSave(time, data, currentUser);
-
-    return {};
   }
 
   @OpenAPI({

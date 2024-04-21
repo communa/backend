@@ -7,6 +7,7 @@ import {BaseControllerTest} from './BaseController.test';
 import {ActivityManager} from '../../service/ActivityManager';
 import {TimeRepository} from '../../repository/TimeRepository';
 import {TimeCreateDto} from '../../validator/dto/TimeCreateDto';
+import {In} from 'typeorm';
 
 @suite
 export class TimeControllerCrudTest extends BaseControllerTest {
@@ -199,25 +200,54 @@ export class TimeControllerCrudTest extends BaseControllerTest {
   }
 
   @test
-  async createPersonalDuplicationError() {
+  async updatePersonal() {
     const user = await this.userFixture.createUser();
     const activityA = await this.activityFixture.createPersonal(user);
+    const activityB = await this.activityFixture.createPersonal(user);
+
     const unix = 1705829280;
-    const fromAt = moment.unix(unix).toISOString();
-    const toAt = moment.unix(unix).add(10, 'minutes').toDate().toISOString();
-    const timeData = {
-      fromIndex: 1000,
-      toIndex: 1001,
-      note: faker.datatype.uuid(),
-      keyboardKeys: faker.datatype.number(9),
-      minutesActive: faker.datatype.number(9),
-      mouseKeys: faker.datatype.number(9),
-      mouseDistance: faker.datatype.number(9),
-      fromAt,
-      toAt,
-      activityId: activityA.id,
-    };
-    const data: TimeCreateDto[] = [timeData, timeData];
+    const fromAt = moment.unix(unix);
+    const toAt = moment.unix(unix).add(10, 'minutes');
+
+    await this.timeFixture.create(activityB, fromAt.toDate(), toAt.toDate());
+    const data: TimeCreateDto[] = [
+      {
+        fromIndex: 1000,
+        toIndex: 1001,
+        note: faker.datatype.uuid(),
+        keyboardKeys: faker.datatype.number(9),
+        minutesActive: faker.datatype.number(9),
+        mouseKeys: faker.datatype.number(9),
+        mouseDistance: faker.datatype.number(9),
+        fromAt: fromAt.toISOString(),
+        toAt: toAt.toISOString(),
+        activityId: activityA.id,
+      },
+      {
+        fromIndex: 1000,
+        toIndex: 1001,
+        note: faker.datatype.uuid(),
+        keyboardKeys: 100000,
+        minutesActive: 100000,
+        mouseKeys: 100000,
+        mouseDistance: 100000,
+        fromAt: fromAt.toISOString(),
+        toAt: toAt.toISOString(),
+        activityId: activityA.id,
+      },
+      {
+        fromIndex: 2000,
+        toIndex: 2001,
+        note: faker.datatype.uuid(),
+        keyboardKeys: 200000,
+        minutesActive: 200000,
+        mouseKeys: 200000,
+        mouseDistance: 200000,
+        fromAt: fromAt.toISOString(),
+        toAt: toAt.toISOString(),
+        activityId: activityB.id,
+      },
+    ];
 
     const res = await this.http.request({
       url: `${this.url}/api/time`,
@@ -229,27 +259,19 @@ export class TimeControllerCrudTest extends BaseControllerTest {
       data,
     });
 
-    const time = await this.timeRepository.findOneByOrFail({
+    const times = await this.timeRepository.findBy({
       where: {
-        activity: activityA,
+        activity: In([activityA.id, activityB.id]),
+      },
+      order: {
+        createdAt: 'ASC',
       },
     });
-    const timeFromAt = moment(time.fromAt).toISOString();
-    const timeToAt = moment(time.toAt).toISOString();
 
-    expect(res.status).to.be.equal(200);
-    expect(timeFromAt).to.be.equal(fromAt);
-    expect(timeToAt).to.be.equal(toAt);
-
-    expect(res.data).to.be.deep.equal([
-      data[0],
-      {
-        ...data[1],
-        error: {
-          message: 'duplicate key value violates unique constraint "UQ_ACTIVITYFROM"',
-          name: 'QueryFailedError',
-        },
-      },
-    ]);
+    expect(res.data).to.have.length(3);
+    expect(times[0].keyboardKeys).to.eq(200000);
+    expect(times[0].activity.id).to.eq(activityB.id);
+    expect(times[1].keyboardKeys).to.eq(100000);
+    expect(times[1].activity.id).to.eq(activityA.id);
   }
 }

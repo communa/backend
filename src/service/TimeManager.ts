@@ -25,11 +25,16 @@ export class TimeManager {
 
   public static reportExpiresIn: number = 1000 * 60 * 10; // 10 minutes
 
-  public async saveMany(data: TimeCreateDto[], user: User): Promise<ITimeInsertionResult[]> {
+  public async createOrUpdateMany(
+    data: TimeCreateDto[],
+    user: User
+  ): Promise<ITimeInsertionResult[]> {
     const times: ITimeInsertionResult[] = data;
 
     for (let a = 0; a < times.length; a++) {
       const data = times[a];
+      const fromAt = moment(data.fromAt).toDate();
+      const toAt = moment(data.toAt).toDate();
 
       try {
         const activity = await this.activityRepository.findActivityAsFreelancerOrFail(
@@ -46,9 +51,14 @@ export class TimeManager {
           throw new AccessException(`The given activity is unavailable for time tracking`);
         }
 
-        const time = new Time();
-        time.fromAt = moment(data.fromAt).toDate();
-        time.toAt = moment(data.toAt).toDate();
+        let time = await this.timeRepository.findTimeSingleForActivity(activity, fromAt, toAt);
+
+        if (!time) {
+          time = new Time();
+        }
+
+        time.fromAt = fromAt;
+        time.toAt = toAt;
         time.note = data.note;
         time.minutesActive = data.minutesActive;
         time.keyboardKeys = data.keyboardKeys;
