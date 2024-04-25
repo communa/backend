@@ -27,7 +27,7 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
   public findActivityAsGuest(activity: Activity): Promise<Activity | undefined> {
     return this.getRepo()
       .createQueryBuilder('activity')
-      .innerJoinAndSelect('activity.user', 'user')
+      .leftJoinAndSelect('activity.user', 'user')
       .andWhere('activity.id = :id', {id: activity.id})
       .andWhere(`activity.state IN (:...state)`, {
         state: [
@@ -41,15 +41,14 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
       .getOne();
   }
 
-  public findActivityAsBusiness(activity: Activity, user: User): Promise<Activity | undefined> {
+  public findActivityAsBusiness(activity: Activity): Promise<Activity | undefined> {
     return this.getRepo()
       .createQueryBuilder('activity')
       .innerJoinAndSelect('activity.user', 'user')
-      .innerJoinAndSelect('activity.proposals', 'proposals')
+      .leftJoinAndSelect('activity.proposals', 'proposals')
       .leftJoinAndSelect('activity.proposalAccepted', 'proposalAccepted')
       .leftJoinAndSelect('proposalAccepted.user', 'freelancer')
       .andWhere('activity.id = :activityId', {activityId: activity.id})
-      .andWhere(`user.id = :userId`, {userId: user.id})
       .select()
       .getOne();
   }

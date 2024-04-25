@@ -18,11 +18,14 @@ export class ActivityManager {
   @inject('TimeRepository')
   protected timeRepository: TimeRepository;
 
-  public async findActivity(activity: Activity, user?: User): Promise<Activity | undefined> {
+  public async findActivityCheckAccess(
+    activity: Activity,
+    user?: User
+  ): Promise<Activity | undefined> {
     if (!user) {
       return this.activityRepository.findActivityAsGuest(activity);
     } else if (user.id === activity.user.id) {
-      return this.activityRepository.findActivityAsBusiness(activity, user);
+      return this.activityRepository.findActivityAsBusiness(activity);
     }
 
     const findActivityAsFreelancer = await this.activityRepository.findActivityAsFreelancerOrFail(

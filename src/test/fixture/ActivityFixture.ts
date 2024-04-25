@@ -38,4 +38,16 @@ export class ActivityFixture {
 
     return this.activityRepository.saveSingle(activity);
   }
+
+  public createImported(): Promise<Activity> {
+    const activity = new Activity();
+
+    activity.title = faker.datatype.uuid();
+    activity.text = faker.datatype.uuid();
+    activity.rateHour = 0;
+    activity.state = EActivityState.PUBLISHED;
+    activity.type = EActivityType.IMPORT;
+
+    return this.activityRepository.saveSingle(activity);
+  }
 }

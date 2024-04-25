@@ -174,7 +174,7 @@ export class ActivityController extends AbstractController {
     const token = req.headers['authorization'] as string;
     const user = await this.authenticator.getUserFromJwtToken(token);
 
-    return await this.activityManager.findActivity(activity, user);
+    return await this.activityManager.findActivityCheckAccess(activity, user);
   }
 
   @OpenAPI({
