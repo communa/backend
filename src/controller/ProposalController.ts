@@ -4,6 +4,7 @@ import {
   HttpCode,
   JsonController,
   Post,
+  Put,
   Res,
   ResponseClassTransformOptions,
 } from 'routing-controllers';
@@ -18,6 +19,7 @@ import {Proposal} from '../entity/Proposal';
 import {ProposalSearchDto} from '../validator/dto/ProposalSearchDto';
 import {EntityFromParam} from '../decorator/EntityFromParam';
 import {ActivityRepository} from '../repository/ActivityRepository';
+import AccessException from '../exception/AccessException';
 
 @JsonController('/proposal')
 export class ProposalController extends AbstractController {
@@ -58,6 +60,22 @@ export class ProposalController extends AbstractController {
 
     res.status(201);
     res.location(`/api/proposal/${proposal.id}`);
+
+    return {};
+  }
+
+  @Put('/:id')
+  @HttpCode(200)
+  public async edit(
+    @CurrentUser() currentUser: User,
+    @EntityFromParam('id', null, {user: true, activity: true}) proposal: Proposal,
+    @Body({validate: {groups: ['edit']}, transform: {groups: ['edit']}}) data: Proposal
+  ) {
+    if (proposal.user.id !== currentUser.id) {
+      throw new AccessException();
+    }
+
+    await this.proposalManager.edit(proposal, data);
 
     return {};
   }

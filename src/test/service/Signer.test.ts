@@ -3,7 +3,7 @@ import {expect} from 'chai';
 import {suite, test} from '@testdeck/mocha';
 
 import {AbstractDatabaseIntegration} from '../AbstractDatabase.integration';
-import {Signer} from '../../service/Signer';
+import {Signer} from '../../service/auth/Signer';
 
 @suite()
 export class SignerTest extends AbstractDatabaseIntegration {

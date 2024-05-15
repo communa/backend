@@ -27,7 +27,7 @@ import {ActivityManager} from '../service/ActivityManager';
 import {EActivityType} from '../interface/EActivityType';
 import {Proposal} from '../entity/Proposal';
 import AccessException from '../exception/AccessException';
-import {Authenticator} from '../service/Authenticator';
+import {Authenticator} from '../service/auth/Authenticator';
 
 @JsonController('/activity')
 export class ActivityController extends AbstractController {

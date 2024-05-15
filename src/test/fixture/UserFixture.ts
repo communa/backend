@@ -6,7 +6,7 @@ import {User} from '../../entity/User';
 import {EUserRole} from '../../interface/EUserRole';
 
 import {UserRepository} from '../../repository/UserRepository';
-import {Signer} from '../../service/Signer';
+import {Signer} from '../../service/auth/Signer';
 import {UserManager} from '../../service/UserManager';
 import {Faker} from '../../service/Faker';
 

@@ -13,6 +13,6 @@
     "port": 5432,
     "username": "postgres",
     "password": "",
-    "database": "communa_prod"
+    "database": "communa_dev"
   }
 }

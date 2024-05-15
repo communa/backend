@@ -8,7 +8,7 @@ import {CurrentUser} from '../decorator/CurrentUser';
 import {User} from '../entity/User';
 import {App} from '../app/App';
 import {EUserRole} from '../interface/EUserRole';
-import {AuthenticatorTimeTracker} from '../service/AuthenticatorTimeTracker';
+import {AuthenticatorTimeTracker} from '../service/auth/AuthenticatorTimeTracker';
 import {EAuthTimeTrackerState} from '../interface/EAuthTimeTrackerState';
 
 @JsonController('/auth/timeTracker')

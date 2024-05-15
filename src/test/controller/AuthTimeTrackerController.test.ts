@@ -4,7 +4,7 @@ import {suite, test} from '@testdeck/mocha';
 import {UserRepository} from '../../repository/UserRepository';
 import {BaseControllerTest} from './BaseController.test';
 import {RedisClient} from '../../service/RedisClient';
-import {AuthenticatorTimeTracker} from '../../service/AuthenticatorTimeTracker';
+import {AuthenticatorTimeTracker} from '../../service/auth/AuthenticatorTimeTracker';
 import {EAuthTimeTrackerState} from '../../interface/EAuthTimeTrackerState';
 
 @suite()

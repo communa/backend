@@ -4,7 +4,7 @@ import {expect} from 'chai';
 import * as jwt from 'jsonwebtoken';
 import * as web3 from 'web3';
 
-import {Authenticator} from '../../service/Authenticator';
+import {Authenticator} from '../../service/auth/Authenticator';
 import {User} from '../../entity/User';
 import {UserFixture} from '../fixture/UserFixture';
 import {AbstractDatabaseIntegration} from '../AbstractDatabase.integration';
@@ -180,7 +180,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
 
     const nonce = await this.authenticator.getNonce(account.address);
     const signature = web3.eth.accounts.sign(nonce, account.privateKey);
-    const tokens = await this.authenticator.loginWeb3(signature.signature, account.address);
+    const tokens = await this.authenticator.loginEth(signature.signature, account.address);
 
     const userDB = await this.userRepository.findByAddressPublicOrFail(account.address);
 
@@ -195,7 +195,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
 
     const nonce = await this.authenticator.getNonce(user.address);
     const signature = web3.eth.accounts.sign(nonce, account.privateKey);
-    const tokens = await this.authenticator.loginWeb3(signature.signature, account.address);
+    const tokens = await this.authenticator.loginEth(signature.signature, account.address);
 
     const userDB = await this.userRepository.findByAddressPublicOrFail(account.address);
 
@@ -214,7 +214,7 @@ export class AuthenticatorTest extends AbstractDatabaseIntegration {
     let err = null;
 
     try {
-      await this.authenticator.loginWeb3(signature.signature, accountB.address);
+      await this.authenticator.loginEth(signature.signature, accountB.address);
     } catch (e: any) {
       err = e;
     }

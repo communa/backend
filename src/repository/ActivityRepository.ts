@@ -9,6 +9,7 @@ import {ISearchActivity} from '../interface/search/ISearchActivity';
 import {User} from '../entity/User';
 import {EActivityState} from '../interface/EActivityState';
 import {EActivityType} from '../interface/EActivityType';
+import {Proposal} from '../entity/Proposal';
 
 @injectable()
 export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
@@ -91,6 +92,15 @@ export class ActivityRepository extends AbstractRepositoryTemplate<Activity> {
       .andWhere('user.id = :userId', {userId: user.id})
       .andWhere(`activity.type = :type`, {type: EActivityType.PERSONAL})
       .andWhere(`activity.state = :state`, {state: EActivityState.PUBLISHED})
+      .select()
+      .getOne();
+  }
+
+  public findActivityByProposalAccepted(proposal: Proposal): Promise<Activity | undefined> {
+    return this.getRepo()
+      .createQueryBuilder('activity')
+      .innerJoinAndSelect('activity.proposalAccepted', 'proposalAccepted')
+      .andWhere(`proposalAccepted.id = :type`, {id: proposal.id})
       .select()
       .getOne();
   }

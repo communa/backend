@@ -1,14 +1,14 @@
 import {inject, injectable} from 'inversify';
 import moment from 'moment';
 
-import {User} from '../entity/User';
-import {IConfigParameters} from '../interface/IConfigParameters';
-import TimeTrackerException from '../exception/TimeTrackerException';
-import {RedisClient} from './RedisClient';
+import {User} from '../../entity/User';
+import {IConfigParameters} from '../../interface/IConfigParameters';
+import TimeTrackerException from '../../exception/TimeTrackerException';
+import {RedisClient} from './../RedisClient';
 import {Signer} from './Signer';
 import {Authenticator} from './Authenticator';
-import {EAuthTimeTrackerState} from '../interface/EAuthTimeTrackerState';
-import {UserRepository} from '../repository/UserRepository';
+import {EAuthTimeTrackerState} from '../../interface/EAuthTimeTrackerState';
+import {UserRepository} from '../../repository/UserRepository';
 
 @injectable()
 export class AuthenticatorTimeTracker {

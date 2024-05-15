@@ -4,7 +4,7 @@ import {expect} from 'chai';
 import {Action} from 'routing-controllers';
 
 import {UserFixture} from '../fixture/UserFixture';
-import {Authenticator} from '../../service/Authenticator';
+import {Authenticator} from '../../service/auth/Authenticator';
 import {ValidateRoles} from '../../middleware/ValidateRoles';
 import {EUserRole} from '../../interface/EUserRole';
 import {AbstractDatabaseIntegration} from '../AbstractDatabase.integration';

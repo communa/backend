@@ -2,7 +2,7 @@ import {ExpressMiddlewareInterface, Middleware} from 'routing-controllers';
 import express from 'express';
 import getDecorators from 'inversify-inject-decorators';
 import {AppContainer} from '../app/AppContainer';
-import {Authenticator} from '../service/Authenticator';
+import {Authenticator} from '../service/auth/Authenticator';
 import * as jwt from 'jsonwebtoken';
 import {ILogger} from '../interface/ILogger';
 
