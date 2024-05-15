@@ -6,7 +6,7 @@ import {UserRepository} from '../../repository/UserRepository';
 import {AbstractDatabaseIntegration} from '../AbstractDatabase.integration';
 import {User} from '../../entity/User';
 import {EUserRole} from '../../interface/EUserRole';
-import {Signer} from '../../service/Signer';
+import {Signer} from '../../service/auth/Signer';
 
 @suite()
 export class UserRepositoryIntegrationTest extends AbstractDatabaseIntegration {

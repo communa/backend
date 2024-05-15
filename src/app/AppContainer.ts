@@ -4,7 +4,7 @@ import {IConfigParameters} from '../interface/IConfigParameters';
 
 import {Http} from '../service/Http';
 import {OpenApi} from '../service/OpenApi';
-import {Signer} from '../service/Signer';
+import {Signer} from '../service/auth/Signer';
 import {RedisClient} from '../service/RedisClient';
 import {UserFixture} from '../test/fixture/UserFixture';
 import {UserRepository} from '../repository/UserRepository';
@@ -12,7 +12,7 @@ import {Filter} from '../service/Filter';
 import {UserManager} from '../service/UserManager';
 import {Mailer} from '../service/Mailer';
 import {Faker} from '../service/Faker';
-import {Authenticator} from '../service/Authenticator';
+import {Authenticator} from '../service/auth/Authenticator';
 import {ActivityRepository} from '../repository/ActivityRepository';
 import {ActivityFixture} from '../test/fixture/ActivityFixture';
 import {ActivityManager} from '../service/ActivityManager';
@@ -25,7 +25,8 @@ import {InvoiceRepository} from '../repository/InvoiceRepository';
 import {ProposalManager} from '../service/ProposalManager';
 import {TimeManager} from '../service/TimeManager';
 import {InvoiceManager} from '../service/InvoiceManager';
-import {AuthenticatorTimeTracker} from '../service/AuthenticatorTimeTracker';
+import {AuthenticatorTimeTracker} from '../service/auth/AuthenticatorTimeTracker';
+import {TonProofService} from '../service/auth/TonProofService';
 
 export class AppContainer {
   private static container: Container;
@@ -67,6 +68,7 @@ export class AppContainer {
     container.bind<InvoiceManager>('InvoiceManager').to(InvoiceManager);
     container.bind<Mailer>('Mailer').to(Mailer);
     container.bind<ActivityManager>('ActivityManager').to(ActivityManager);
+    container.bind<TonProofService>('TonProofService').to(TonProofService);
     container.bind<Faker>('Faker').to(Faker);
 
     // Fixture

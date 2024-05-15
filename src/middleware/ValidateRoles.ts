@@ -1,6 +1,6 @@
 import {Action} from 'routing-controllers';
 
-import {Authenticator} from '../service/Authenticator';
+import {Authenticator} from '../service/auth/Authenticator';
 import {AppContainer} from '../app/AppContainer';
 
 export const ValidateRoles = async (action: Action, roles: string[] = []) => {

@@ -16,7 +16,7 @@ import {OpenAPI} from 'routing-controllers-openapi';
 
 import {User} from '../entity/User';
 import {App} from '../app/App';
-import {Authenticator} from '../service/Authenticator';
+import {Authenticator} from '../service/auth/Authenticator';
 import {UserManager} from '../service/UserManager';
 import {UserRepository} from '../repository/UserRepository';
 import {IConfigParameters} from '../interface/IConfigParameters';
@@ -37,7 +37,7 @@ export class AuthController {
   }
 
   @OpenAPI({
-    summary: 'Auth login Web3',
+    summary: 'Auth login Eth',
     requestBody: {
       content: {
         'application/json': {
@@ -71,9 +71,9 @@ export class AuthController {
       },
     },
   })
-  @Post('/web3')
+  @Post('/eth')
   @HttpCode(200)
-  public async loginWeb3(
+  public async loginEth(
     @Body()
     payload: {
       signature: string;
@@ -81,7 +81,55 @@ export class AuthController {
     },
     @Res() res: any
   ): Promise<Record<string, never>> {
-    const tokens = await this.authenticator.loginWeb3(payload.signature, payload.address);
+    const tokens = await this.authenticator.loginEth(payload.signature, payload.address);
+
+    res.setHeader('Authorization', tokens.accessToken);
+    res.setHeader('Refresh-Token', tokens.refreshToken);
+
+    return {};
+  }
+
+  @OpenAPI({
+    summary: 'Auth login TON',
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {},
+        },
+      },
+      required: false,
+    },
+    responses: {
+      200: {
+        description: 'Replies with refresh and login headers sent',
+        content: {
+          'application/json': {},
+        },
+        headers: {
+          Authorization: {
+            required: true,
+            schema: {
+              type: 'string',
+            },
+            description: 'contains JWT Access Token',
+          },
+          'Refresh-Token': {
+            required: true,
+            schema: {
+              type: 'string',
+            },
+            description: 'contains JWT Refresh Token',
+          },
+        },
+      },
+    },
+  })
+  @HttpCode(200)
+  @Post('/ton')
+  public async checkProofHandler(@Body() payload: any, @Res() res: any) {
+    console.log(payload);
+
+    const tokens = await this.authenticator.loginTon(payload);
 
     res.setHeader('Authorization', tokens.accessToken);
     res.setHeader('Refresh-Token', tokens.refreshToken);
@@ -123,6 +171,8 @@ export class AuthController {
   @HttpCode(200)
   @Post('/nonce')
   public nonce(@Body() payload: {address: string}): Promise<string> {
+    console.log(payload);
+
     return this.authenticator.getNonce(payload.address);
   }
 

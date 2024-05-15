@@ -1,6 +1,6 @@
 import {createParamDecorator} from 'routing-controllers';
 import {AppContainer} from '../app/AppContainer';
-import {Authenticator} from '../service/Authenticator';
+import {Authenticator} from '../service/auth/Authenticator';
 
 export function CurrentUser() {
   return createParamDecorator({

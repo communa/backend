@@ -16,7 +16,7 @@ import {ProposalRepository} from '../../repository/ProposalRepository';
 import {ProposalFixture} from '../fixture/ProposalFixture';
 import {InvoiceFixture} from '../fixture/InvoiceFixture ';
 import {TimeFixture} from '../fixture/TimeFixture';
-import {Authenticator} from '../../service/Authenticator';
+import {Authenticator} from '../../service/auth/Authenticator';
 
 export class BaseControllerTest {
   protected url: string;

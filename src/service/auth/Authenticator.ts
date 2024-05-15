@@ -2,20 +2,22 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import {inject, injectable} from 'inversify';
 
-import {User} from '../entity/User';
-import {Mailer} from './Mailer';
+import {User} from '../../entity/User';
+import {Mailer} from './../Mailer';
 
-import {IAuthTokenData} from '../interface/IAuthTokenData';
-import {UserRepository} from '../repository/UserRepository';
-import {EUserRole} from '../interface/EUserRole';
-import {IAuthTokens} from '../interface/IAuthTokens';
-import {IConfigParameters} from '../interface/IConfigParameters';
-import AuthenticationException from '../exception/AuthenticationException';
-import {UserManager} from './UserManager';
-import {RedisClient} from './RedisClient';
+import {IAuthTokenData} from '../../interface/IAuthTokenData';
+import {UserRepository} from '../../repository/UserRepository';
+import {EUserRole} from '../../interface/EUserRole';
+import {IAuthTokens} from '../../interface/IAuthTokens';
+import {IConfigParameters} from '../../interface/IConfigParameters';
+import AuthenticationException from '../../exception/AuthenticationException';
+import {UserManager} from './../UserManager';
+import {RedisClient} from './../RedisClient';
 import {Signer} from './Signer';
-import {ActivityManager} from './ActivityManager';
-import {TimeRepository} from '../repository/TimeRepository';
+import {ActivityManager} from './../ActivityManager';
+import {TimeRepository} from '../../repository/TimeRepository';
+import {TonProofService} from './TonProofService';
+import {IAuthTonPayload} from '../../interface/IAuthTonPayload';
 
 @injectable()
 export class Authenticator {
@@ -40,6 +42,8 @@ export class Authenticator {
   protected signer: Signer;
   @inject('RedisClient')
   protected redis: RedisClient;
+  @inject('TonProofService')
+  protected tonProofService: TonProofService;
 
   public async getNonce(address: string): Promise<string> {
     const nonce = this.signer.generateNonce();
@@ -50,7 +54,7 @@ export class Authenticator {
     return nonce;
   }
 
-  public async loginWeb3(signature: string, address: string): Promise<IAuthTokens> {
+  public async loginEth(signature: string, address: string): Promise<IAuthTokens> {
     const key = `nonce:${address}`;
     const nonce = await this.redis.get(key);
 
@@ -59,6 +63,34 @@ export class Authenticator {
     }
 
     const isValid = this.signer.verify(nonce, signature, address);
+
+    if (!isValid) {
+      throw new AuthenticationException('Signature is not valid');
+    }
+
+    let user = await this.userRepository.findByAddressPublic(address);
+
+    if (!user) {
+      user = await this.createUserWithDemoData(address);
+    }
+
+    return this.getTokens(user);
+  }
+
+  public async loginTon(payload: IAuthTonPayload): Promise<IAuthTokens> {
+    const address = payload.address;
+    // const key = `nonce:${address}`;
+    // const nonce = await this.redis.get(key);
+    
+    // console.log(nonce);
+    // console.log(address);
+    // console.log(payload);
+
+    // if (!nonce) {
+    //   throw new AuthenticationException('Nonce is not available or expired');
+    // }
+
+    const isValid = this.tonProofService.checkProof(payload);
 
     if (!isValid) {
       throw new AuthenticationException('Signature is not valid');

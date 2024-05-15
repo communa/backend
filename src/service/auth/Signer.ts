@@ -4,7 +4,7 @@ import * as crypto from 'crypto';
 
 import faker from 'faker';
 
-import {IConfigParameters} from '../interface/IConfigParameters';
+import {IConfigParameters} from '../../interface/IConfigParameters';
 
 @injectable()
 export class Signer {

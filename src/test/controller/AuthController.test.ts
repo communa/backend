@@ -6,7 +6,7 @@ import {suite, test} from '@testdeck/mocha';
 import {UserRepository} from '../../repository/UserRepository';
 import {BaseControllerTest} from './BaseController.test';
 import {RedisClient} from '../../service/RedisClient';
-import {AuthenticatorTimeTracker} from '../../service/AuthenticatorTimeTracker';
+import {AuthenticatorTimeTracker} from '../../service/auth/AuthenticatorTimeTracker';
 import {ActivityRepository} from '../../repository/ActivityRepository';
 import {TimeRepository} from '../../repository/TimeRepository';
 import moment from 'moment';
@@ -29,13 +29,13 @@ export class AuthControllerTest extends BaseControllerTest {
   }
 
   @test()
-  async loginWeb3() {
+  async loginEth() {
     const account = web3.eth.accounts.create();
     const nonce = await this.authenticator.getNonce(account.address);
     const signature = web3.eth.accounts.sign(nonce, account.privateKey);
 
     const res = await this.http.request({
-      url: `${this.url}/api/auth/web3`,
+      url: `${this.url}/api/auth/eth`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
