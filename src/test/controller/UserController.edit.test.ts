@@ -25,7 +25,9 @@ export class UserControllerEditTest extends BaseControllerTest {
       roles: [EUserRole.ROLE_USER, EUserRole.ROLE_BUSINESS],
       tz: 'America/Los_Angeles',
       phone: this.faker.phone(),
+      skills: faker.datatype.uuid(),
       userName: faker.name.firstName(),
+      price: faker.datatype.number(50),
     };
 
     const config = {
@@ -46,6 +48,8 @@ export class UserControllerEditTest extends BaseControllerTest {
     expect(updated.bio).to.be.equal(data.bio.toString());
     expect(updated.roles).to.be.deep.equal([EUserRole.ROLE_USER, EUserRole.ROLE_BUSINESS]);
     expect(updated.tz).to.be.eq(data.tz);
+    expect(updated.price).to.be.not.eq(0);
+    expect(updated.skills).to.be.not.eq('');
     expect(updated.phone).to.be.eq(data.phone);
 
     expect(updated.userName).to.eq(data.userName);

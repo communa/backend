@@ -73,6 +73,18 @@ export class User extends AbstractBaseEntity implements IUser {
   @IsOptional()
   bio: string;
 
+  @Expose({groups: ['search', 'create', 'edit']})
+  @Column('decimal', {precision: 6, scale: 2, default: 0, nullable: true})
+  @IsString()
+  @IsOptional()
+  price: number;
+
+  @Expose({groups: ['search', 'edit']})
+  @Column('text', {nullable: true})
+  @IsString()
+  @IsOptional()  
+  skills: string;
+
   // Social
   @Expose({groups: ['search', 'edit']})
   @Column('text', {nullable: true})

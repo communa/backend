@@ -81,7 +81,7 @@ export class Authenticator {
     const address = payload.address;
     // const key = `nonce:${address}`;
     // const nonce = await this.redis.get(key);
-    
+
     // console.log(nonce);
     // console.log(address);
     // console.log(payload);
