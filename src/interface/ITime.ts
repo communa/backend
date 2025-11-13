@@ -10,4 +10,10 @@ export interface ITime {
   activity?: {
     id: string;
   };
+  processes?: {
+    name: string;
+    description: string;
+    timeMin: number;
+  }[];
+  screenshot?: string | null;
 }

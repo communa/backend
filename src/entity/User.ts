@@ -82,7 +82,7 @@ export class User extends AbstractBaseEntity implements IUser {
   @Expose({groups: ['search', 'edit']})
   @Column('text', {nullable: true})
   @IsString()
-  @IsOptional()  
+  @IsOptional()
   skills: string;
 
   // Social

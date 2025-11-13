@@ -171,8 +171,6 @@ export class AuthController {
   @HttpCode(200)
   @Post('/nonce')
   public nonce(@Body() payload: {address: string}): Promise<string> {
-    console.log(payload);
-
     return this.authenticator.getNonce(payload.address);
   }
 

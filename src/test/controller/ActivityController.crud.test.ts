@@ -24,6 +24,8 @@ export class ActivityControllerCrudTest extends BaseControllerTest {
   async create() {
     const business = await this.userFixture.createUser();
     const data = {
+      trackScreenshots: false,
+      trackProcesses: true,
       title: faker.datatype.uuid(),
       text: faker.datatype.uuid(),
       state: EActivityState.DRAFT,
@@ -47,6 +49,8 @@ export class ActivityControllerCrudTest extends BaseControllerTest {
 
     expect(activity.title).to.be.eq(data.title);
     expect(activity.text).to.be.eq(data.text);
+    expect(activity.trackScreenshots).to.be.eq(data.trackScreenshots);
+    expect(activity.trackProcesses).to.be.eq(data.trackProcesses);
   }
 
   @test
@@ -184,6 +188,8 @@ export class ActivityControllerCrudTest extends BaseControllerTest {
       title: faker.datatype.uuid(),
       text: faker.datatype.uuid(),
       state: EActivityState.PUBLISHED,
+      trackScreenshots: true,
+      trackProcesses: true,
     };
 
     const res = await this.http.request({
@@ -204,6 +210,8 @@ export class ActivityControllerCrudTest extends BaseControllerTest {
     expect(activityUpdated.title).to.be.eq(data.title);
     expect(activityUpdated.state).to.be.eq(data.state);
     expect(activityUpdated.text).to.be.eq(data.text);
+    expect(activityUpdated.trackScreenshots).to.be.eq(data.trackScreenshots);
+    expect(activityUpdated.trackProcesses).to.be.eq(data.trackProcesses);
   }
 
   @test

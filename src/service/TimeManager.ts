@@ -13,6 +13,7 @@ import {RedisClient} from './RedisClient';
 import {ITimeTotals} from '../interface/ITimeTotals';
 import {EActivityState} from '../interface/EActivityState';
 import AccessException from '../exception/AccessException';
+import {ImageResizer} from './ImageResizer';
 
 @injectable()
 export class TimeManager {
@@ -22,6 +23,8 @@ export class TimeManager {
   protected activityRepository: ActivityRepository;
   @inject('RedisClient')
   protected redisClient: RedisClient;
+  @inject('ImageResizer')
+  protected imageResizer: ImageResizer;
 
   public static reportExpiresIn: number = 1000 * 60 * 10; // 10 minutes
 
@@ -65,6 +68,8 @@ export class TimeManager {
         time.mouseKeys = data.mouseKeys;
         time.mouseDistance = data.mouseDistance;
         time.activity = activity;
+        time.screenshot = await this.resize(data.screenshot);
+        time.processes = data.processes;
 
         await this.timeRepository.validateAndSave(time);
       } catch (error: any) {
@@ -122,5 +127,13 @@ export class TimeManager {
     await this.redisClient.setWithExpiry(activity.id, data, TimeManager.reportExpiresIn);
 
     return data;
+  }
+
+  public async resize(screenshot?: string): Promise<string | null> {
+    if (!screenshot) {
+      return null;
+    }
+    
+    return this.imageResizer.resize(screenshot, 600);
   }
 }

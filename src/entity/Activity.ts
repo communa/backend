@@ -6,11 +6,12 @@ import {JSONSchema} from 'class-validator-jsonschema';
 import {User} from './User';
 import {AbstractBaseEntity} from './AbstractBaseEntity';
 import {EActivityType} from '../interface/EActivityType';
-import {IsNotEmpty, IsOptional, IsString} from 'class-validator';
+import {IsBoolean, IsNotEmpty, IsOptional, IsString} from 'class-validator';
 import {EActivityState} from '../interface/EActivityState';
 import {Proposal} from './Proposal';
 import {Invoice} from './Invoice';
 import {Time} from './Time';
+import {IActivity} from '../interface/IActivity';
 
 @JSONSchema({
   example: {
@@ -19,12 +20,24 @@ import {Time} from './Time';
 })
 @Entity()
 @Exclude()
-export class Activity extends AbstractBaseEntity {
+export class Activity extends AbstractBaseEntity implements IActivity {
   @IsNotEmpty()
   @Expose({groups: ['search', 'create', 'edit']})
   @Column('text', {nullable: true})
   @IsString()
   title: string;
+
+  @Expose({groups: ['search', 'create', 'edit']})
+  @Column('bool', {nullable: true, default: false})
+  @IsBoolean()
+  @IsOptional()
+  trackScreenshots?: boolean | null;
+
+  @Expose({groups: ['search', 'create', 'edit']})
+  @Column('bool', {nullable: true, default: false})
+  @IsBoolean()
+  @IsOptional()
+  trackProcesses?: boolean | null;
 
   @IsNotEmpty()
   @Expose({groups: ['search', 'create', 'edit']})

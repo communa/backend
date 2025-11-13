@@ -84,11 +84,12 @@ export class App {
         verify: (req: any, _res, buf) => {
           req.rawBuffer = buf.toString();
         },
+        limit: '30mb',
       })
     );
 
     this.express.use(boolParser());
-
+    
     this.initControllers();
 
     this.express.use('/swagger', swaggerUiExpress.serve, swaggerUiExpress.setup(spec));

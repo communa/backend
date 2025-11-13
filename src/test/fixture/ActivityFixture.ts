@@ -22,11 +22,18 @@ export class ActivityFixture {
     activity.type = EActivityType.HOURLY;
     activity.keywords = keywords;
     activity.jobUrl = faker.internet.url();
+    activity.trackScreenshots = false;
+    activity.trackProcesses = false;
 
     return this.activityRepository.saveSingle(activity);
   }
 
-  public createPersonal(user: User, rateHour: number = 0): Promise<Activity> {
+  public createPersonal(
+    user: User,
+    rateHour: number = 0,
+    trackScreenshots?: boolean,
+    trackProcesses?: boolean
+  ): Promise<Activity> {
     const activity = new Activity();
 
     activity.title = faker.datatype.uuid();
@@ -35,6 +42,8 @@ export class ActivityFixture {
     activity.rateHour = rateHour;
     activity.state = EActivityState.PUBLISHED;
     activity.type = EActivityType.PERSONAL;
+    activity.trackScreenshots = trackScreenshots;
+    activity.trackProcesses = trackProcesses;
 
     return this.activityRepository.saveSingle(activity);
   }

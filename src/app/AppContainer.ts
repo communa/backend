@@ -27,6 +27,7 @@ import {TimeManager} from '../service/TimeManager';
 import {InvoiceManager} from '../service/InvoiceManager';
 import {AuthenticatorTimeTracker} from '../service/auth/AuthenticatorTimeTracker';
 import {TonProofService} from '../service/auth/TonProofService';
+import {ImageResizer} from '../service/ImageResizer';
 
 export class AppContainer {
   private static container: Container;
@@ -67,6 +68,7 @@ export class AppContainer {
     container.bind<TimeManager>('TimeManager').to(TimeManager);
     container.bind<InvoiceManager>('InvoiceManager').to(InvoiceManager);
     container.bind<Mailer>('Mailer').to(Mailer);
+    container.bind<ImageResizer>('ImageResizer').to(ImageResizer);
     container.bind<ActivityManager>('ActivityManager').to(ActivityManager);
     container.bind<TonProofService>('TonProofService').to(TonProofService);
     container.bind<Faker>('Faker').to(Faker);

@@ -102,6 +102,14 @@ export class TimeController extends AbstractController {
               fromAt: '2024-01-21T09:10:00.000Z',
               toAt: '2024-01-21T09:20:00.000Z',
               activityId: 'dd8a088d-00c1-499f-a75b-7ca45821a7e3',
+              screenshot: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAA.....',
+              processes: [
+                {
+                  name: 'dd8a088d-00c1-499f-a75b-7ca45821a7e3',
+                  description: 'dd8a088d-00c1-499f-a75b-7ca45821a7e3',
+                  timeMin: 10,
+                },
+              ],
             },
           ],
           schema: {

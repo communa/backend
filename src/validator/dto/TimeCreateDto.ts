@@ -1,4 +1,4 @@
-import {IsDateString, IsNumber, IsString} from 'class-validator';
+import {IsArray, IsDateString, IsNumber, IsOptional, IsString} from 'class-validator';
 
 export class TimeCreateDto {
   @IsNumber()
@@ -24,4 +24,16 @@ export class TimeCreateDto {
   mouseKeys: number;
   @IsNumber()
   mouseDistance: number;
+
+  @IsString()
+  @IsOptional()
+  screenshot?: string;
+
+  @IsArray()
+  @IsOptional()
+  processes?: {
+    name: string;
+    description: string;
+    timeMin: number;
+  }[];
 }
