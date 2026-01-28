@@ -32,16 +32,16 @@ export class TimeManager {
     data: TimeCreateDto[],
     user: User
   ): Promise<ITimeInsertionResult[]> {
-    const times: ITimeInsertionResult[] = data;
+    const insertionResults: ITimeInsertionResult[] = [];
 
-    for (let a = 0; a < times.length; a++) {
-      const data = times[a];
-      const fromAt = moment(data.fromAt).toDate();
-      const toAt = moment(data.toAt).toDate();
+    for (let a = 0; a < data.length; a++) {
+      const item = data[a];
+      const fromAt = moment(item.fromAt).toDate();
+      const toAt = moment(item.toAt).toDate();
 
       try {
         const activity = await this.activityRepository.findActivityAsFreelancerOrFail(
-          data.activityId
+          item.activityId
         );
 
         const isProposeeAndActive =
@@ -60,24 +60,43 @@ export class TimeManager {
           time = new Time();
         }
 
+        // const resizedScreenshot = await this.resize(item.screenshot);
+        // console.log('>>>>', resizedScreenshot?.length);
+
         time.fromAt = fromAt;
         time.toAt = toAt;
-        time.note = data.note;
-        time.minutesActive = data.minutesActive;
-        time.keyboardKeys = data.keyboardKeys;
-        time.mouseKeys = data.mouseKeys;
-        time.mouseDistance = data.mouseDistance;
+        time.note = item.note;
+        time.minutesActive = item.minutesActive;
+        time.keyboardKeys = item.keyboardKeys;
+        time.mouseKeys = item.mouseKeys;
+        time.mouseDistance = item.mouseDistance;
         time.activity = activity;
-        time.screenshot = await this.resize(data.screenshot);
-        time.processes = data.processes;
+        time.screenshot = await this.resize(item.screenshot);
+        time.processes = item.processes;
 
-        await this.timeRepository.validateAndSave(time);
+        const savedTime = await this.timeRepository.validateAndSave(time);
+        
+        insertionResults.push({
+          ...item,
+          id: savedTime.id,
+          // TODO: remove screenshot and processes from the response
+          screenshot: undefined,
+          processes: undefined,
+        });
       } catch (error: any) {
-        times[a].error = ErrorFormatter.format(error);
+        insertionResults.push({
+          ...item,
+          error: ErrorFormatter.format(error),
+          // TODO: remove screenshot and processes from the response
+          screenshot: undefined,
+          processes: undefined,
+        });
       }
     }
 
-    return times;
+    // console.log('>>>>', insertionResults);
+    
+    return insertionResults;
   }
 
   public async save(time: Time): Promise<Time> {

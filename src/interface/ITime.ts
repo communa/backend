@@ -12,7 +12,7 @@ export interface ITime {
   };
   processes?: {
     name: string;
-    description: string;
+    description?: string;
     timeMin: number;
   }[];
   screenshot?: string | null;

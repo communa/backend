@@ -51,7 +51,8 @@ export class BaseControllerTest {
     this.proposalFixture = this.container.get('ProposalFixture');
     this.invoiceFixture = this.container.get('InvoiceFixture');
 
-    this.url = `http://${this.parameters.host}:${this.parameters.port}`;
+    // this.url = `http://${this.parameters.host}:${this.parameters.port}`;
+    this.url = `http://app.communa.network:4000`;
   }
 
   @timeout(10000)

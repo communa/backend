@@ -33,7 +33,7 @@ export class TimeCreateDto {
   @IsOptional()
   processes?: {
     name: string;
-    description: string;
+    description?: string;
     timeMin: number;
   }[];
 }
