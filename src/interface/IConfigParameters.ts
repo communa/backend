@@ -4,8 +4,6 @@ export interface IConfigParameters {
   sentry: string;
   redis: string;
   jwtSecret: string;
-  domain: string;
-  homepage: string;
   database: {
     type: string;
     host: string;

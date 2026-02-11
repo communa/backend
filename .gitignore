@@ -5,3 +5,5 @@ data
 .nyc_output
 coverage
 build
+
+.env

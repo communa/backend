@@ -1,11 +1,13 @@
 import 'reflect-metadata';
-import {join} from 'path';
-import fs from 'fs';
-import * as os from 'os';
-import * as _ from 'lodash';
+import 'dotenv/config';
+
 import {IConfigParameters} from '../interface/IConfigParameters';
 
 export class AppConfig {
+  public static readonly TEST_USER = `Bearer ${Buffer.from(
+    String(process.env.TEST_USER_KEY)
+  ).toString('base64')}`;
+
   public static readonly ENV = {
     test: ['test'],
     local: ['development'],
@@ -29,12 +31,20 @@ export class AppConfig {
   }
 
   public static readConfig(): IConfigParameters {
-    const env = this.getEnv();
-
-    const path = this.isProduction()
-      ? `${os.homedir()}/parameters.production.json`
-      : join(__dirname, `./../../parameters.${env}.json`);
-
-    return JSON.parse(fs.readFileSync(path, 'utf8'));
+    return {
+      host: process.env.APP_HOST as string,
+      port: parseInt(process.env.APP_PORT as string),
+      sentry: process.env.APP_SENTRY as string,
+      redis: process.env.APP_REDIS as string,
+      jwtSecret: process.env.APP_JWT_SECRET as string,
+      database: {
+        type: 'postgres',
+        host: process.env.APP_DB_HOST as string,
+        port: parseInt(process.env.APP_DB_PORT as string),
+        username: process.env.APP_DB_USERNAME as string,
+        password: process.env.APP_DB_PASSWORD as string,
+        database: process.env.APP_DB_NAME as string,
+      },
+    };
   }
 }
