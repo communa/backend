@@ -16,13 +16,13 @@ With Postgres do:
 `create database communa_dev;`
 
 Install node packages:
-`yarn install`
+`pnpm install`
 
 Create the necessary database schema
-`NODE_ENV=test yarn run typeorm:cli -- schema:sync`
+`NODE_ENV=test pnpm run typeorm:cli -- schema:sync`
 
 Ensure there are no errors by execution of all tests
-`yarn test`
+`pnpm test`
 
 `NODE_ENV=production pm2 start build/server.js --watch`
 
@@ -50,7 +50,7 @@ cap deploy production
 ## Testing
 
 ```sh
-npm yarn test
+pnpm test
 
 NODE_ENV=test node --inspect ./node_modules/.bin/mocha --require ts-node/register ./src/test/service/ActivityBuilder.test.ts -g
 ```

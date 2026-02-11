@@ -42,7 +42,7 @@ export class AuthTimeTrackerController {
     state: EAuthTimeTrackerState;
     ip: string;
   }> {
-    return await this.authenticatorTimeTracker.timeTrackerNonceGenerate(req.ip);
+    return await this.authenticatorTimeTracker.timeTrackerNonceGenerate(req.ip ?? '');
   }
 
   @OpenAPI({
@@ -85,7 +85,7 @@ export class AuthTimeTrackerController {
     @Param('nonce') nonce: string,
     @Req() req: express.Request
   ): Promise<Record<string, never>> {
-    await this.authenticatorTimeTracker.timeTrackerLogin(nonce, req.ip);
+    await this.authenticatorTimeTracker.timeTrackerLogin(nonce, req.ip ?? '');
 
     return {};
   }
@@ -132,7 +132,7 @@ export class AuthTimeTrackerController {
     @Param('nonce') nonce: string,
     @Req() req: express.Request
   ): Promise<Record<string, never>> {
-    await this.authenticatorTimeTracker.timeTrackerConnect(nonce, currentUser, req.ip);
+    await this.authenticatorTimeTracker.timeTrackerConnect(nonce, currentUser, req.ip ?? '');
 
     return {};
   }
@@ -223,6 +223,6 @@ export class AuthTimeTrackerController {
     @Param('nonce') nonce: string,
     @Req() req: express.Request
   ): Promise<Record<string, never>> {
-    return this.authenticatorTimeTracker.timeTrackerNonceGet(nonce, req.ip);
+    return this.authenticatorTimeTracker.timeTrackerNonceGet(nonce, req.ip ?? '');
   }
 }
